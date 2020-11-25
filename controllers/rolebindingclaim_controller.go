@@ -20,7 +20,7 @@ import (
 	"context"
 	"reflect"
 
-	claim "github.com/tmax-cloud/hypercloud-go-operator/apis/claim/v1alpha1"
+	claim "github.com/tmax-cloud/hypercloud-go-operator/api/v1alpha1"
 
 	"github.com/go-logr/logr"
 	rbacApi "k8s.io/api/rbac/v1"

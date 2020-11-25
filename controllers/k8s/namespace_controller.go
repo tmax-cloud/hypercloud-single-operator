@@ -24,7 +24,7 @@ import (
 
 	"fmt"
 
-	claim "github.com/tmax-cloud/hypercloud-go-operator/apis/claim/v1alpha1"
+	claim "github.com/tmax-cloud/hypercloud-go-operator/api/v1alpha1"
 
 	"github.com/go-logr/logr"
 	v1 "k8s.io/api/core/v1"

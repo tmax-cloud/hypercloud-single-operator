@@ -38,7 +38,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
-	claim "github.com/tmax-cloud/hypercloud-go-operator/api/claim/v1alpha1"
+	claim "github.com/tmax-cloud/hypercloud-go-operator/api/v1alpha1"
 	"github.com/tmax-cloud/hypercloud-go-operator/util"
 
 	networkv1 "k8s.io/api/networking/v1"
