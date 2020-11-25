@@ -6,7 +6,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.3.0
   creationTimestamp: null
-  name: namespaceclaims.claim.tmax.io
+  name: resourcequotaclaims.claim.tmax.io
 spec:
   additionalPrinterColumns:
   - JSONPath: .resourceName
@@ -20,18 +20,18 @@ spec:
     type: string
   group: claim.tmax.io
   names:
-    kind: NamespaceClaim
-    listKind: NamespaceClaimList
-    plural: namespaceclaims
+    kind: ResourceQuotaClaim
+    listKind: ResourceQuotaClaimList
+    plural: resourcequotaclaims
     shortNames:
-    - nsc
-    singular: namespaceclaim
-  scope: Cluster
+    - rqc
+    singular: resourcequotaclaim
+  scope: Namespaced
   subresources:
     status: {}
   validation:
     openAPIV3Schema:
-      description: NamespaceClaim is the Schema for the namespaceclaims API
+      description: ResourceQuotaClaim is the Schema for the resourcequotaclaims API
       properties:
         apiVersion:
           description: 'APIVersion defines the versioned schema of this representation
@@ -109,7 +109,7 @@ spec:
               type: array
           type: object
         status:
-          description: NamespaceClaimStatus defines the observed state of NamespaceClaim
+          description: ResourceQuotaClaimStatus defines the observed state of ResourceQuotaClaim
           properties:
             lastTransitionTime:
               format: date-time

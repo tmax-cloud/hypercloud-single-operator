@@ -1,7 +1,10 @@
 apiVersion: claim.tmax.io/v1alpha1
 kind: ResourceQuotaClaim
 metadata:
-  name: resourcequotaclaim-sample
+  name: rqc3
+  namespace: default
+resourceName: rq3
 spec:
-  # Add fields here
-  foo: bar
+  hard:
+    limits.cpu: '1'
+    limits.memory: 1Gi

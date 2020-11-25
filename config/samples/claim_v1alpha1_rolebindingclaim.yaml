@@ -1,7 +1,13 @@
 apiVersion: claim.tmax.io/v1alpha1
 kind: RoleBindingClaim
 metadata:
-  name: rolebindingclaim-sample
-spec:
-  # Add fields here
-  foo: bar
+  name: rbc2
+  namespace: default  
+resourceName: rb2
+subjects:
+  - kind: User
+    name: admin@tmax.co.kr
+roleRef:
+  kind: ClusterRole
+  name: namespace-user
+  apiGroup: rbac.authorization.k8s.io

@@ -1,7 +1,13 @@
 apiVersion: claim.tmax.io/v1alpha1
 kind: NamespaceClaim
 metadata:
-  name: namespaceclaim-sample
+  name: nsc1
+  annotations:
+    creator: taegeon_woo@tmax.co.kr
+  labels:
+    trial: t
+resourceName: ns1
 spec:
-  # Add fields here
-  foo: bar
+  hard:
+    limits.cpu: '1'
+    limits.memory: 1Gi
