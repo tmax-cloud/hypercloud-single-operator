@@ -1,0 +1,11 @@
+domain: tmax.io
+layout: go.kubebuilder.io/v2
+projectName: hypercloud-go-operator
+repo: github.com/tmax-cloud/hypercloud-go-operator
+resources:
+- group: claim
+  kind: NamespaceClaim
+  version: v1alpha1
+version: 3-alpha
+plugins:
+  go.sdk.operatorframework.io/v2-alpha: {}

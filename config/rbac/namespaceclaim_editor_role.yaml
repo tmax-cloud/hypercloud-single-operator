@@ -1,0 +1,24 @@
+# permissions for end users to edit namespaceclaims.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: namespaceclaim-editor-role
+rules:
+- apiGroups:
+  - claim.tmax.io
+  resources:
+  - namespaceclaims
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - claim.tmax.io
+  resources:
+  - namespaceclaims/status
+  verbs:
+  - get
