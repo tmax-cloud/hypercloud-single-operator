@@ -1,0 +1,7 @@
+apiVersion: claim.tmax.io/v1alpha1
+kind: RoleBindingClaim
+metadata:
+  name: rolebindingclaim-sample
+spec:
+  # Add fields here
+  foo: bar

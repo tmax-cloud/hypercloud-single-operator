@@ -9,4 +9,8 @@ require (
 	k8s.io/apimachinery v0.18.6
 	k8s.io/client-go v0.18.6
 	sigs.k8s.io/controller-runtime v0.6.2
+	
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
+	sigs.k8s.io/cluster-api v0.3.9
+	sigs.k8s.io/yaml v1.2.0
 )

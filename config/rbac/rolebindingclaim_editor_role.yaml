@@ -1,0 +1,24 @@
+# permissions for end users to edit rolebindingclaims.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rolebindingclaim-editor-role
+rules:
+- apiGroups:
+  - claim.tmax.io
+  resources:
+  - rolebindingclaims
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - claim.tmax.io
+  resources:
+  - rolebindingclaims/status
+  verbs:
+  - get

@@ -29,6 +29,7 @@ import (
 
 	claimv1alpha1 "github.com/tmax-cloud/hypercloud-go-operator/api/v1alpha1"
 	"github.com/tmax-cloud/hypercloud-go-operator/controllers"
+	k8scontroller "github.com/tmax-cloud/hypercloud-go-operator/controllers/k8s"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -67,12 +68,37 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err = (&k8scontroller.NamespaceReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("Namespace"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Namespace")
+		os.Exit(1)
+	}
+
 	if err = (&controllers.NamespaceClaimReconciler{
 		Client: mgr.GetClient(),
 		Log:    ctrl.Log.WithName("controllers").WithName("NamespaceClaim"),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "NamespaceClaim")
+		os.Exit(1)
+	}
+	if err = (&controllers.RoleBindingClaimReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("RoleBindingClaim"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "RoleBindingClaim")
+		os.Exit(1)
+	}
+	if err = (&controllers.ResourceQuotaClaimReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("ResourceQuotaClaim"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ResourceQuotaClaim")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

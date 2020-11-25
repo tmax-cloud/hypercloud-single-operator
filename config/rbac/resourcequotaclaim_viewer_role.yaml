@@ -1,0 +1,20 @@
+# permissions for end users to view resourcequotaclaims.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: resourcequotaclaim-viewer-role
+rules:
+- apiGroups:
+  - claim.tmax.io
+  resources:
+  - resourcequotaclaims
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - claim.tmax.io
+  resources:
+  - resourcequotaclaims/status
+  verbs:
+  - get

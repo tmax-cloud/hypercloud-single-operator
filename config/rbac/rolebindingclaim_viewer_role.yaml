@@ -1,0 +1,20 @@
+# permissions for end users to view rolebindingclaims.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rolebindingclaim-viewer-role
+rules:
+- apiGroups:
+  - claim.tmax.io
+  resources:
+  - rolebindingclaims
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - claim.tmax.io
+  resources:
+  - rolebindingclaims/status
+  verbs:
+  - get

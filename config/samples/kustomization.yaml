@@ -1,4 +1,6 @@
 ## Append samples you want in your CSV to this file as resources ##
 resources:
 - claim_v1alpha1_namespaceclaim.yaml
+- claim_v1alpha1_rolebindingclaim.yaml
+- claim_v1alpha1_resourcequotaclaim.yaml
 # +kubebuilder:scaffold:manifestskustomizesamples

@@ -1,0 +1,24 @@
+# permissions for end users to edit resourcequotaclaims.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: resourcequotaclaim-editor-role
+rules:
+- apiGroups:
+  - claim.tmax.io
+  resources:
+  - resourcequotaclaims
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - claim.tmax.io
+  resources:
+  - resourcequotaclaims/status
+  verbs:
+  - get

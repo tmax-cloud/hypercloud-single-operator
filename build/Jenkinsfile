@@ -1,0 +1,157 @@
+import java.text.SimpleDateFormat
+
+node {
+    def goHome = "/usr/local/go/bin"
+    def buildDir = "/var/lib/jenkins/workspace/hypercloud-go-operator"
+    
+    def scope = "${params.scope}"
+    def prevVersion
+    def version
+    
+    stage('github-config') {
+        sh "git config --global user.name hypercloud-bot"
+	    sh "git config --global user.email hypercloudbot@gmail.com"
+		sh "git config --global credential.helper store"
+    }
+    
+    stage('create release branch') {
+        new File("${buildDir}").mkdir()
+        if(scope == 'major' || scope == 'minor') {
+            def releaseBranch = "release-v${params.major}.${params.minor}"
+            dir("${buildDir}") {
+                git(branch: 'master', credentialsId: 'hypercloud-bot', url: "https://github.com/tmax-cloud/hypercloud-go-operator.git")
+                sh "git checkout -b ${releaseBranch}"
+                sh "sudo git push --set-upstream origin ${releaseBranch}"
+            }
+        } else {
+            dir("${buildDir}") {
+                git(branch: "release-v${params.major}.${params.minor}", credentialsId: 'hypercloud-bot', url: "https://github.com/tmax-cloud/hypercloud-go-operator.git")
+            }
+        }
+        (prevVersion, version) = getVersionFromGit(scope);
+        
+    }
+    
+    stage('go build') {
+        new File("${buildDir}").mkdir()
+        dir("${buildDir}") {
+            git branch: 'master',
+            credentialsId: '${credentialsId}',
+            url: "https://github.com/tmax-cloud/hypercloud-go-operator.git"
+        }
+        sh '''#!/bin/bash
+            export PATH=$PATH:/usr/local/go/bin
+            export GO111MODULE=on
+            go build -o bin/manager main.go
+        '''
+    }
+    
+    stage('changelog') {
+        sh "echo targetVersion: ${version}, prevVersion: ${prevVersion}"
+        sh "sudo ./build/make-changelog.sh ${version} ${prevVersion}"
+    }
+    
+    stage('make manifests') {
+        sh "sudo kubectl kustomize ./config/default/ > bin/hypercloud-v${version}.yaml"
+        sh "sudo kubectl kustomize ./config/crd/ > bin/crd-v${version}.yaml"
+        sh "sudo tar -zvcf bin/hypercloud-manifests-v${version}.tar.gz bin/hypercloud-v${version}.yaml bin/crd-v${version}.yaml"
+        
+        sh "sudo mkdir -p build/manifests/v${version}"
+        sh "sudo cp bin/*.yaml build/manifests/v${version}/"
+    }
+
+    stage('build/push image') {
+        sh "sudo docker build --tag tmaxcloudk/hypercloud-operator:v${version} ."
+        sh "sudo docker push tmaxcloudk/hypercloud-operator:v${version}"
+        sh "sudo docker rmi tmaxcloudk/hypercloud-operator:v${version}"
+    }
+
+    stage('gitcommit') {
+        dir("${buildDir}") {
+            sh "sudo git checkout release-v${params.major}.${params.minor}"
+            sh "git add -A"
+            def commitMsg = "Release commit for hypercloud-go-operator v${version}"
+            sh (script: "git commit -m \"${commitMsg}\" || true")
+            sh "git tag v${version}"
+            sh "sudo git push -u origin +release-v${params.major}.${params.minor}"
+            sh "sudo git push origin v${version}"
+            
+            sh "git fetch --all"
+            sh "git reset --hard origin/release-v${params.major}.${params.minor}"
+            sh "git pull origin release-v${params.major}.${params.minor}"
+        }
+    }
+    
+    stage('release') {
+        withCredentials([usernamePassword(credentialsId: 'hypercloud-bot', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+            def body = '\\{\\"tag_name\\":\\"' + "v${version}"+ '\\",\\"name\\":\\"' + "v${version}" + '\\",\\"body\\":\\"test\\"\\}'
+            def releaseResult = sh returnStdout: true, script: "curl -u ${USERNAME}:${PASSWORD} -H \"Content-Type: application/vnd.github.v3+json\" -d ${body} -X POST https://api.github.com/repos/tmax-cloud/hypercloud-go-operator/releases | jq '.id' | tr -d '\n' "
+            
+            def filename = "hypercloud-manifests-v${version}.tar.gz"
+            sh "curl -u ${USERNAME}:${PASSWORD} -H \"Content-Type: application/zip\" --data-binary @bin/${filename} -X POST https://uploads.github.com/repos/tmax-cloud/hypercloud-go-operator/releases/${releaseResult}/assets?name=${filename}"
+        }
+    }
+    
+    stage('clean repo') {
+        sh "sudo rm -rf ${buildDir}/*"
+    }
+    
+    stage('send email') {
+        def dateFormat = new SimpleDateFormat("yyyy.MM.dd E")
+        def date = new Date()
+                
+        def today = dateFormat.format(date) 
+        
+        emailext (
+            subject: "Release hypercloud-go-operator v${version}",
+            body: 
+"""
+안녕하세요. ck2-3팀입니다.
+hypercloud-go-operator 정기 배포 안내 메일입니다.
+
+배포 관련 아래 링크를 확인 부탁드립니다.
+https://github.com/tmax-cloud/hypercloud-go-operator/releases/tag/v${version}
+
+감사합니다.
+
+===
+
+${today}
+Hypercloud-go-operator 배포
+    * HyperCloudServer
+        * version: v${version}
+        * image: docker.io/tmaxcloudck/hypercloud-go-operator:v${version}
+        
+""",
+            to: "jaihwan_jung@tmax.co.kr;jaehyan1013@naver.com",
+            from: "hypercloudbot@gmail.com"
+        )
+    }
+}
+
+def getVersionFromGit(scope) {
+    def prevVersion, version
+    switch(scope) {
+        case 'major':
+            version = "${params.major}.0.0"
+            prevVersion = "0.0.0"
+            break
+        case 'minor':
+            version = "${params.major}.${params.minor}.0"
+            prevVersion = "0.0.0"
+            break
+        case 'patch':
+            def rev = sh returnStdout: true, script: "git rev-list --tags=v${params.major}.${params.minor}.* --max-count=1 2> /dev/null || echo "
+            def latestTag = sh returnStdout: true, script: "git describe --tags ${rev} 2> /dev/null || echo ${params.major}.${params.minor}.0"
+            
+            prevVersion = latestTag.replace('v', '')
+            if("${params.patch}" == '0') {
+                def (major, minor, patch) = prevVersion.tokenize('.').collect { it.toInteger() }
+                version = "${params.major}.${params.minor}.${patch + 1}"
+            } else {
+                version = "${params.major}.${params.minor}.${params.patch}"
+            }
+            break
+    }
+    return [prevVersion, version]
+}
