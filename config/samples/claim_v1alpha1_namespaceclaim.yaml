@@ -1,12 +1,12 @@
 apiVersion: claim.tmax.io/v1alpha1
 kind: NamespaceClaim
 metadata:
-  name: nsc1
+  name: nsc17
   annotations:
     creator: taegeon_woo@tmax.co.kr
   labels:
     trial: t
-resourceName: ns1
+resourceName: ns17
 spec:
   hard:
     limits.cpu: '1'

@@ -128,10 +128,14 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 		}
 
 	case claim.NamespaceClaimStatusTypeSuccess:
+		nsLabels := make(map[string]string)
+		nsLabels = namespaceClaim.Labels
+		nsLabels["period"] = "1"
+
 		namespace := &v1.Namespace{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:        namespaceClaim.ResourceName,
-				Labels:      namespaceClaim.Labels,
+				Labels:      nsLabels,
 				Annotations: namespaceClaim.Annotations,
 				Finalizers: []string{
 					"namespace/finalizers",
@@ -242,24 +246,24 @@ func (r *NamespaceClaimReconciler) sendConfirmMail(namespaceClaim *claim.Namespa
 	var imgCid string
 	email := namespaceClaim.Annotations["owner"]
 	if isSuccess {
-		subject = " HyperCloud 서비스 신청 승인 완료 "
+		subject = "HyperCloud 서비스 신청 승인 완료"
 		body = util.TRIAL_SUCCESS_CONFIRM_MAIL_CONTENTS
-		body = strings.ReplaceAll(body, "%%NAMESPACE_NAME%%", namespaceClaim.ResourceName)
-		body = strings.ReplaceAll(body, "%%TRIAL_START_TIME%%", createTime.Format("2006-01-02"))
-		body = strings.ReplaceAll(body, "%%TRIAL_END_TIME%%", createTime.AddDate(0, 0, 30).Format("2006-01-02"))
-		imgPath = "/home/tmax/hypercloud4-operator/_html/img/trial-approval.png"
-		imgCid = "trial-approval"
+		// body = strings.ReplaceAll(body, "%%NAMESPACE_NAME%%", namespaceClaim.ResourceName)
+		// body = strings.ReplaceAll(body, "%%TRIAL_START_TIME%%", createTime.Format("2006-01-02"))
+		// body = strings.ReplaceAll(body, "%%TRIAL_END_TIME%%", createTime.AddDate(0, 0, 30).Format("2006-01-02"))
+		// imgPath = "/home/tmax/hypercloud4-operator/_html/img/trial-approval.png"
+		// imgCid = "trial-approval"
 
 	} else {
-		subject = " HyperCloud 서비스 신청 승인 거절  "
+		subject = "HyperCloud 서비스 신청 승인 거절"
 		body = util.TRIAL_FAIL_CONFIRM_MAIL_CONTENTS
 		if namespaceClaim.Status.Reason != "" {
 			body = strings.ReplaceAll(body, "%%FAIL_REASON%%", namespaceClaim.Status.Reason)
 		} else {
 			body = strings.ReplaceAll(body, "%%FAIL_REASON%%", "Unknown Reason")
 		}
-		imgPath = "/home/tmax/hypercloud4-operator/_html/img/trial-disapproval.png"
-		imgCid = "trial-disapproval"
+		// imgPath = "/home/tmax/hypercloud4-operator/_html/img/trial-disapproval.png"
+		// imgCid = "trial-disapproval"
 	}
 	util.SendMail(email, subject, body, imgPath, imgCid, reqLogger)
 }
@@ -338,7 +342,7 @@ func (r *NamespaceClaimReconciler) createTrialRB(namespaceClaim *claim.Namespace
 
 func (r *NamespaceClaimReconciler) createDefaultNetPol(namespaceClaim *claim.NamespaceClaim) {
 	reqLogger := r.Log
-	reqLogger.Info("Create Network Policy for new Namespace [ " + namespaceClaim.ResourceName + " ] Starts")
+	reqLogger.Info("Create Network Policy for new Namespace [ " + namespaceClaim.ResourceName + " ] Start")
 	netPolConfigFound := &v1.ConfigMap{}
 	if err := r.Get(context.TODO(), types.NamespacedName{Name: util.DEFAULT_NETWORK_POLICY_CONFIG_MAP, Namespace: util.HYPERCLOUD_NAMESPACE}, netPolConfigFound); err != nil && errors.IsNotFound(err) {
 		// Make ConfigMap default-networkpolicy-configmap With Empty Data in hypercloud4-system Namespace
