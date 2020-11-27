@@ -22,6 +22,12 @@ spec:
       labels:
         control-plane: controller-manager
     spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Equal
+        effect: "NoSchedule"
+      nodeSelector:
+        kubernetes.io/hostname: master-1      
       dnsPolicy: "ClusterFirstWithHostNet"
       containers:
       - command:

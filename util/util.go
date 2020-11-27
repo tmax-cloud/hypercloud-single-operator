@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/gomail.v2"
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 
 	"github.com/go-logr/logr"
-	mail "github.com/tmax-cloud/hypercloud-go-operator/util/gomail"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -161,30 +161,19 @@ func SetTrialNSTimer(ns *v1.Namespace, client client.Client, reqLogger logr.Logg
 
 func SendMail(recipient string, subject string, body string, imgPath string, imgCid string, reqLogger logr.Logger) {
 	reqLogger.Info(" Send Mail to User [ " + recipient + " ] Start")
-	// host := "mail.tmax.co.kr"
-	// port := 25
-	// // sender := "no-reply-tc@tmax.co.kr"
-	// // pw := "!@tcdnsdudxla11"
+	host := "mail.tmax.co.kr"
+	port := 25
+	sender := "no-reply-tc@tmax.co.kr"
+	pw := "!@tcdnsdudxla11"
 
-	// sender := "taegeon_woo@tmax.co.kr"
-	// pw := "tg540315"
-
-	// m := gomail.NewMessage()
-	// m.SetHeader("From", "no-reply-tc@tmax.co.kr")
-	// m.SetHeader("To", recipient)
-	// m.SetHeader("Subject", subject)
-	// m.SetBody("text/html", body)
-	// //m.Attach("/home/Alex/lolcat.jpg")
-	// //m.SetAddressHeader("Cc", "skerlight@naver.com", "Song")
-	// d := gomail.NewDialer(host, port, sender, pw)
-	m := mail.NewMessage()
-	m.SetHeader("From", "no-reply@tmax.co.kr")
-	m.SetHeader("To", "taegeon_woo@tmax.co.kr")
-	m.SetHeader("Subject", "Hello!")
-	m.SetBody("text/html", TEST)
+	m := gomail.NewMessage()
+	m.SetHeader("From", "no-reply-tc@tmax.co.kr")
+	m.SetHeader("To", recipient)
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/html", body)
 	//m.Attach("/home/Alex/lolcat.jpg")
 	//m.SetAddressHeader("Cc", "skerlight@naver.com", "Song")
-	d := mail.NewDialer("mail.tmax.co.kr", 25, "taegeon_woo@tmax.co.kr", "tg540315")
+	d := gomail.NewDialer(host, port, sender, pw)
 
 	if err := d.DialAndSend(m); err != nil {
 		reqLogger.Error(err, " Sent Mail to User [ "+recipient+"] Failed")
