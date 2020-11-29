@@ -17,9 +17,12 @@ limitations under the License.
 package main
 
 import (
+	"context"
 	"flag"
 	"os"
+	"time"
 
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -30,6 +33,7 @@ import (
 	claimv1alpha1 "github.com/tmax-cloud/hypercloud-go-operator/api/v1alpha1"
 	"github.com/tmax-cloud/hypercloud-go-operator/controllers"
 	k8scontroller "github.com/tmax-cloud/hypercloud-go-operator/controllers/k8s"
+	"github.com/tmax-cloud/hypercloud-go-operator/util"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -40,7 +44,6 @@ var (
 
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
-
 	utilruntime.Must(claimv1alpha1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
 }
@@ -101,7 +104,34 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "ResourceQuotaClaim")
 		os.Exit(1)
 	}
+
+	if err = (&claimv1alpha1.ResourceQuotaClaim{}).SetupWebhookWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create webhook", "webhook", "ResourceQuotaClaim")
+		os.Exit(1)
+	}
 	// +kubebuilder:scaffold:builder
+
+	// Set Trial Timer
+	setupLog.Info("[Main] Start Trial Namespace Timer")
+	go func() {
+		for {
+			nsList := &v1.NamespaceList{}
+			if err := mgr.GetClient().List(context.TODO(), nsList); err != nil {
+				setupLog.Info("Not Ready to List Namespace Yet, Wait 1 seconds & try again")
+				time.Sleep(1 * time.Second)
+				continue
+			}
+
+			for _, ns := range nsList.Items {
+				if ns.Labels != nil && ns.Labels["trial"] != "" && ns.Labels["period"] != "" && ns.Annotations != nil && ns.Annotations["owner"] != "" {
+					setupLog.Info("[Main] Trial NameSpace : " + ns.Name)
+					util.SetTrialNSTimer(&ns, mgr.GetClient(), ctrl.Log)
+				}
+			}
+			setupLog.Info("[Main] Start Trial Namespace Timer Complete")
+			break
+		}
+	}()
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {

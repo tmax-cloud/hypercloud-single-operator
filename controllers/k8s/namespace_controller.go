@@ -61,7 +61,6 @@ func (r *NamespaceReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			reqLogger.Info("Namespace resource not found. Ignoring since object must be deleted.")
 			return ctrl.Result{}, nil
 		}
-
 		reqLogger.Error(err, "Failed to get Namespace")
 		return ctrl.Result{}, err
 	}
@@ -74,7 +73,6 @@ func (r *NamespaceReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 	defer func() {
 		r.patchHelper.Patch(context.TODO(), namespace)
-
 	}()
 
 	defer func() {
@@ -93,9 +91,7 @@ func (r *NamespaceReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		}
 	}()
 
-	switch namespace.Status.Phase {
-
-	case "Terminating":
+	if namespace.Status.Phase == "Terminating" {
 		if namespace.Labels != nil && namespace.Labels["fromClaim"] != "" {
 			reqLogger.Info("Namespace from Claim [ " + namespace.Name + " ] is in Terminating Status")
 			if namespace.Finalizers != nil {
@@ -106,10 +102,13 @@ func (r *NamespaceReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			// Delete ClusterRoleBinding for nsc user
 			r.deleteCRBForNSCUser(namespace)
 
-			reqLogger.Info("Update NamespaceClaim [ " + namespace.Labels["fromClaim"] + " ] Status to Deleted")
-			r.replaceNSCStatus(namespace.Labels["fromClaim"], claim.NamespaceClaimStatueTypeDeleted)
-
+			reqLogger.Info("Update NamespaceClaim [ " + namespace.Labels["fromClaim"] + " ] Status to Namespace Deleted")
+			r.replaceNSCStatus(namespace.Labels["fromClaim"], namespace.Name, claim.NamespaceClaimStatueTypeDeleted)
 		}
+	}
+
+	if namespace.Labels != nil && namespace.Labels["trial"] != "" && namespace.Labels["period"] != "" && namespace.Annotations["owner"] != "" {
+		util.SetTrialNSTimer(namespace, r.Client, reqLogger)
 	}
 
 	return ctrl.Result{}, nil
@@ -122,9 +121,13 @@ func (r *NamespaceReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			predicate.Funcs{
 				// Only reconciling if the status.status change
 				UpdateFunc: func(e event.UpdateEvent) bool {
-					oldRbcStatus := e.ObjectOld.(*v1.Namespace).DeepCopy().Status.Phase
-					newRbcStatus := e.ObjectNew.(*v1.Namespace).DeepCopy().Status.Phase
-					if !reflect.DeepEqual(oldRbcStatus, newRbcStatus) {
+					oldNsStatus := e.ObjectOld.(*v1.Namespace).DeepCopy().Status.Phase
+					newNsStatus := e.ObjectNew.(*v1.Namespace).DeepCopy().Status.Phase
+
+					oldNsLabels := e.ObjectOld.(*v1.Namespace).DeepCopy().Labels
+					newNsLabels := e.ObjectNew.(*v1.Namespace).DeepCopy().Labels
+
+					if !reflect.DeepEqual(oldNsStatus, newNsStatus) || !reflect.DeepEqual(oldNsLabels, newNsLabels) {
 						return true
 					} else {
 						return false
@@ -135,19 +138,19 @@ func (r *NamespaceReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func (r *NamespaceReconciler) replaceNSCStatus(nscName string, status string) {
+func (r *NamespaceReconciler) replaceNSCStatus(nscName string, nsName string, status string) {
 	reqLogger := r.Log
-	reqLogger.Info("Replace NamespaceClaim [ " + nscName + " ] Status to " + status)
 	nscFound := &claim.NamespaceClaim{}
 	if err := r.Get(context.TODO(), types.NamespacedName{Name: nscName}, nscFound); err != nil && errors.IsNotFound(err) {
 		reqLogger.Info("NamespaceClaim [ " + nscName + " ] Not Exists, Do Nothing")
 	} else {
 		nscFound.Status.Status = status
-		if err := r.Update(context.TODO(), nscFound); err != nil {
-			reqLogger.Error(err, "Failed to Update ClusterRoleBinding [ "+nscName+" ]")
-			panic("Failed to Update ClusterRoleBinding [ " + nscName + " ]")
+		nscFound.Status.Reason = "Namespace [ " + nsName + " ] Deleted"
+		if err := r.Status().Update(context.TODO(), nscFound); err != nil {
+			reqLogger.Error(err, "Failed to Update NamespaceClaim [ "+nscName+" ]")
+			panic("Failed to Update NamespaceClaim [ " + nscName + " ]")
 		} else {
-			reqLogger.Info("Update ClusterRoleBinding [ " + nscName + " ] Success")
+			reqLogger.Info("Update NamespaceClaim [ " + nscName + " ] Success")
 		}
 	}
 }

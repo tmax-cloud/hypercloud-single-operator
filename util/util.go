@@ -78,10 +78,10 @@ const (
 )
 
 func SetTrialNSTimer(ns *v1.Namespace, client client.Client, reqLogger logr.Logger) {
-	reqLogger.Info("[Trial Timer] TrialNSTimer for Trial NS[ " + ns.Name + " ] Set Service Start")
+	reqLogger.Info(" [Trial Timer] TrialNSTimer for Trial NS[ " + ns.Name + " ] Set Service Start")
 	currentTime := time.Now()
 	createTime := ns.CreationTimestamp.Time
-	reqLogger.Info("[Trial Timer] CreateTime of Trial NS[ " + ns.Name + " ] : " + createTime.String())
+	reqLogger.Info(" [Trial Timer] CreateTime of Trial NS[ " + ns.Name + " ] : " + createTime.String())
 	mailTime := createTime.AddDate(0, 0, 23)
 	// mailTime := createTime.Add(time.Second * 23)  // for test
 	deleteTime := createTime.AddDate(0, 0, 30)
@@ -99,16 +99,26 @@ func SetTrialNSTimer(ns *v1.Namespace, client client.Client, reqLogger logr.Logg
 			if err := client.Get(context.TODO(), types.NamespacedName{Name: ns.Name}, nsFound); err != nil && errors.IsNotFound(err) {
 				reqLogger.Info(" [Trial Timer]  NameSpace [ " + ns.Name + " ] has Deleted, Nothing to do")
 			}
-			if nsFound.Labels != nil && nsFound.Labels["trial"] != "" && nsFound.Annotations != nil && nsFound.Annotations["owner"] != "" {
-				reqLogger.Info(" [Trial Timer] Still Trial NameSpace, Send Info Mail to User [ " + nsFound.Annotations["owner"] + " ]")
-				subject := " 신청해주신 Trial NameSpace [ " + nsFound.Name + " ] 만료 안내 "
-				body := TRIAL_TIME_OUT_CONTENTS
-				body = strings.ReplaceAll(body, "%%TRIAL_END_TIME%%", deleteTime.Format("2006-01-02"))
-				SendMail(nsFound.Annotations["owner"], subject, body, "/home/tmax/hypercloud4-operator/_html/img/service-timeout.png", "service-timeout", reqLogger)
-			} else {
-				reqLogger.Info(" [Trial Timer] Paid NameSpace, Nothing to do")
-			}
 
+			currentTimeinTimer := time.Now()
+			periodinTimer, _ := strconv.Atoi(nsFound.Labels["period"])
+			reqLogger.Info("[Trial Timer] currentTime in MailTimer of Trial NS[ " + ns.Name + " ] : " + currentTimeinTimer.String())
+			reqLogger.Info("[Trial Timer] Period in MailTimer of Trial NS[ " + ns.Name + " ] : " + nsFound.Labels["period"])
+			expectedCreationDate := currentTimeinTimer.AddDate(0, -periodinTimer, 7)
+
+			if (expectedCreationDate.Second() - currentTimeinTimer.Second()) < 1000 {
+				if nsFound.Labels != nil && nsFound.Labels["trial"] != "" && nsFound.Annotations != nil && nsFound.Annotations["owner"] != "" {
+					reqLogger.Info(" [Trial Timer] Still Trial NameSpace, Send Info Mail to User [ " + nsFound.Annotations["owner"] + " ]")
+					subject := " 신청해주신 Trial NameSpace [ " + nsFound.Name + " ] 만료 안내 "
+					body := TRIAL_TIME_OUT_CONTENTS
+					body = strings.ReplaceAll(body, "%%TRIAL_END_TIME%%", deleteTime.Format("2006-01-02"))
+					SendMail(nsFound.Annotations["owner"], subject, body, "/home/tmax/hypercloud4-operator/_html/img/service-timeout.png", "service-timeout", reqLogger)
+				} else {
+					reqLogger.Info(" [Trial Timer] Paid NameSpace, Nothing to do")
+				}
+			} else {
+				reqLogger.Info(" [Trial Timer] Mail Timer wake up at the wrong date, Nothing to do")
+			}
 		})
 		reqLogger.Info(" [Trial Timer] Set Trial NameSpace Sending Mail Timer Success ")
 		reqLogger.Info(" [Trial Timer] MailSendTime for Trial NS[ " + ns.Name + " ] : " + mailTime.String())
@@ -125,23 +135,33 @@ func SetTrialNSTimer(ns *v1.Namespace, client client.Client, reqLogger logr.Logg
 			if err := client.Get(context.TODO(), types.NamespacedName{Name: ns.Name}, nsFound); err != nil && errors.IsNotFound(err) {
 				reqLogger.Error(err, " [Trial Timer]  NameSpace [ "+ns.Name+" ] has Deleted, Nothing to do")
 			}
-			if nsFound.Labels != nil && nsFound.Labels["trial"] != "" && nsFound.Annotations != nil && nsFound.Annotations["owner"] != "" {
-				reqLogger.Info(" [Trial Timer] Still Trial NameSpace, Delete Expired Namespace [ " + nsFound.Name + " ]")
-				if err := client.Delete(context.TODO(), nsFound); err != nil {
-					reqLogger.Error(err, " [Trial Timer] Failed to Delete NameSpace [ "+ns.Name+" ]")
-					panic(err)
-				} else if err := client.Delete(context.TODO(), &rbacv1.ClusterRoleBinding{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "CRB-" + nsFound.Name,
-					},
-				}); err != nil {
-					reqLogger.Error(err, " [Trial Timer] Failed to Delete ClusterRoleBinding [ "+"CRB-"+nsFound.Name+" ]")
-					panic(err)
+
+			currentTimeinTimer := time.Now()
+			periodinTimer, _ := strconv.Atoi(nsFound.Labels["period"])
+			reqLogger.Info("[Trial Timer] currentTime in DeleteTimer of Trial NS[ " + ns.Name + " ] : " + currentTimeinTimer.String())
+			reqLogger.Info("[Trial Timer] Period in DeleteTimer of Trial NS[ " + ns.Name + " ] : " + nsFound.Labels["period"])
+			expectedCreationDate := currentTimeinTimer.AddDate(0, -periodinTimer, 0)
+			if (expectedCreationDate.Second() - currentTimeinTimer.Second()) < 1000 {
+				if nsFound.Labels != nil && nsFound.Labels["trial"] != "" && nsFound.Annotations != nil && nsFound.Annotations["owner"] != "" {
+					reqLogger.Info(" [Trial Timer] Still Trial NameSpace, Delete Expired Namespace [ " + nsFound.Name + " ]")
+					if err := client.Delete(context.TODO(), nsFound); err != nil {
+						reqLogger.Error(err, " [Trial Timer] Failed to Delete NameSpace [ "+ns.Name+" ]")
+						panic(err)
+					} else if err := client.Delete(context.TODO(), &rbacv1.ClusterRoleBinding{
+						ObjectMeta: metav1.ObjectMeta{
+							Name: "CRB-" + nsFound.Name,
+						},
+					}); err != nil {
+						reqLogger.Error(err, " [Trial Timer] Failed to Delete ClusterRoleBinding [ "+"CRB-"+nsFound.Name+" ]")
+						panic(err)
+					} else {
+						reqLogger.Info(" [Trial Timer] Delete Expired Namespace [ " + nsFound.Name + " ] Success")
+					}
 				} else {
-					reqLogger.Info(" [Trial Timer] Delete Expired Namespace [ " + nsFound.Name + " ] Success")
+					reqLogger.Info(" [Trial Timer] Paid NameSpace, Nothing to do")
 				}
 			} else {
-				reqLogger.Info(" [Trial Timer] Paid NameSpace, Nothing to do")
+				reqLogger.Info(" [Trial Timer] Delete Timer wake up at the wrong date, Nothing to do")
 			}
 		})
 		reqLogger.Info(" [Trial Timer] Set Trial NameSpace delete Timer Success ")
@@ -170,8 +190,10 @@ func SendMail(recipient string, subject string, body string, imgPath string, img
 	m.SetHeader("From", "no-reply-tc@tmax.co.kr")
 	m.SetHeader("To", recipient)
 	m.SetHeader("Subject", subject)
+	// m.SetHeader("Content-Type", "image/svg")
+	// m.SetHeader("Content-ID", "<"+imgCid+">")
 	m.SetBody("text/html", body)
-	//m.Attach("/home/Alex/lolcat.jpg")
+	m.Embed(imgPath)
 	//m.SetAddressHeader("Cc", "skerlight@naver.com", "Song")
 	d := gomail.NewDialer(host, port, sender, pw)
 

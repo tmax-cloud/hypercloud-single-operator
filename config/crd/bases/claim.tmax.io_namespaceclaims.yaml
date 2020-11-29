@@ -124,6 +124,7 @@ spec:
               - Success
               - Reject
               - Error
+              - Namespace Deleted
               type: string
           type: object
       required:

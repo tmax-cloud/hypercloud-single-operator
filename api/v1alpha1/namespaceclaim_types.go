@@ -21,14 +21,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// +kubebuilder:validation:Enum=Awaiting;Success;Reject;Error
+// +kubebuilder:validation:Enum=Awaiting;Success;Reject;Error;Deleted;
 
 const (
 	NamespaceClaimStatusTypeAwaiting = "Awaiting"
 	NamespaceClaimStatusTypeSuccess  = "Success"
 	NamespaceClaimStatusTypeReject   = "Reject"
 	NamespaceClaimStatueTypeError    = "Error"
-	NamespaceClaimStatueTypeDeleted  = "Deleted"
+	NamespaceClaimStatueTypeDeleted  = "Namespace Deleted"
 )
 
 // NamespaceClaimStatus defines the observed state of NamespaceClaim
@@ -37,7 +37,7 @@ type NamespaceClaimStatus struct {
 	Reason             string      `json:"reason,omitempty" protobuf:"bytes,3,opt,name=reason"`
 	LastTransitionTime metav1.Time `json:"lastTransitionTime,omitempty" protobuf:"bytes,3,opt,name=lastTransitionTime"`
 
-	// +kubebuilder:validation:Enum=Awaiting;Success;Reject;Error;
+	// +kubebuilder:validation:Enum=Awaiting;Success;Reject;Error;Namespace Deleted;
 	Status string `json:"status,omitempty" protobuf:"bytes,4,opt,name=status"`
 }
 

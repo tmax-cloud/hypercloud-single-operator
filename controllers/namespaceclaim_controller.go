@@ -100,8 +100,8 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 		}
 	}()
 
-	found := &v1.Namespace{}
-	err := r.Get(context.TODO(), types.NamespacedName{Name: namespaceClaim.ResourceName}, found)
+	nsFound := &v1.Namespace{}
+	err := r.Get(context.TODO(), types.NamespacedName{Name: namespaceClaim.ResourceName}, nsFound)
 
 	reqLogger.Info("NamespaceClaim status:" + string(namespaceClaim.Status.Status))
 	if err != nil && !errors.IsNotFound(err) {
@@ -117,7 +117,21 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 			namespaceClaim.Annotations["owner"] = namespaceClaim.Annotations["creator"]
 		}
 
-		if err != nil && errors.IsNotFound(err) {
+		nscList := &claim.NamespaceClaimList{}
+		if err := r.List(context.TODO(), nscList); err != nil {
+			reqLogger.Error(err, "Failed to get NamespaceClaim List")
+			panic(err)
+		}
+
+		flag := false
+		for _, nsc := range nscList.Items {
+			if nsc.Status.Status == claim.NamespaceClaimStatusTypeAwaiting && nsc.ResourceName == namespaceClaim.ResourceName {
+				flag = true
+				break
+			}
+		}
+
+		if err != nil && errors.IsNotFound(err) && !flag {
 			reqLogger.Info("Namespace [ " + namespaceClaim.ResourceName + " ] Not found.")
 			namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeAwaiting
 			namespaceClaim.Status.Reason = "Please Wait for administrator approval"
@@ -128,14 +142,15 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 		}
 
 	case claim.NamespaceClaimStatusTypeSuccess:
-		nsLabels := make(map[string]string)
-		nsLabels = namespaceClaim.Labels
-		nsLabels["period"] = "1"
+		nscLabels := make(map[string]string)
+		nscLabels = namespaceClaim.Labels
+		nscLabels["period"] = "1"
+		nscLabels["fromClaim"] = namespaceClaim.Name
 
 		namespace := &v1.Namespace{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:        namespaceClaim.ResourceName,
-				Labels:      nsLabels,
+				Labels:      nscLabels,
 				Annotations: namespaceClaim.Annotations,
 				Finalizers: []string{
 					"namespace/finalizers",
@@ -147,7 +162,7 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 			ObjectMeta: metav1.ObjectMeta{
 				Name:        namespaceClaim.ResourceName,
 				Namespace:   namespaceClaim.ResourceName,
-				Labels:      namespaceClaim.Labels,
+				Labels:      nscLabels,
 				Annotations: namespaceClaim.Annotations,
 			},
 			Spec: namespaceClaim.Spec,
@@ -211,8 +226,9 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 			}
 		}
 	case claim.NamespaceClaimStatusTypeReject:
-		if namespaceClaim.Labels != nil && namespaceClaim.Labels["trial"] != "" && namespaceClaim.Annotations != nil && namespaceClaim.Annotations["owner"] != "" {
+		if namespaceClaim.Labels != nil && namespaceClaim.Labels["trial"] != "" && namespaceClaim.Annotations != nil && namespaceClaim.Annotations["owner"] != "" && namespaceClaim.Status.Message != "reject mail sent" {
 			r.sendConfirmMail(namespaceClaim, time.Now(), false, reqLogger)
+			namespaceClaim.Status.Message = "reject mail sent"
 		}
 	}
 	namespaceClaim.Status.LastTransitionTime = metav1.Now()
@@ -248,11 +264,11 @@ func (r *NamespaceClaimReconciler) sendConfirmMail(namespaceClaim *claim.Namespa
 	if isSuccess {
 		subject = "HyperCloud 서비스 신청 승인 완료"
 		body = util.TRIAL_SUCCESS_CONFIRM_MAIL_CONTENTS
-		// body = strings.ReplaceAll(body, "%%NAMESPACE_NAME%%", namespaceClaim.ResourceName)
-		// body = strings.ReplaceAll(body, "%%TRIAL_START_TIME%%", createTime.Format("2006-01-02"))
-		// body = strings.ReplaceAll(body, "%%TRIAL_END_TIME%%", createTime.AddDate(0, 0, 30).Format("2006-01-02"))
-		// imgPath = "/home/tmax/hypercloud4-operator/_html/img/trial-approval.png"
-		// imgCid = "trial-approval"
+		body = strings.ReplaceAll(body, "%%NAMESPACE_NAME%%", namespaceClaim.ResourceName)
+		body = strings.ReplaceAll(body, "%%TRIAL_START_TIME%%", createTime.Format("2006-01-02"))
+		body = strings.ReplaceAll(body, "%%TRIAL_END_TIME%%", createTime.AddDate(0, 0, 30).Format("2006-01-02"))
+		imgPath = "/img/trial-approval.png"
+		imgCid = "trial-approval"
 
 	} else {
 		subject = "HyperCloud 서비스 신청 승인 거절"
@@ -262,8 +278,8 @@ func (r *NamespaceClaimReconciler) sendConfirmMail(namespaceClaim *claim.Namespa
 		} else {
 			body = strings.ReplaceAll(body, "%%FAIL_REASON%%", "Unknown Reason")
 		}
-		// imgPath = "/home/tmax/hypercloud4-operator/_html/img/trial-disapproval.png"
-		// imgCid = "trial-disapproval"
+		imgPath = "/img/trial-disapproval.png"
+		imgCid = "trial-disapproval"
 	}
 	util.SendMail(email, subject, body, imgPath, imgCid, reqLogger)
 }

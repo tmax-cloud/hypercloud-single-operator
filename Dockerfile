@@ -24,6 +24,8 @@ FROM gcr.io/distroless/static:nonroot
 ENV TZ=Asia/Seoul
 WORKDIR /
 COPY --from=builder /workspace/manager .
+COPY util/img/ /img/
+
 USER nonroot:nonroot
 
 ENTRYPOINT ["/manager"]
