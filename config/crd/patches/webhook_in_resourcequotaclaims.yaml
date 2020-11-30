@@ -5,6 +5,7 @@ kind: CustomResourceDefinition
 metadata:
   name: resourcequotaclaims.claim.tmax.io
 spec:
+  preserveUnknownFields: false
   conversion:
     strategy: Webhook
     webhookClientConfig:

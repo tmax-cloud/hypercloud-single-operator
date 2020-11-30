@@ -104,9 +104,12 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "ResourceQuotaClaim")
 		os.Exit(1)
 	}
-
 	if err = (&claimv1alpha1.ResourceQuotaClaim{}).SetupWebhookWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create webhook", "webhook", "ResourceQuotaClaim")
+		os.Exit(1)
+	}
+	if err = (&claimv1alpha1.NamespaceClaim{}).SetupWebhookWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create webhook", "webhook", "NamespaceClaim")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

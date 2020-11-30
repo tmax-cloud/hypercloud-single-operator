@@ -1,0 +1,44 @@
+
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  creationTimestamp: null
+  name: validating-webhook-configuration
+webhooks:
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: webhook-service
+      namespace: system
+      path: /validate-claim-tmax-io-v1alpha1-namespaceclaim
+  failurePolicy: Fail
+  name: vnamespaceclaim.kb.io
+  rules:
+  - apiGroups:
+    - claim.tmax.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - namespaceclaim
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: webhook-service
+      namespace: system
+      path: /validate-claim-tmax-io-v1alpha1-resourcequotaclaim
+  failurePolicy: Fail
+  name: vresourcequotaclaim.kb.io
+  rules:
+  - apiGroups:
+    - claim.tmax.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - resourcequotaclaims

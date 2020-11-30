@@ -17,11 +17,53 @@ limitations under the License.
 package v1alpha1
 
 import (
+	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
+
+var ResourceNameList = []string{
+	string(v1.ResourceCPU),
+	string(v1.ResourceMemory),
+	string(v1.ResourceEphemeralStorage),
+	string(v1.ResourceRequestsCPU),
+	string(v1.ResourceRequestsMemory),
+	string(v1.ResourceRequestsEphemeralStorage),
+	string(v1.ResourceLimitsCPU),
+	string(v1.ResourceLimitsMemory),
+	string(v1.ResourceLimitsEphemeralStorage),
+	string(v1.ResourcePods),
+	string(v1.ResourceQuotas),
+	string(v1.ResourceServices),
+	string(v1.ResourceReplicationControllers),
+	string(v1.ResourceSecrets),
+	string(v1.ResourceConfigMaps),
+	string(v1.ResourcePersistentVolumeClaims),
+	string(v1.ResourceStorage),
+	string(v1.ResourceRequestsStorage),
+	string(v1.ResourceServicesNodePorts),
+	string(v1.ResourceServicesLoadBalancers),
+	"count/" + string(v1.ResourcePersistentVolumeClaims),
+	"count/" + string(v1.ResourceServices),
+	"count/" + string(v1.ResourceConfigMaps),
+	"count/" + string(v1.ResourceReplicationControllers),
+	"count/deployments.apps",
+	"count/replicasets.apps",
+	"count/statefulsets.apps",
+	"count/jobs.batch",
+	"count/cronjobs.batch",
+	"count/deployments.extensions",
+	"requests.nvidia.com/gpu",
+	"ssd-ceph-fs.storageclass.storage.k8s.io/requests.storage",
+	"hdd-ceph-fs.storageclass.storage.k8s.io/requests.storage",
+	"ssd-ceph-block.storageclass.storage.k8s.io/requests.storage",
+	"hdd-ceph-block.storageclass.storage.k8s.io/requests.storage",
+}
 
 // log is for logging in this package.
 var resourcequotaclaimlog = logf.Log.WithName("resourcequotaclaim-resource")
@@ -43,15 +85,12 @@ var _ webhook.Validator = &ResourceQuotaClaim{}
 func (r *ResourceQuotaClaim) ValidateCreate() error {
 	resourcequotaclaimlog.Info("validate create", "name", r.Name)
 	resourcequotaclaimlog.Info("validating Webhook for resourcequotaClaim CRD Start!!")
-
-	// TODO(user): fill in your validation logic upon object creation.
-	return nil
+	return r.validateRqc()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
 func (r *ResourceQuotaClaim) ValidateUpdate(old runtime.Object) error {
 	resourcequotaclaimlog.Info("validate update", "name", r.Name)
-
 	// TODO(user): fill in your validation logic upon object update.
 	return nil
 }
@@ -59,7 +98,37 @@ func (r *ResourceQuotaClaim) ValidateUpdate(old runtime.Object) error {
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
 func (r *ResourceQuotaClaim) ValidateDelete() error {
 	resourcequotaclaimlog.Info("validate delete", "name", r.Name)
-
 	// TODO(user): fill in your validation logic upon object deletion.
 	return nil
+}
+
+func (r *ResourceQuotaClaim) validateRqc() error {
+	var allErrs field.ErrorList
+
+	if err := r.validateRqcSpec(); err != nil {
+		allErrs = append(allErrs, err)
+	}
+	if len(allErrs) == 0 {
+		return nil
+	}
+
+	return errors.NewInvalid(schema.GroupKind{Group: "claim.tmax.io", Kind: "resourcequotaclaim"}, "resourceQuotaSpecName", allErrs)
+}
+
+func (r *ResourceQuotaClaim) validateRqcSpec() *field.Error {
+	for resourceName, _ := range r.Spec.Hard {
+		if !contains(ResourceNameList, resourceName.String()) {
+			return field.Invalid(field.NewPath(resourceName.String()), resourceName.String(), "Invalid ResourceQuotaSpecName")
+		}
+	}
+	return nil
+}
+
+func contains(arr []string, str string) bool {
+	for _, a := range arr {
+		if a == str {
+			return true
+		}
+	}
+	return false
 }
