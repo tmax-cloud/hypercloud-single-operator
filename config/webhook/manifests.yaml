@@ -23,7 +23,7 @@ webhooks:
     - CREATE
     - UPDATE
     resources:
-    - namespaceclaim
+    - namespaceclaims
 - clientConfig:
     caBundle: Cg==
     service:
