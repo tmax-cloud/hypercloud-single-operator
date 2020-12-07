@@ -43,4 +43,11 @@ spec:
           requests:
             cpu: 100m
             memory: 20Mi
+        volumeMounts:
+        - name: operator-log-mnt
+          mountPath: /logs    
+      volumes:
+      - name: operator-log-mnt
+        hostPath:
+          path: /root/woo/go-workspace/src/hypercloud-go-operator/logs
       terminationGracePeriodSeconds: 10

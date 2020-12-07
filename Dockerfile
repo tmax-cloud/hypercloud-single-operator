@@ -14,7 +14,7 @@ COPY main.go main.go
 COPY api/ api/
 COPY util/ util/
 COPY controllers/ controllers/
-
+COPY logs/ logs/
 # Build
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o manager main.go
 
@@ -25,7 +25,10 @@ ENV TZ=Asia/Seoul
 WORKDIR /
 COPY --from=builder /workspace/manager .
 COPY util/img/ /img/
+COPY logs/ logs/
 
-USER nonroot:nonroot
+USER root
+
+# USER nonroot:nonroot
 
 ENTRYPOINT ["/manager"]

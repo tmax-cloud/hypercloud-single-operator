@@ -79,6 +79,7 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 	}
 	defer func() {
 		r.patchHelper.Patch(context.TODO(), namespaceClaim)
+		// klog.Flush()
 
 	}()
 

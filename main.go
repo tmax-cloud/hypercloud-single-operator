@@ -19,6 +19,8 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -48,6 +50,16 @@ func init() {
 	// +kubebuilder:scaffold:scheme
 }
 
+type HypercloudLogWriter struct {
+	fileBuffer io.Writer
+}
+
+func (aa HypercloudLogWriter) Write(p []byte) (n int, err error) {
+	os.Stdout.Write(p)
+	nn, err := aa.fileBuffer.Write(p)
+	return nn, err
+}
+
 func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
@@ -57,7 +69,20 @@ func main() {
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.Parse()
 
-	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
+	// For Log file
+	file, err := os.OpenFile(
+		"/logs/operator.log",
+		os.O_CREATE|os.O_RDWR,
+		os.FileMode(0644),
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+	w := io.MultiWriter(file, os.Stdout)
+	ctrl.SetLogger(zap.New(zap.UseDevMode(true), zap.WriteTo(w)))
+	//Log setup finish
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:             scheme,
