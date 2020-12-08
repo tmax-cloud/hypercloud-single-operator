@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"time"
 
@@ -32,6 +33,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
+	"github.com/robfig/cron"
 	claimv1alpha1 "github.com/tmax-cloud/hypercloud-go-operator/api/v1alpha1"
 	"github.com/tmax-cloud/hypercloud-go-operator/controllers"
 	k8scontroller "github.com/tmax-cloud/hypercloud-go-operator/controllers/k8s"
@@ -50,29 +52,11 @@ func init() {
 	// +kubebuilder:scaffold:scheme
 }
 
-type HypercloudLogWriter struct {
-	fileBuffer io.Writer
-}
-
-func (aa HypercloudLogWriter) Write(p []byte) (n int, err error) {
-	os.Stdout.Write(p)
-	nn, err := aa.fileBuffer.Write(p)
-	return nn, err
-}
-
 func main() {
-	var metricsAddr string
-	var enableLeaderElection bool
-	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
-	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
-		"Enable leader election for controller manager. "+
-			"Enabling this will ensure there is only one active controller manager.")
-	flag.Parse()
-
 	// For Log file
 	file, err := os.OpenFile(
 		"/logs/operator.log",
-		os.O_CREATE|os.O_RDWR,
+		os.O_CREATE|os.O_RDWR|os.O_TRUNC,
 		os.FileMode(0644),
 	)
 	if err != nil {
@@ -81,8 +65,36 @@ func main() {
 	}
 	defer file.Close()
 	w := io.MultiWriter(file, os.Stdout)
+
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true), zap.WriteTo(w)))
-	//Log setup finish
+
+	// Logging Cron Job
+	cronJob := cron.New()
+	cronJob.AddFunc("1 0 0 * * ?", func() {
+		input, err := ioutil.ReadFile("/logs/operator.log")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		err = ioutil.WriteFile("/logs/operator"+time.Now().AddDate(0, 0, -1).Format("2006-01-02")+".log", input, 0644)
+		if err != nil {
+			fmt.Println("Error creating", "/logs/operator")
+			fmt.Println(err)
+			return
+		}
+		setupLog.Info("Log BackUp Success")
+		os.Truncate("/logs/operator.log", 0)
+		file.Seek(0, os.SEEK_SET)
+	})
+	cronJob.Start()
+
+	var metricsAddr string
+	var enableLeaderElection bool
+	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
+	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
+		"Enable leader election for controller manager. "+
+			"Enabling this will ensure there is only one active controller manager.")
+	flag.Parse()
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:             scheme,
