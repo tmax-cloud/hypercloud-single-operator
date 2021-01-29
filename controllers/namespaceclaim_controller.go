@@ -362,7 +362,7 @@ func (r *NamespaceClaimReconciler) createDefaultNetPol(namespaceClaim *claim.Nam
 	reqLogger.Info("Create Network Policy for new Namespace [ " + namespaceClaim.ResourceName + " ] Start")
 	netPolConfigFound := &v1.ConfigMap{}
 	if err := r.Get(context.TODO(), types.NamespacedName{Name: util.DEFAULT_NETWORK_POLICY_CONFIG_MAP, Namespace: util.HYPERCLOUD_NAMESPACE}, netPolConfigFound); err != nil && errors.IsNotFound(err) {
-		// Make ConfigMap default-networkpolicy-configmap With Empty Data in hypercloud4-system Namespace
+		// Make ConfigMap default-networkpolicy-configmap With Empty Data in hypercloud5-system Namespace
 		netPolConfig := &v1.ConfigMap{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      util.DEFAULT_NETWORK_POLICY_CONFIG_MAP,
