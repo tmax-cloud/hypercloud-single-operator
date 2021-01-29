@@ -2,7 +2,7 @@ package util
 
 const (
 	RBAC_API_GROUP                      = "rbac.authorization.k8s.io"
-	HYPERCLOUD_NAMESPACE                = "hypercloud4-system"
+	HYPERCLOUD_NAMESPACE                = "hypercloud5-system"
 	DEFAULT_NETWORK_POLICY_CONFIG_MAP   = "default-networkpolicy-configmap"
 	NETWORK_POLICY_YAML                 = "networkpolicies.yaml"
 	TRIAL_SUCCESS_CONFIRM_MAIL_CONTENTS = "<!DOCTYPE html>\r\n" +
