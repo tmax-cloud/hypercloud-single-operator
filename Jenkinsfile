@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat
 node {
     def gitHubBaseAddress = "github.com"
     def goHome = "/usr/local/go/bin"
-    def imageBuildHome = "/var/lib/jenkins/workspace/hypercloud-go-operator"
+    def buildDir = "/var/lib/jenkins/workspace/hypercloud-go-operator"
     
     def scriptHome = "${buildDir}/scripts"
 	
@@ -18,7 +18,7 @@ node {
 	def userEmail = "taegeon_woo@tmax.co.kr"
     
     stage('git pull') {
-        dir(imageBuildHome){
+        dir(buildDir){
             git branch: "${params.buildBranch}",
             credentialsId: '${userName}',
             url: "http://${gitAddress}"
