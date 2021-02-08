@@ -55,7 +55,7 @@ node {
     }
 
     stage('changelog') {
-        sh "echo targetVersion: ${version}, prevVersion: ${prevVersion}"
+        sh "echo targetVersion: ${version}, preVersion: ${preVersion}"
         sh "sudo sh ${scriptHome}/hypercloud-changelog.sh ${version} ${preVersion}"
     }
 
