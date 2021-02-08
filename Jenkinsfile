@@ -56,7 +56,7 @@ node {
 
     stage('changelog') {
         sh "echo targetVersion: ${version}, preVersion: ${preVersion}"
-        sh "sudo sh ${scriptHome}/hypercloud-changelog.sh ${version} ${preVersion}"
+        sh "sudo sh ${scriptHome}/make-changelog.sh ${version} ${preVersion}"
     }
 
     stage('gitcommit') {
