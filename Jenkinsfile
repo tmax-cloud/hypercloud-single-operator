@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat
 node {
     def gitHubBaseAddress = "github.com"
     def goHome = "/usr/local/go/bin"
-    def buildDir = "/var/lib/jenkins/workspace/hypercloud-go-operator"
+    def imageBuildHome = "/var/lib/jenkins/workspace/hypercloud-go-operator"
     
     def scriptHome = "${buildDir}/scripts"
 	
