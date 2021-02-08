@@ -66,12 +66,12 @@ node {
             def commitMsg = "[Distribution] Release commit for hypercloud-go-operator v${version}"
             sh (script: "git commit -m \"${commitMsg}\" || true")
             sh "git tag v${version}"
-            sh "sudo git push -u origin +release-v${params.major}.${params.minor}"
+			sh "sudo git push -u origin +${params.buildBranch}"
             sh "sudo git push origin v${version}"
             
             sh "git fetch --all"
-            sh "git reset --hard origin/release-v${params.major}.${params.minor}"
-            sh "git pull origin release-v${params.major}.${params.minor}"
+			sh "git reset --hard origin/${params.buildBranch}"
+			sh "git pull origin ${params.buildBranch}"
         }
     }
     
