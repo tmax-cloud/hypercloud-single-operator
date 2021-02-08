@@ -1,5 +1,3 @@
-import java.text.SimpleDateFormat
-
 node {
     def gitHubBaseAddress = "github.com"
     def goHome = "/usr/local/go/bin"
@@ -51,9 +49,9 @@ node {
     }
 
     stage('build/push image') {
-        sh "sudo docker build --tag tmaxcloudk/hypercloud-go-operator:v${version} ."
-        sh "sudo docker push tmaxcloudk/hypercloud-go-operator:v${version}"
-        sh "sudo docker rmi tmaxcloudk/hypercloud-go-operator:v${version}"
+        sh "sudo docker build --tag tmaxcloudk/hypercloud-go-operator:${imageTag} ."
+        sh "sudo docker push tmaxcloudk/hypercloud-go-operator:${imageTag}"
+        sh "sudo docker rmi tmaxcloudk/hypercloud-go-operator:${imageTag}"
     }
 
     stage('changelog') {
