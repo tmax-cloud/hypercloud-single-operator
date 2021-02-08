@@ -49,9 +49,9 @@ node {
     }
 
     stage('build/push image') {
-        sh "sudo docker build --tag tmaxcloudk/hypercloud-go-operator:${imageTag} ."
-        sh "sudo docker push tmaxcloudk/hypercloud-go-operator:${imageTag}"
-        sh "sudo docker rmi tmaxcloudk/hypercloud-go-operator:${imageTag}"
+        sh "sudo docker build --tag tmaxcloudck/hypercloud-go-operator:${imageTag} ."
+        sh "sudo docker push tmaxcloudck/hypercloud-go-operator:${imageTag}"
+        sh "sudo docker rmi tmaxcloudck/hypercloud-go-operator:${imageTag}"
     }
 
     stage('changelog') {
