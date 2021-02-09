@@ -44,12 +44,14 @@ type ResourceQuotaClaimStatus struct {
 	Status string `json:"status,omitempty" protobuf:"bytes,4,opt,name=status"`
 }
 
+// +kubebuilder:validation:Required
 type CustomHard struct {
-	LimitCpu    string `json:"limitCpu"`
-	LimitMemory string `json:"limitMemory"`
+	// +kubebuilder:validation:Required
+	LimitCpu string `json:"limitCpu"`
+	// +kubebuilder:validation:Required
+	LimitMemory string `json:"limitMemory,omitempty"`
 }
 
-// +kubebuilder:validation:Required
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:shortName=rqc

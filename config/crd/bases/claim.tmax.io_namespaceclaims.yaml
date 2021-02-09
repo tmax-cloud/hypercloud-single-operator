@@ -116,7 +116,6 @@ spec:
               type: string
           required:
           - limitCpu
-          - limitMemory
           type: object
         status:
           description: NamespaceClaimStatus defines the observed state of NamespaceClaim
