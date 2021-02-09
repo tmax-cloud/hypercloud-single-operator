@@ -114,6 +114,9 @@ spec:
               type: string
             limitMemory:
               type: string
+          required:
+          - limitCpu
+          - limitMemory
           type: object
         status:
           description: ResourceQuotaClaimStatus defines the observed state of ResourceQuotaClaim

@@ -76,6 +76,11 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 		resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeAwaiting
 		resourceQuotaClaim.Status.Reason = "Please Wait for administrator approval"
 	case claim.ResourceQuotaClaimStatusTypeSuccess:
+		// for POC must DELETE!!
+		resourceQuotaClaim.Spec.Hard.Cp
+
+		//
+
 		resourceQuota := &v1.ResourceQuota{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      resourceQuotaClaim.ResourceName,
