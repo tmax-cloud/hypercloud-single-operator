@@ -38,15 +38,6 @@ spec:
             of an object. Servers should convert recognized schemas to the latest
             internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
           type: string
-        customSpec:
-          properties:
-            limitCpu:
-              description: RequestCpu    string `json:"requestCpu,omitempty"` RequestMemory
-                string `json:"requestMemory,omitempty"`
-              type: string
-            limitMemory:
-              type: string
-          type: object
         kind:
           description: 'Kind is a string value representing the REST resource this
             object represents. Servers may infer this from the endpoint the client
@@ -116,6 +107,15 @@ spec:
                   each object tracked by a quota
                 type: string
               type: array
+          type: object
+        specLimit:
+          properties:
+            limitCpu:
+              description: RequestCpu    string `json:"requestCpu,omitempty"` RequestMemory
+                string `json:"requestMemory,omitempty"`
+              type: string
+            limitMemory:
+              type: string
           type: object
         status:
           description: NamespaceClaimStatus defines the observed state of NamespaceClaim

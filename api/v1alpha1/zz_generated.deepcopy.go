@@ -45,7 +45,7 @@ func (in *NamespaceClaim) DeepCopyInto(out *NamespaceClaim) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
 	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
-	out.CustomSpec = in.CustomSpec
+	out.SpecLimit = in.SpecLimit
 	in.Spec.DeepCopyInto(&out.Spec)
 	in.Status.DeepCopyInto(&out.Status)
 }
