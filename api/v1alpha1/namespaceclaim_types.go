@@ -41,6 +41,13 @@ type NamespaceClaimStatus struct {
 	Status string `json:"status,omitempty" protobuf:"bytes,4,opt,name=status"`
 }
 
+type CustomHard struct {
+	// RequestCpu    string `json:"requestCpu,omitempty"`
+	// RequestMemory string `json:"requestMemory,omitempty"`
+	LimitCpu    string `json:"limitCpu,omitempty"`
+	LimitMemory string `json:"limitMemory,omitempty"`
+}
+
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster,shortName=nsc
@@ -52,7 +59,8 @@ type NamespaceClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 	ResourceName      string               `json:"resourceName"`
-	Spec              v1.ResourceQuotaSpec `json:"spec,omitempty"`
+	CustomSpec        CustomHard           `json:"spec,omitempty"`
+	Spec              v1.ResourceQuotaSpec `json:"spec1,omitempty"`
 	Status            NamespaceClaimStatus `json:"status,omitempty"`
 }
 

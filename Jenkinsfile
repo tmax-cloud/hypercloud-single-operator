@@ -48,18 +48,18 @@ node {
         sh "sudo cp bin/*.yaml build/manifests/v${version}/"
     }
 
-    stage('build/push image') {
+    stage('image build/push') {
         sh "sudo docker build --tag tmaxcloudck/hypercloud-go-operator:${imageTag} ."
         sh "sudo docker push tmaxcloudck/hypercloud-go-operator:${imageTag}"
         sh "sudo docker rmi tmaxcloudck/hypercloud-go-operator:${imageTag}"
     }
 
-    stage('changelog') {
+    stage('make-changelog') {
         sh "echo targetVersion: ${version}, preVersion: ${preVersion}"
         sh "sudo sh ${scriptHome}/make-changelog.sh ${version} ${preVersion}"
     }
 
-    stage('gitcommit') {
+    stage('gitcommit & push') {
         dir("${buildDir}") {
 			sh "git checkout ${params.buildBranch}"
             sh "git add -A"
