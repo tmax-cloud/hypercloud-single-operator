@@ -111,8 +111,6 @@ spec:
         specLimit:
           properties:
             limitCpu:
-              description: RequestCpu    string `json:"requestCpu,omitempty"` RequestMemory
-                string `json:"requestMemory,omitempty"`
               type: string
             limitMemory:
               type: string

@@ -42,8 +42,6 @@ type NamespaceClaimStatus struct {
 }
 
 type CustomHard struct {
-	// RequestCpu    string `json:"requestCpu,omitempty"`
-	// RequestMemory string `json:"requestMemory,omitempty"`
 	LimitCpu    string `json:"limitCpu,omitempty"`
 	LimitMemory string `json:"limitMemory,omitempty"`
 }
