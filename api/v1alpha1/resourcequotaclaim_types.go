@@ -47,7 +47,7 @@ type ResourceQuotaClaimStatus struct {
 // +kubebuilder:validation:Required
 type CustomHard struct {
 	// +kubebuilder:validation:Required
-	LimitCpu string `json:"limitCpu"`
+	LimitCpu string `json:"limitCpu,omitempty"`
 	// +kubebuilder:validation:Required
 	LimitMemory string `json:"limitMemory,omitempty"`
 }
