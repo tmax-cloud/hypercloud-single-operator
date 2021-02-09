@@ -32,6 +32,7 @@ import (
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -166,7 +167,14 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 				Labels:      nscLabels,
 				Annotations: namespaceClaim.Annotations,
 			},
-			Spec: namespaceClaim.Spec,
+			Spec: v1.ResourceQuotaSpec{
+				Scopes:        namespaceClaim.Spec.Scopes,
+				ScopeSelector: namespaceClaim.Spec.ScopeSelector,
+				Hard: v1.ResourceList{
+					v1.ResourceCPU:    resource.MustParse(namespaceClaim.SpecLimit.LimitCpu),
+					v1.ResourceMemory: resource.MustParse(namespaceClaim.SpecLimit.LimitMemory),
+				},
+			},
 		}
 
 		if err != nil && errors.IsNotFound(err) {

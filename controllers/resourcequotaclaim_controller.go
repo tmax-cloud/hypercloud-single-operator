@@ -23,9 +23,12 @@ import (
 	"github.com/go-logr/logr"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+
+	// "k8s.io/kubernetes/pkg/api"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
@@ -76,17 +79,25 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 		resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeAwaiting
 		resourceQuotaClaim.Status.Reason = "Please Wait for administrator approval"
 	case claim.ResourceQuotaClaimStatusTypeSuccess:
-		// for POC must DELETE!!
-		resourceQuotaClaim.Spec.Hard.Cp
+		// hards := v1.ResourceList{
 
-		//
+		// 	v1.ResourceLimitsCPU.String():    resourceQuotaClaim.SpecLimit.LimitCpu,
+		// 	v1.ResourceLimitsMemory.String(): resourceQuotaClaim.SpecLimit.LimitCpu,
+		// }
 
 		resourceQuota := &v1.ResourceQuota{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      resourceQuotaClaim.ResourceName,
 				Namespace: resourceQuotaClaim.Namespace,
 			},
-			Spec: resourceQuotaClaim.Spec,
+			Spec: v1.ResourceQuotaSpec{
+				Scopes:        resourceQuotaClaim.Spec.Scopes,
+				ScopeSelector: resourceQuotaClaim.Spec.ScopeSelector,
+				Hard: v1.ResourceList{
+					v1.ResourceCPU:    resource.MustParse(resourceQuotaClaim.SpecLimit.LimitCpu),
+					v1.ResourceMemory: resource.MustParse(resourceQuotaClaim.SpecLimit.LimitMemory),
+				},
+			},
 		}
 
 		if err != nil && errors.IsNotFound(err) {

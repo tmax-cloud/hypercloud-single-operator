@@ -17,7 +17,6 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -85,8 +84,8 @@ func (r *NamespaceClaim) validateNscRqSpec() *field.Error {
 		}
 		checkRequireNameList = append(checkRequireNameList, resourceName.String())
 	}
-	if !(contains(checkRequireNameList, string(v1.ResourceLimitsCPU)) && contains(checkRequireNameList, string(v1.ResourceLimitsMemory))) {
-		return field.Invalid(nil, nil, "limits.cpu & limits.memory are Mandatory")
-	}
+	// if !(contains(checkRequireNameList, string(v1.ResourceLimitsCPU)) && contains(checkRequireNameList, string(v1.ResourceLimitsMemory))) {
+	// 	return field.Invalid(nil, nil, "limits.cpu & limits.memory are Mandatory")
+	// }
 	return nil
 }
