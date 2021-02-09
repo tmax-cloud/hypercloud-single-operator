@@ -145,7 +145,9 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 
 	case claim.NamespaceClaimStatusTypeSuccess:
 		nscLabels := make(map[string]string)
-		nscLabels = namespaceClaim.Labels
+		if namespaceClaim.Labels != nil {
+			nscLabels = namespaceClaim.Labels
+		}
 		nscLabels["period"] = "1"
 		nscLabels["fromClaim"] = namespaceClaim.Name
 
