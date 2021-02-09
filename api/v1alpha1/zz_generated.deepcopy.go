@@ -121,6 +121,7 @@ func (in *ResourceQuotaClaim) DeepCopyInto(out *ResourceQuotaClaim) {
 	*out = *in
 	out.TypeMeta = in.TypeMeta
 	in.ObjectMeta.DeepCopyInto(&out.ObjectMeta)
+	out.SpecLimit = in.SpecLimit
 	in.Spec.DeepCopyInto(&out.Spec)
 	in.Status.DeepCopyInto(&out.Status)
 }

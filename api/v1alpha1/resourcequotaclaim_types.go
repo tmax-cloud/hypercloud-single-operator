@@ -44,6 +44,11 @@ type ResourceQuotaClaimStatus struct {
 	Status string `json:"status,omitempty" protobuf:"bytes,4,opt,name=status"`
 }
 
+type CustomHard struct {
+	LimitCpu    string `json:"limitCpu,omitempty"`
+	LimitMemory string `json:"limitMemory,omitempty"`
+}
+
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:shortName=rqc
@@ -55,6 +60,7 @@ type ResourceQuotaClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=.metadata"`
 	ResourceName      string                   `json:"resourceName"`
+	SpecLimit         CustomHard               `json:"specLimit,omitempty"`
 	Spec              v1.ResourceQuotaSpec     `json:"spec,omitempty"`
 	Status            ResourceQuotaClaimStatus `json:"status,omitempty"`
 }

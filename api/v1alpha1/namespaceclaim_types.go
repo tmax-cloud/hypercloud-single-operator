@@ -41,11 +41,6 @@ type NamespaceClaimStatus struct {
 	Status string `json:"status,omitempty" protobuf:"bytes,4,opt,name=status"`
 }
 
-type CustomHard struct {
-	LimitCpu    string `json:"limitCpu,omitempty"`
-	LimitMemory string `json:"limitMemory,omitempty"`
-}
-
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster,shortName=nsc
