@@ -103,7 +103,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
 				roleBindingClaim.Status.Reason = "Failed to update RoleBinding"
 				roleBindingClaim.Status.Message = err.Error()
-			} else if err := r.Update(context.TODO(), roleBinding); err != nil {
+			} else if err := r.Create(context.TODO(), roleBinding); err != nil {
 				reqLogger.Error(err, "Failed to re-create RoleBinding.")
 				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
 				roleBindingClaim.Status.Reason = "Failed to update RoleBinding"

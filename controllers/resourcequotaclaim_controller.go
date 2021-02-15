@@ -118,7 +118,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 				resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeError
 				resourceQuotaClaim.Status.Reason = "Failed to update ResourceQuota"
 				resourceQuotaClaim.Status.Message = err.Error()
-			} else if err := r.Update(context.TODO(), resourceQuota); err != nil {
+			} else if err := r.Create(context.TODO(), resourceQuota); err != nil {
 				reqLogger.Error(err, "Failed to re-create ResourceQuota.")
 				resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeError
 				resourceQuotaClaim.Status.Reason = "Failed to update ResourceQuota"
