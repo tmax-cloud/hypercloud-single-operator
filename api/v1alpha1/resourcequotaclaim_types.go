@@ -45,9 +45,10 @@ type ResourceQuotaClaimStatus struct {
 }
 
 // +kubebuilder:validation:Required
+// +required
 type CustomHard struct {
-	LimitCpu    string `json:"limitCpu,omitempty"`
-	LimitMemory string `json:"limitMemory,omitempty"`
+	LimitCpu    string `json:"limitCpu"`
+	LimitMemory string `json:"limitMemory"`
 }
 
 // +kubebuilder:object:root=true
@@ -60,10 +61,11 @@ type CustomHard struct {
 type ResourceQuotaClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=.metadata"`
-	ResourceName      string                   `json:"resourceName"`
-	SpecLimit         CustomHard               `json:"specLimit,omitempty"`
-	Spec              v1.ResourceQuotaSpec     `json:"spec,omitempty"`
-	Status            ResourceQuotaClaimStatus `json:"status,omitempty"`
+	ResourceName      string `json:"resourceName"`
+	// +required
+	SpecLimit CustomHard               `json:"specLimit"`
+	Spec      v1.ResourceQuotaSpec     `json:"spec,omitempty"`
+	Status    ResourceQuotaClaimStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true

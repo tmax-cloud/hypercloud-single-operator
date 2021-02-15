@@ -10,9 +10,9 @@ resources:
 patchesStrategicMerge:
 # [WEBHOOK] To enable webhook, uncomment all the sections with [WEBHOOK] prefix.
 # patches here are for enabling the conversion webhook for each CRD
-- patches/webhook_in_namespaceclaims.yaml
+# - patches/webhook_in_namespaceclaims.yaml
 # - patches/webhook_in_rolebindingclaims.yaml
-- patches/webhook_in_resourcequotaclaims.yaml
+# - patches/webhook_in_resourcequotaclaims.yaml
 # +kubebuilder:scaffold:crdkustomizewebhookpatch
 
 # [CERTMANAGER] To enable webhook, uncomment all the sections with [CERTMANAGER] prefix.

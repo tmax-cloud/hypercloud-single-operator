@@ -52,7 +52,7 @@ type NamespaceClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 	ResourceName      string               `json:"resourceName"`
-	SpecLimit         CustomHard           `json:"specLimit,omitempty"`
+	SpecLimit         CustomHard           `json:"specLimit"`
 	Spec              v1.ResourceQuotaSpec `json:"spec,omitempty"`
 	Status            NamespaceClaimStatus `json:"status,omitempty"`
 }
