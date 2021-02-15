@@ -1,0 +1,445 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE)/$(CERTIFICATE_NAME)
+    controller-gen.kubebuilder.io/version: v0.3.0
+  creationTimestamp: null
+  name: namespaceclaims.claim.tmax.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .resourceName
+    name: ResourceName
+    type: string
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.reason
+    name: Reason
+    type: string
+  conversion:
+    strategy: Webhook
+    webhookClientConfig:
+      caBundle: Cg==
+      service:
+        name: webhook-service
+        namespace: system
+        path: /convert
+  group: claim.tmax.io
+  names:
+    kind: NamespaceClaim
+    listKind: NamespaceClaimList
+    plural: namespaceclaims
+    shortNames:
+    - nsc
+    singular: namespaceclaim
+  preserveUnknownFields: false
+  scope: Cluster
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: NamespaceClaim is the Schema for the namespaceclaims API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        resourceName:
+          type: string
+        spec:
+          description: ResourceQuotaSpec defines the desired hard limits to enforce
+            for Quota.
+          properties:
+            hard:
+              additionalProperties:
+                anyOf:
+                - type: integer
+                - type: string
+                pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                x-kubernetes-int-or-string: true
+              description: 'hard is the set of desired hard limits for each named
+                resource. More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/'
+              type: object
+            scopeSelector:
+              description: scopeSelector is also a collection of filters like scopes
+                that must match each object tracked by a quota but expressed using
+                ScopeSelectorOperator in combination with possible values. For a resource
+                to match, both scopes AND scopeSelector (if specified in spec), must
+                be matched.
+              properties:
+                matchExpressions:
+                  description: A list of scope selector requirements by scope of the
+                    resources.
+                  items:
+                    description: A scoped-resource selector requirement is a selector
+                      that contains values, a scope name, and an operator that relates
+                      the scope name and values.
+                    properties:
+                      operator:
+                        description: Represents a scope's relationship to a set of
+                          values. Valid operators are In, NotIn, Exists, DoesNotExist.
+                        type: string
+                      scopeName:
+                        description: The name of the scope that the selector applies
+                          to.
+                        type: string
+                      values:
+                        description: An array of string values. If the operator is
+                          In or NotIn, the values array must be non-empty. If the
+                          operator is Exists or DoesNotExist, the values array must
+                          be empty. This array is replaced during a strategic merge
+                          patch.
+                        items:
+                          type: string
+                        type: array
+                    required:
+                    - operator
+                    - scopeName
+                    type: object
+                  type: array
+              type: object
+            scopes:
+              description: A collection of filters that must match each object tracked
+                by a quota. If not specified, the quota matches all objects.
+              items:
+                description: A ResourceQuotaScope defines a filter that must match
+                  each object tracked by a quota
+                type: string
+              type: array
+          type: object
+        specLimit:
+          properties:
+            limitCpu:
+              type: string
+            limitMemory:
+              type: string
+          type: object
+        status:
+          description: NamespaceClaimStatus defines the observed state of NamespaceClaim
+          properties:
+            lastTransitionTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            reason:
+              type: string
+            status:
+              enum:
+              - Awaiting
+              - Success
+              - Reject
+              - Error
+              - Namespace Deleted
+              type: string
+          type: object
+      required:
+      - resourceName
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE)/$(CERTIFICATE_NAME)
+    controller-gen.kubebuilder.io/version: v0.3.0
+  creationTimestamp: null
+  name: resourcequotaclaims.claim.tmax.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .resourceName
+    name: ResourceName
+    type: string
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.reason
+    name: Reason
+    type: string
+  conversion:
+    strategy: Webhook
+    webhookClientConfig:
+      caBundle: Cg==
+      service:
+        name: webhook-service
+        namespace: system
+        path: /convert
+  group: claim.tmax.io
+  names:
+    kind: ResourceQuotaClaim
+    listKind: ResourceQuotaClaimList
+    plural: resourcequotaclaims
+    shortNames:
+    - rqc
+    singular: resourcequotaclaim
+  preserveUnknownFields: false
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: ResourceQuotaClaim is the Schema for the resourcequotaclaims API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        resourceName:
+          type: string
+        spec:
+          description: ResourceQuotaSpec defines the desired hard limits to enforce
+            for Quota.
+          properties:
+            hard:
+              additionalProperties:
+                anyOf:
+                - type: integer
+                - type: string
+                pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                x-kubernetes-int-or-string: true
+              description: 'hard is the set of desired hard limits for each named
+                resource. More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/'
+              type: object
+            scopeSelector:
+              description: scopeSelector is also a collection of filters like scopes
+                that must match each object tracked by a quota but expressed using
+                ScopeSelectorOperator in combination with possible values. For a resource
+                to match, both scopes AND scopeSelector (if specified in spec), must
+                be matched.
+              properties:
+                matchExpressions:
+                  description: A list of scope selector requirements by scope of the
+                    resources.
+                  items:
+                    description: A scoped-resource selector requirement is a selector
+                      that contains values, a scope name, and an operator that relates
+                      the scope name and values.
+                    properties:
+                      operator:
+                        description: Represents a scope's relationship to a set of
+                          values. Valid operators are In, NotIn, Exists, DoesNotExist.
+                        type: string
+                      scopeName:
+                        description: The name of the scope that the selector applies
+                          to.
+                        type: string
+                      values:
+                        description: An array of string values. If the operator is
+                          In or NotIn, the values array must be non-empty. If the
+                          operator is Exists or DoesNotExist, the values array must
+                          be empty. This array is replaced during a strategic merge
+                          patch.
+                        items:
+                          type: string
+                        type: array
+                    required:
+                    - operator
+                    - scopeName
+                    type: object
+                  type: array
+              type: object
+            scopes:
+              description: A collection of filters that must match each object tracked
+                by a quota. If not specified, the quota matches all objects.
+              items:
+                description: A ResourceQuotaScope defines a filter that must match
+                  each object tracked by a quota
+                type: string
+              type: array
+          type: object
+        specLimit:
+          properties:
+            limitCpu:
+              type: string
+            limitMemory:
+              type: string
+          type: object
+        status:
+          description: ResourceQuotaClaimStatus defines the observed state of ResourceQuotaClaim
+          properties:
+            lastTransitionTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            reason:
+              type: string
+            status:
+              enum:
+              - Awaiting
+              - Success
+              - Reject
+              - Error
+              type: string
+          type: object
+      required:
+      - resourceName
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.3.0
+  creationTimestamp: null
+  name: rolebindingclaims.claim.tmax.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .resourceName
+    name: ResourceName
+    type: string
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.reason
+    name: Reason
+    type: string
+  group: claim.tmax.io
+  names:
+    kind: RoleBindingClaim
+    listKind: RoleBindingClaimList
+    plural: rolebindingclaims
+    shortNames:
+    - rbc
+    singular: rolebindingclaim
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: RoleBindingClaim is the Schema for the rolebindingclaims API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        resourceName:
+          type: string
+        roleRef:
+          description: RoleRef contains information that points to the role being
+            used
+          properties:
+            apiGroup:
+              description: APIGroup is the group for the resource being referenced
+              type: string
+            kind:
+              description: Kind is the type of resource being referenced
+              type: string
+            name:
+              description: Name is the name of resource being referenced
+              type: string
+          required:
+          - apiGroup
+          - kind
+          - name
+          type: object
+        status:
+          description: RoleBindingClaimStatus defines the observed state of RoleBindingClaim
+          properties:
+            lastTransitionTime:
+              format: date-time
+              type: string
+            message:
+              type: string
+            reason:
+              type: string
+            status:
+              enum:
+              - Awaiting
+              - Success
+              - Reject
+              - Error
+              type: string
+          type: object
+        subjects:
+          items:
+            description: Subject contains a reference to the object or user identities
+              a role binding applies to.  This can either hold a direct API object
+              reference, or a value for non-objects such as user and group names.
+            properties:
+              apiGroup:
+                description: APIGroup holds the API group of the referenced subject.
+                  Defaults to "" for ServiceAccount subjects. Defaults to "rbac.authorization.k8s.io"
+                  for User and Group subjects.
+                type: string
+              kind:
+                description: Kind of object being referenced. Values defined by this
+                  API group are "User", "Group", and "ServiceAccount". If the Authorizer
+                  does not recognized the kind value, the Authorizer should report
+                  an error.
+                type: string
+              name:
+                description: Name of the object being referenced.
+                type: string
+              namespace:
+                description: Namespace of the referenced object.  If the object kind
+                  is non-namespace, such as "User" or "Group", and this value is not
+                  empty the Authorizer should report an error.
+                type: string
+            required:
+            - kind
+            - name
+            type: object
+          type: array
+      required:
+      - resourceName
+      - roleRef
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
