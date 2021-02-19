@@ -1,1 +1,1 @@
-# hypercloud-go-operator
+# hypercloud-single-operator

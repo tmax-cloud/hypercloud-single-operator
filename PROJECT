@@ -1,8 +1,8 @@
 domain: tmax.io
 layout: go.kubebuilder.io/v2
 multigroup: true
-projectName: hypercloud-go-operator
-repo: github.com/tmax-cloud/hypercloud-go-operator
+projectName: hypercloud-single-operator
+repo: github.com/tmax-cloud/hypercloud-single-operator
 resources:
 - group: claim
   kind: NamespaceClaim

@@ -42,5 +42,5 @@ spec:
       volumes:
       - name: operator-log-mnt
         hostPath:
-          path: /root/woo/go-workspace/src/hypercloud-go-operator/logs
+          path: /root/woo/go-workspace/src/hypercloud-single-operator/logs
       terminationGracePeriodSeconds: 10

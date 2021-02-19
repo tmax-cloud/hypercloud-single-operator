@@ -1,4 +1,4 @@
-module github.com/tmax-cloud/hypercloud-go-operator
+module github.com/tmax-cloud/hypercloud-single-operator
 
 go 1.13
 

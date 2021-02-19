@@ -20,11 +20,11 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/tmax-cloud/hypercloud-go-operator/util"
+	"github.com/tmax-cloud/hypercloud-single-operator/util"
 
 	"fmt"
 
-	claim "github.com/tmax-cloud/hypercloud-go-operator/api/v1alpha1"
+	claim "github.com/tmax-cloud/hypercloud-single-operator/api/v1alpha1"
 
 	"github.com/go-logr/logr"
 	v1 "k8s.io/api/core/v1"
