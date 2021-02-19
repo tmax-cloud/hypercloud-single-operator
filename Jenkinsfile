@@ -40,12 +40,13 @@ node {
     }
     
     stage('make manifests') {
+	    sh "sed -i 's#{imageTag}#${imageTag}#' ./config/manager/kustomization.yaml"
         sh "sudo kubectl kustomize ./config/default/ > bin/hypercloud-go-operator-v${version}.yaml"
         sh "sudo kubectl kustomize ./config/crd/ > bin/crd-v${version}.yaml"
         sh "sudo tar -zvcf bin/hypercloud-go-operator-manifests-v${version}.tar.gz bin/hypercloud-go-operator-v${version}.yaml bin/crd-v${version}.yaml"
         
         sh "sudo mkdir -p build/manifests/v${version}"
-        sh "sudo cp bin/*.yaml build/manifests/v${version}/"
+        sh "sudo cp bin/*v${version}.yaml build/manifests/v${version}/"
     }
 
     stage('image build/push') {
@@ -63,6 +64,7 @@ node {
         dir("${buildDir}") {
 			sh "git checkout ${params.buildBranch}"
             sh "git add -A"
+			sh "git reset ./config/manager/kustomization.yaml"
             def commitMsg = "[Distribution] Release commit for hypercloud-go-operator v${version}"
             sh (script: "git commit -m \"${commitMsg}\" || true")
             sh "git tag v${version}"
