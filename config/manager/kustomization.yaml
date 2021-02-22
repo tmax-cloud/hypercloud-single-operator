@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: tmaxcloudck/hypercloud-single-operator
-  newTag: b5.0.0.7
+  newTag: b5.0.0.11
