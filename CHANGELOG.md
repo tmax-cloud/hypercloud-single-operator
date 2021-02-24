@@ -1,6 +1,23 @@
 # HyperCloud-Go-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.0.12 start -------------------->
+
+## HyperCloud-Go-Operator_5.0.0.12 (Wed Feb 24 14:23:08 KST 2021)
+
+### Added
+
+### Changed
+  - [mod] namePrefix 수정 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.0.12 end --------------------->
+
 <!-------------------- v5.0.0.11 start -------------------->
 
 ## HyperCloud-Go-Operator_5.0.0.11 (Mon Feb 22 13:59:12 KST 2021)
