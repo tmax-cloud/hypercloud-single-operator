@@ -41,9 +41,9 @@ node {
     
     stage('make manifests') {
 	    sh "sed -i 's#{imageTag}#${imageTag}#' ./config/manager/kustomization.yaml"
-        sh "sudo kubectl kustomize ./config/default/ > bin/hypercloud-go-operator-v${version}.yaml"
+        sh "sudo kubectl kustomize ./config/default/ > bin/hypercloud-single-operator-v${version}.yaml"
         sh "sudo kubectl kustomize ./config/crd/ > bin/crd-v${version}.yaml"
-        sh "sudo tar -zvcf bin/hypercloud-go-operator-manifests-v${version}.tar.gz bin/hypercloud-go-operator-v${version}.yaml bin/crd-v${version}.yaml"
+        sh "sudo tar -zvcf bin/hypercloud-single-operator-manifests-v${version}.tar.gz bin/hypercloud-single-operator-v${version}.yaml bin/crd-v${version}.yaml"
         
         sh "sudo mkdir -p build/manifests/v${version}"
         sh "sudo cp bin/*v${version}.yaml build/manifests/v${version}/"

@@ -26,11 +26,11 @@ echo "!!!make changelog for $version"
 echo "!!!prev version: $prev_version"
 
 # gen file
-echo "# HyperCloud-Go-Operator changelog!!" > $output
+echo "# HyperCloud-Single-Operator changelog!!" > $output
 echo "All notable changes to this project will be documented in this file." >> $output
 
 echo -e "\n<!-------------------- v$version start -------------------->" >> $output
-echo -e "\n## HyperCloud-Go-Operator_$version ($timestamp)" >> $output
+echo -e "\n## HyperCloud-Single-Operator_$version ($timestamp)" >> $output
 
 # make commit log to changelog
 echo -e "\n### Added" >> $output
