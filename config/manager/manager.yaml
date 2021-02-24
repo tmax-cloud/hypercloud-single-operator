@@ -19,8 +19,8 @@ spec:
       - key: node-role.kubernetes.io/master
         operator: Equal
         effect: "NoSchedule"
-      nodeSelector:
-        kubernetes.io/hostname: master-1      
+      #nodeSelector:
+      #  kubernetes.io/hostname: master-1      
       dnsPolicy: "ClusterFirstWithHostNet"
       containers:
       - command:
