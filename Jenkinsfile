@@ -1,7 +1,7 @@
 node {
     def gitHubBaseAddress = "github.com"
     def goHome = "/usr/local/go/bin"
-    def buildDir = "/var/lib/jenkins/workspace/hypercloud-go-operator"
+    def buildDir = "/var/lib/jenkins/workspace/hypercloud-single-operator"
     
     def scriptHome = "${buildDir}/scripts"
 	
