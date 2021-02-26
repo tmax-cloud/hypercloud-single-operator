@@ -12,8 +12,8 @@ node {
 	
 	def imageTag = "b${version}"
 				
-	def userName = "dnxorjs1"
-	def userEmail = "taegeon_woo@tmax.co.kr"
+	def userName = "Seungwon Lee"
+	def userEmail = "seungwon_lee@tmax.co.kr"
     
     stage('git pull') {
         dir(buildDir){
