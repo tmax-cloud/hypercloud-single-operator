@@ -17,6 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
+	err "errors"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -38,7 +40,7 @@ func (r *NamespaceClaim) SetupWebhookWithManager(mgr ctrl.Manager) error {
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
-// +kubebuilder:webhook:verbs=create;update,path=/validate-claim-tmax-io-v1alpha1-namespaceclaim,mutating=false,failurePolicy=fail,groups=claim.tmax.io,resources=namespaceclaims,versions=v1alpha1,name=vnamespaceclaim.kb.io
+// +kubebuilder:webhook:verbs=create;update,path=/validate-claim-tmax-io-v1alpha1-namespaceclaim,mutating=false,failurePolicy=fail,groups=claim.tmax.io,resources=namespaceclaims;namespaceclaims/status,versions=v1alpha1,name=vnamespaceclaim.kb.io
 
 var _ webhook.Validator = &NamespaceClaim{}
 
@@ -53,6 +55,14 @@ func (r *NamespaceClaim) ValidateCreate() error {
 func (r *NamespaceClaim) ValidateUpdate(old runtime.Object) error {
 	namespaceclaimlog.Info("validate update", "name", r.Name)
 	// TODO(user): fill in your validation logic upon object update.
+	if r.Status.Status == NamespaceClaimStatusTypeSuccess ||
+		r.Status.Status == NamespaceClaimStatueTypeDeleted {
+		return errors.NewForbidden(
+			schema.GroupResource{Group: "claim.tmax.io", Resource: r.Name},
+			"",
+			err.New("cannot update NamespaceClaim in Success or Deleted status"),
+		)
+	}
 	return nil
 }
 
