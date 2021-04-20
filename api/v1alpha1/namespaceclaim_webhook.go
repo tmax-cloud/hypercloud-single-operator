@@ -17,8 +17,6 @@ limitations under the License.
 package v1alpha1
 
 import (
-	err "errors"
-
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -55,14 +53,21 @@ func (r *NamespaceClaim) ValidateCreate() error {
 func (r *NamespaceClaim) ValidateUpdate(old runtime.Object) error {
 	namespaceclaimlog.Info("validate update", "name", r.Name)
 	// TODO(user): fill in your validation logic upon object update.
-	if r.Status.Status == NamespaceClaimStatusTypeSuccess ||
-		r.Status.Status == NamespaceClaimStatueTypeDeleted {
-		return errors.NewForbidden(
-			schema.GroupResource{Group: "claim.tmax.io", Resource: r.Name},
-			"",
-			err.New("cannot update NamespaceClaim in Success or Deleted status"),
-		)
-	}
+	// TODO(user): fill in your validation logic upon object update.
+	// nsc := old.(*NamespaceClaim)
+	// namespaceclaimlog.Info("nsc.Status.Status", nsc.Status.Status)
+
+	// if nsc.Status.Status == NamespaceClaimStatusTypeSuccess ||
+	// 	nsc.Status.Status == NamespaceClaimStatueTypeDeleted {
+	// 	namespaceclaimlog.Info("CANNOT UPDATE ERROR")
+	// 	return errors.NewForbidden(
+	// 		schema.GroupResource{Group: "claim.tmax.io", Resource: r.Name},
+	// 		"",
+	// 		err.New("cannot update NamespaceClaim in Success or Deleted status"),
+	// 	)
+	// }
+
+	// namespaceclaimlog.Info("YOU CAN UPDATE")
 	return nil
 }
 
