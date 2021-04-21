@@ -25,8 +25,8 @@ import (
 
 const (
 	NamespaceClaimStatusTypeAwaiting = "Awaiting"
-	NamespaceClaimStatusTypeSuccess  = "Approved"
-	NamespaceClaimStatusTypeReject   = "Rejected"
+	NamespaceClaimStatusTypeSuccess  = "Success" // TOBE Approved
+	NamespaceClaimStatusTypeReject   = "Reject"  // TOBE Rejected
 	NamespaceClaimStatueTypeError    = "Error"
 	NamespaceClaimStatueTypeDeleted  = "Namespace Deleted"
 )
