@@ -1,6 +1,29 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.7.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.7.0 (Thu Apr 22 10:30:49 KST 2021)
+
+### Added
+  - [feat] Reject updating when status is Approved & Deleted by Seungwon Lee
+
+### Changed
+  - [mod] RB deleted status 추가 by Seungwon Lee
+  - [mod] rqc deleted 상태 추가 by Seungwon Lee
+  - [mod] status enum 변경 by Seungwon Lee
+  - [mod] status name by Seungwon Lee
+  - [mod] reject status change algorithm by Seungwon Lee
+  - [mod] status name by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.7.0 end --------------------->
+
 <!-------------------- v5.0.6.0 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.6.0 (Thu Apr  8 09:40:07 KST 2021)
