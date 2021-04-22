@@ -81,6 +81,7 @@ spec:
               - Approved
               - Rejected
               - Error
+              - Role Binding Deleted
               type: string
           type: object
         subjects:

@@ -32,6 +32,7 @@ const (
 	RoleBindingClaimStatusTypeSuccess  = "Approved"
 	RoleBindingClaimStatusTypeReject   = "Rejected"
 	RoleBindingClaimStatusTypeError    = "Error"
+	RoleBindingClaimStatusTypeDeleted  = "Role Binding Deleted"
 )
 
 // RoleBindingClaimStatus defines the observed state of RoleBindingClaim
@@ -40,7 +41,7 @@ type RoleBindingClaimStatus struct {
 	Reason             string      `json:"reason,omitempty" protobuf:"bytes,2,opt,name=reason"`
 	LastTransitionTime metav1.Time `json:"lastTransitionTime,omitempty" protobuf:"bytes,3,opt,name=lastTransitionTime"`
 
-	// +kubebuilder:validation:Enum=Awaiting;Approved;Rejected;Error;
+	// +kubebuilder:validation:Enum=Awaiting;Approved;Rejected;Error;Role Binding Deleted;
 	Status string `json:"status,omitempty" protobuf:"bytes,4,opt,name=status"`
 }
 
