@@ -134,6 +134,7 @@ spec:
               - Approved
               - Rejected
               - Error
+              - Resource Quota Deleted
               type: string
           type: object
       required:

@@ -32,6 +32,7 @@ const (
 	ResourceQuotaClaimStatusTypeSuccess  = "Approved"
 	ResourceQuotaClaimStatusTypeReject   = "Rejected"
 	ResourceQuotaClaimStatusTypeError    = "Error"
+	ResourceQuotaClaimStatusTypeDeleted  = "Resource Quota Deleted"
 )
 
 // ResourceQuotaClaimStatus defines the observed state of ResourceQuotaClaim
