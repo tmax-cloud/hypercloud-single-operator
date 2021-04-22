@@ -29,8 +29,8 @@ import (
 
 const (
 	RoleBindingClaimStatusTypeAwaiting = "Awaiting"
-	RoleBindingClaimStatusTypeSuccess  = "Success"
-	RoleBindingClaimStatusTypeReject   = "Reject"
+	RoleBindingClaimStatusTypeSuccess  = "Approved"
+	RoleBindingClaimStatusTypeReject   = "Rejected"
 	RoleBindingClaimStatusTypeError    = "Error"
 )
 
@@ -40,7 +40,7 @@ type RoleBindingClaimStatus struct {
 	Reason             string      `json:"reason,omitempty" protobuf:"bytes,2,opt,name=reason"`
 	LastTransitionTime metav1.Time `json:"lastTransitionTime,omitempty" protobuf:"bytes,3,opt,name=lastTransitionTime"`
 
-	// +kubebuilder:validation:Enum=Awaiting;Success;Reject;Error;
+	// +kubebuilder:validation:Enum=Awaiting;Approved;Rejected;Error;
 	Status string `json:"status,omitempty" protobuf:"bytes,4,opt,name=status"`
 }
 
