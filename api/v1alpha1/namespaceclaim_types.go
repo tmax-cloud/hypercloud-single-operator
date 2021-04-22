@@ -21,7 +21,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// +kubebuilder:validation:Enum=Awaiting;Success;Reject;Error;Deleted;
+// +kubebuilder:validation:Enum=Awaiting;Approved;Rejected;Error;Namespace Deleted;
 
 const (
 	NamespaceClaimStatusTypeAwaiting = "Awaiting"

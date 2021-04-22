@@ -131,8 +131,8 @@ spec:
             status:
               enum:
               - Awaiting
-              - Success
-              - Reject
+              - Approved
+              - Rejected
               - Error
               - Namespace Deleted
               type: string
