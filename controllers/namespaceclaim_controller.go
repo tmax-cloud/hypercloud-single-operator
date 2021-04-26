@@ -170,8 +170,8 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 				Annotations: namespaceClaim.Annotations,
 			},
 			Spec: v1.ResourceQuotaSpec{
-				Scopes:        namespaceClaim.Spec.Scopes,
-				ScopeSelector: namespaceClaim.Spec.ScopeSelector,
+				//Scopes:        namespaceClaim.Spec.Scopes,
+				//ScopeSelector: namespaceClaim.Spec.ScopeSelector,
 				Hard: v1.ResourceList{
 					v1.ResourceCPU:    resource.MustParse(namespaceClaim.SpecLimit.LimitCpu),
 					v1.ResourceMemory: resource.MustParse(namespaceClaim.SpecLimit.LimitMemory),

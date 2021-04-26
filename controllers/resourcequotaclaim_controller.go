@@ -91,8 +91,8 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 				Namespace: resourceQuotaClaim.Namespace,
 			},
 			Spec: v1.ResourceQuotaSpec{
-				Scopes:        resourceQuotaClaim.Spec.Scopes,
-				ScopeSelector: resourceQuotaClaim.Spec.ScopeSelector,
+				//Scopes:        resourceQuotaClaim.Spec.Scopes,
+				//ScopeSelector: resourceQuotaClaim.Spec.ScopeSelector,
 				Hard: v1.ResourceList{
 					v1.ResourceCPU:    resource.MustParse(resourceQuotaClaim.SpecLimit.LimitCpu),
 					v1.ResourceMemory: resource.MustParse(resourceQuotaClaim.SpecLimit.LimitMemory),

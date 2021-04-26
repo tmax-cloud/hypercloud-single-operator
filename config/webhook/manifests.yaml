@@ -24,6 +24,7 @@ webhooks:
     - UPDATE
     resources:
     - namespaceclaims
+    - namespaceclaims/status
 - clientConfig:
     caBundle: Cg==
     service:
