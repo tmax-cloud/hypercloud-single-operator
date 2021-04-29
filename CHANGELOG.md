@@ -1,6 +1,24 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.8.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.8.0 (Fri Apr 30 08:57:54 KST 2021)
+
+### Added
+
+### Changed
+  - [mod] NS 생성 오류시 status가 error로 바뀌지 않는 버그 수정 by Seungwon Lee
+  - [mod] delete scope / scopeSelector by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.8.0 end --------------------->
+
 <!-------------------- v5.0.7.0 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.7.0 (Thu Apr 22 10:30:49 KST 2021)
