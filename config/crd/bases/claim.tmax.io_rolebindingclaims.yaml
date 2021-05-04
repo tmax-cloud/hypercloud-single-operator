@@ -9,8 +9,8 @@ metadata:
   name: rolebindingclaims.claim.tmax.io
 spec:
   additionalPrinterColumns:
-  - JSONPath: .resourceName
-    name: ResourceName
+  - JSONPath: .Role Binding Name
+    name: Role Binding Name
     type: string
   - JSONPath: .status.status
     name: Status
