@@ -48,14 +48,14 @@ type RoleBindingClaimStatus struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:shortName=rbc
-// +kubebuilder:printcolumn:name="Role Binding Name",type=string,JSONPath=`.Role Binding Name`
+// +kubebuilder:printcolumn:name="ResourceName",type=string,JSONPath=`.resourceName`
 // +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
 // +kubebuilder:printcolumn:name="Reason",type=string,JSONPath=`.status.reason`
 // RoleBindingClaim is the Schema for the rolebindingclaims API
 type RoleBindingClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=.metadata"`
-	ResourceName      string                 `json:"Role Binding Name"`
+	ResourceName      string                 `json:"resourceName"`
 	Subjects          []rbacApi.Subject      `json:"subjects,omitempty" protobuf:"bytes,2,rep,name=subjects"`
 	RoleRef           rbacApi.RoleRef        `json:"roleRef" protobuf:"bytes,3,opt,name=roleRef"`
 	Status            RoleBindingClaimStatus `json:"status,omitempty"`

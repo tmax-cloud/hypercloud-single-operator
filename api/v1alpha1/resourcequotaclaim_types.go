@@ -55,14 +55,14 @@ type CustomHard struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:shortName=rqc
-// +kubebuilder:printcolumn:name="Resource Quota Name",type=string,JSONPath=`.Resource Quota Name`
+// +kubebuilder:printcolumn:name="ResourceName",type=string,JSONPath=`.resourceName`
 // +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
 // +kubebuilder:printcolumn:name="Reason",type=string,JSONPath=`.status.reason`
 // ResourceQuotaClaim is the Schema for the resourcequotaclaims API
 type ResourceQuotaClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=.metadata"`
-	ResourceName      string `json:"Resource Quota Name"`
+	ResourceName      string `json:"resourceName"`
 	// +required
 	SpecLimit CustomHard               `json:"specLimit"`
 	Spec      v1.ResourceQuotaSpec     `json:"spec,omitempty"`
