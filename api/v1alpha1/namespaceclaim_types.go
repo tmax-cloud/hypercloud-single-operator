@@ -44,14 +44,14 @@ type NamespaceClaimStatus struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster,shortName=nsc
-// +kubebuilder:printcolumn:name="ResourceName",type=string,JSONPath=`.resourceName`
+// +kubebuilder:printcolumn:name="Namespace Name",type=string,JSONPath=`.Namespace Name`
 // +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
 // +kubebuilder:printcolumn:name="Reason",type=string,JSONPath=`.status.reason`
 // NamespaceClaim is the Schema for the namespaceclaims API
 type NamespaceClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	ResourceName      string               `json:"resourceName"`
+	ResourceName      string               `json:"Namespace Name"`
 	SpecLimit         CustomHard           `json:"specLimit"`
 	Spec              v1.ResourceQuotaSpec `json:"spec,omitempty"`
 	Status            NamespaceClaimStatus `json:"status,omitempty"`

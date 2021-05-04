@@ -55,7 +55,7 @@ type RoleBindingClaimStatus struct {
 type RoleBindingClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=.metadata"`
-	ResourceName      string                 `json:"resourceName"`
+	ResourceName      string                 `json:"Role Binding Name"`
 	Subjects          []rbacApi.Subject      `json:"subjects,omitempty" protobuf:"bytes,2,rep,name=subjects"`
 	RoleRef           rbacApi.RoleRef        `json:"roleRef" protobuf:"bytes,3,opt,name=roleRef"`
 	Status            RoleBindingClaimStatus `json:"status,omitempty"`

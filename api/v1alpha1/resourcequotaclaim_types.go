@@ -62,7 +62,7 @@ type CustomHard struct {
 type ResourceQuotaClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=.metadata"`
-	ResourceName      string `json:"resourceName"`
+	ResourceName      string `json:"Resource Quota Name"`
 	// +required
 	SpecLimit CustomHard               `json:"specLimit"`
 	Spec      v1.ResourceQuotaSpec     `json:"spec,omitempty"`

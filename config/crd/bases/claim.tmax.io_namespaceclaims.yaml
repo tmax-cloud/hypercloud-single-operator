@@ -9,8 +9,8 @@ metadata:
   name: namespaceclaims.claim.tmax.io
 spec:
   additionalPrinterColumns:
-  - JSONPath: .resourceName
-    name: ResourceName
+  - JSONPath: .Namespace Name
+    name: Namespace Name
     type: string
   - JSONPath: .status.status
     name: Status
@@ -33,6 +33,8 @@ spec:
     openAPIV3Schema:
       description: NamespaceClaim is the Schema for the namespaceclaims API
       properties:
+        Namespace Name:
+          type: string
         apiVersion:
           description: 'APIVersion defines the versioned schema of this representation
             of an object. Servers should convert recognized schemas to the latest
@@ -45,8 +47,6 @@ spec:
           type: string
         metadata:
           type: object
-        resourceName:
-          type: string
         spec:
           description: ResourceQuotaSpec defines the desired hard limits to enforce
             for Quota.
@@ -92,7 +92,7 @@ spec:
               type: string
           type: object
       required:
-      - resourceName
+      - Namespace Name
       - specLimit
       type: object
   version: v1alpha1
