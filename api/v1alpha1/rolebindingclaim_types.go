@@ -48,7 +48,7 @@ type RoleBindingClaimStatus struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:shortName=rbc
-// +kubebuilder:printcolumn:name="ResourceName",type=string,JSONPath=`.resourceName`
+// +kubebuilder:printcolumn:name="Role Binding Name",type=string,JSONPath=`.Role Binding Name`
 // +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
 // +kubebuilder:printcolumn:name="Reason",type=string,JSONPath=`.status.reason`
 // RoleBindingClaim is the Schema for the rolebindingclaims API
