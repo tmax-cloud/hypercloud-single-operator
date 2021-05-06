@@ -46,6 +46,7 @@ spec:
         metadata:
           type: object
         resourceName:
+          title: "rolebindingName"
           type: string
         roleRef:
           description: RoleRef contains information that points to the role being

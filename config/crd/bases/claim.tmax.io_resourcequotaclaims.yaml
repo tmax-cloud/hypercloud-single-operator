@@ -46,6 +46,7 @@ spec:
         metadata:
           type: object
         resourceName:
+          title: "resourcequotaName"
           type: string
         spec:
           description: ResourceQuotaSpec defines the desired hard limits to enforce
