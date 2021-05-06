@@ -1,6 +1,25 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.9.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.9.0 (Thu May  6 09:35:51 KST 2021)
+
+### Added
+
+### Changed
+
+### Fixed
+  - [ims][259867] form view 생성 페이지에 노출 되는 resourceName을 각 claim 이름에 맞게 수정 by Seungwon Lee
+  - [ims][259867] 개발 보류로 인해, 변경 사항 이전으로 복구 by Seungwon Lee
+  - [ims][259867] ResourceName을 각 claim별 이름+Name으로 변경 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.9.0 end --------------------->
+
 <!-------------------- v5.0.8.0 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.8.0 (Fri Apr 30 08:57:54 KST 2021)
