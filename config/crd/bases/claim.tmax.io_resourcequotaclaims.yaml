@@ -46,7 +46,6 @@ spec:
         metadata:
           type: object
         resourceName:
-          title: resourcequotaName
           description: resourcequotaName is name of the resource quota which will
             be created
           type: string

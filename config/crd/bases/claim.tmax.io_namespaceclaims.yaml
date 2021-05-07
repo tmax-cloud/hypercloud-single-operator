@@ -46,7 +46,6 @@ spec:
         metadata:
           type: object
         resourceName:
-          title: namespaceName
           description: namespaceName is name of the namespace which will be created
           type: string
         spec:

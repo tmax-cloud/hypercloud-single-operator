@@ -46,7 +46,6 @@ spec:
         metadata:
           type: object
         resourceName:
-          title: rolebindingName
           description: rolebindingName is name of the role binding which will be created
           type: string
         roleRef:
