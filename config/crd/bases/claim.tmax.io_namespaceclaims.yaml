@@ -59,21 +59,11 @@ spec:
                 pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                 x-kubernetes-int-or-string: true
               description: 'hard is the set of desired hard limits for each named
-                resource. More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/'
+                resource. "limits.cpu" and "limits.memory" must be required. More
+                info: https://kubernetes.io/docs/concepts/policy/resource-quotas/'
               type: object
-          type: object
-        specLimit:
-          description: SpecLimit limits the value of CPU and Memory
-          properties:
-            limitCpu:
-              description: LimitCpu limits the value of CPU
-              type: string
-            limitMemory:
-              description: LimitCpu limits the value of Memory
-              type: string
           required:
-          - limitCpu
-          - limitMemory
+          - hard
           type: object
         status:
           description: Status shows the present status of the NamespaceClaim
@@ -101,7 +91,7 @@ spec:
           type: object
       required:
       - resourceName
-      - specLimit
+      - spec
       type: object
   version: v1alpha1
   versions:

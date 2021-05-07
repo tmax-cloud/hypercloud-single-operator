@@ -23,7 +23,6 @@ import (
 	"github.com/go-logr/logr"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -94,8 +93,8 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 				//Scopes:        resourceQuotaClaim.Spec.Scopes,
 				//ScopeSelector: resourceQuotaClaim.Spec.ScopeSelector,
 				Hard: v1.ResourceList{
-					v1.ResourceCPU:    resource.MustParse(resourceQuotaClaim.SpecLimit.LimitCpu),
-					v1.ResourceMemory: resource.MustParse(resourceQuotaClaim.SpecLimit.LimitMemory),
+					v1.ResourceCPU:    resourceQuotaClaim.Spec.Hard["limits.cpu"],
+					v1.ResourceMemory: resourceQuotaClaim.Spec.Hard["limits.memory"],
 				},
 			},
 		}

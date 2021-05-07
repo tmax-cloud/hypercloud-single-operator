@@ -56,11 +56,8 @@ type NamespaceClaim struct {
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 	// namespaceName is name of the namespace which will be created
 	ResourceName string `json:"resourceName"`
-	// +required
-	// SpecLimit limits the value of CPU and Memory
-	SpecLimit CustomHard `json:"specLimit"`
 	// Spec is ResourceQuotaSpec of NamespaceClaim
-	Spec v1.ResourceQuotaSpec `json:"spec,omitempty"`
+	Spec v1.ResourceQuotaSpec `json:"spec"`
 	// Status shows the present status of the NamespaceClaim
 	Status NamespaceClaimStatus `json:"status,omitempty"`
 }
