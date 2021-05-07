@@ -33,11 +33,14 @@ const (
 
 // NamespaceClaimStatus defines the observed state of NamespaceClaim
 type NamespaceClaimStatus struct {
-	Message            string      `json:"message,omitempty" protobuf:"bytes,2,opt,name=message"`
-	Reason             string      `json:"reason,omitempty" protobuf:"bytes,3,opt,name=reason"`
+	// Message shows log when the status changed in last
+	Message string `json:"message,omitempty" protobuf:"bytes,2,opt,name=message"`
+	// Reason shows why the status changed in last
+	Reason string `json:"reason,omitempty" protobuf:"bytes,3,opt,name=reason"`
+	// LastTransitionTime shows the time when the status changed in last
 	LastTransitionTime metav1.Time `json:"lastTransitionTime,omitempty" protobuf:"bytes,3,opt,name=lastTransitionTime"`
-
 	// +kubebuilder:validation:Enum=Awaiting;Approved;Rejected;Error;Namespace Deleted;
+	// Status shows the present status of the NamespaceClaim
 	Status string `json:"status,omitempty" protobuf:"bytes,4,opt,name=status"`
 }
 
@@ -51,10 +54,15 @@ type NamespaceClaimStatus struct {
 type NamespaceClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	ResourceName      string               `json:"resourceName"`
-	SpecLimit         CustomHard           `json:"specLimit"`
-	Spec              v1.ResourceQuotaSpec `json:"spec,omitempty"`
-	Status            NamespaceClaimStatus `json:"status,omitempty"`
+	// namespaceName is name of the namespace which will be created
+	ResourceName string `json:"resourceName"`
+	// +required
+	// SpecLimit limits the value of CPU and Memory
+	SpecLimit CustomHard `json:"specLimit"`
+	// Spec is ResourceQuotaSpec of NamespaceClaim
+	Spec v1.ResourceQuotaSpec `json:"spec,omitempty"`
+	// Status shows the present status of the NamespaceClaim
+	Status NamespaceClaimStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true

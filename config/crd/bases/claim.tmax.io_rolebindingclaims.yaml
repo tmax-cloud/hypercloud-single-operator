@@ -46,7 +46,8 @@ spec:
         metadata:
           type: object
         resourceName:
-          title: "rolebindingName"
+          title: rolebindingName
+          description: rolebindingName is name of the role binding which will be created
           type: string
         roleRef:
           description: RoleRef contains information that points to the role being
@@ -67,16 +68,21 @@ spec:
           - name
           type: object
         status:
-          description: RoleBindingClaimStatus defines the observed state of RoleBindingClaim
+          description: Status shows the present status of the RoleBindingClaim
           properties:
             lastTransitionTime:
+              description: LastTransitionTime shows the time when the status changed
+                in last
               format: date-time
               type: string
             message:
+              description: Message shows log when the status changed in last
               type: string
             reason:
+              description: Reason shows why the status changed in last
               type: string
             status:
+              description: Status shows the present status of the NamespaceClaim
               enum:
               - Awaiting
               - Approved
@@ -86,6 +92,9 @@ spec:
               type: string
           type: object
         subjects:
+          description: Subjects contains a reference to the object or user identities
+            a role binding applies to.  This can either hold a direct API object reference,
+            or a value for non-objects such as user and group names.
           items:
             description: Subject contains a reference to the object or user identities
               a role binding applies to.  This can either hold a direct API object

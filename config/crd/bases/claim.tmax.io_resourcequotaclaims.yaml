@@ -46,11 +46,12 @@ spec:
         metadata:
           type: object
         resourceName:
-          title: "resourcequotaName"
+          title: resourcequotaName
+          description: resourcequotaName is name of the resource quota which will
+            be created
           type: string
         spec:
-          description: ResourceQuotaSpec defines the desired hard limits to enforce
-            for Quota.
+          description: Spec is ResourceQuotaSpec of NamespaceClaim
           properties:
             hard:
               additionalProperties:
@@ -64,26 +65,34 @@ spec:
               type: object
           type: object
         specLimit:
+          description: SpecLimit limits the value of CPU and Memory
           properties:
             limitCpu:
+              description: LimitCpu limits the value of CPU
               type: string
             limitMemory:
+              description: LimitCpu limits the value of Memory
               type: string
           required:
           - limitCpu
           - limitMemory
           type: object
         status:
-          description: ResourceQuotaClaimStatus defines the observed state of ResourceQuotaClaim
+          description: Status shows the present status of the ResourceQuotaClaim
           properties:
             lastTransitionTime:
+              description: LastTransitionTime shows the time when the status changed
+                in last
               format: date-time
               type: string
             message:
+              description: Message shows log when the status changed in last
               type: string
             reason:
+              description: Reason shows why the status changed in last
               type: string
             status:
+              description: Status shows the present status of the NamespaceClaim
               enum:
               - Awaiting
               - Approved

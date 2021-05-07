@@ -37,18 +37,24 @@ const (
 
 // ResourceQuotaClaimStatus defines the observed state of ResourceQuotaClaim
 type ResourceQuotaClaimStatus struct {
-	Message            string      `json:"message,omitempty" protobuf:"bytes,1,opt,name=message"`
-	Reason             string      `json:"reason,omitempty" protobuf:"bytes,2,opt,name=reason"`
+	// Message shows log when the status changed in last
+	Message string `json:"message,omitempty" protobuf:"bytes,1,opt,name=message"`
+	// Reason shows why the status changed in last
+	Reason string `json:"reason,omitempty" protobuf:"bytes,2,opt,name=reason"`
+	// LastTransitionTime shows the time when the status changed in last
 	LastTransitionTime metav1.Time `json:"lastTransitionTime,omitempty" protobuf:"bytes,3,opt,name=lastTransitionTime"`
-
 	// +kubebuilder:validation:Enum=Awaiting;Approved;Rejected;Error;Resource Quota Deleted;
+	// Status shows the present status of the NamespaceClaim
 	Status string `json:"status,omitempty" protobuf:"bytes,4,opt,name=status"`
 }
 
 // +kubebuilder:validation:Required
 // +required
+// CustomHard limits the value of CPU and Memory
 type CustomHard struct {
-	LimitCpu    string `json:"limitCpu"`
+	// LimitCpu limits the value of CPU
+	LimitCpu string `json:"limitCpu"`
+	// LimitCpu limits the value of Memory
 	LimitMemory string `json:"limitMemory"`
 }
 
@@ -62,11 +68,15 @@ type CustomHard struct {
 type ResourceQuotaClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=.metadata"`
-	ResourceName      string `json:"resourceName"`
+	// resourcequotaName is name of the resource quota which will be created
+	ResourceName string `json:"resourceName"`
 	// +required
-	SpecLimit CustomHard               `json:"specLimit"`
-	Spec      v1.ResourceQuotaSpec     `json:"spec,omitempty"`
-	Status    ResourceQuotaClaimStatus `json:"status,omitempty"`
+	// SpecLimit limits the value of CPU and Memory
+	SpecLimit CustomHard `json:"specLimit"`
+	// Spec is ResourceQuotaSpec of NamespaceClaim
+	Spec v1.ResourceQuotaSpec `json:"spec,omitempty"`
+	// Status shows the present status of the ResourceQuotaClaim
+	Status ResourceQuotaClaimStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
