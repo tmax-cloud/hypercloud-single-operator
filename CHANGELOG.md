@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.10.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.10.0 (Thu May 13 08:41:06 KST 2021)
+
+### Added
+
+### Changed
+
+### Fixed
+  - [ims][260530] NSC, RQC의 specLimit 제거및 Hard를 required 필드로 변경 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.10.0 end --------------------->
+
 <!-------------------- v5.0.9.1 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.9.1 (Fri May  7 03:18:38 KST 2021)
