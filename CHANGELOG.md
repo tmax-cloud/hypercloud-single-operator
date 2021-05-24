@@ -1,5 +1,21 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
+
+<!-------------------- v5.0.11.4 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.11.4 (Tue May 25 05:10:03 KST 2021)
+
+### Added
+
+### Changed
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.11.4 end --------------------->
 -e 
 <!-------------------- v5.0.11.1 start -------------------->
 -e 
