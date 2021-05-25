@@ -19,6 +19,7 @@ package v1alpha1
 import (
 	err "errors"
 
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -67,7 +68,7 @@ func (r *NamespaceClaim) ValidateUpdate(old runtime.Object) error {
 		)
 	}
 
-	return nil
+	return r.validateNscRq()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
@@ -98,8 +99,8 @@ func (r *NamespaceClaim) validateNscRqSpec() *field.Error {
 		}
 		checkRequireNameList = append(checkRequireNameList, resourceName.String())
 	}
-	// if !(contains(checkRequireNameList, string(v1.ResourceLimitsCPU)) && contains(checkRequireNameList, string(v1.ResourceLimitsMemory))) {
-	// 	return field.Invalid(nil, nil, "limits.cpu & limits.memory are Mandatory")
-	// }
+	if !(contains(checkRequireNameList, string(v1.ResourceLimitsCPU)) && contains(checkRequireNameList, string(v1.ResourceLimitsMemory))) {
+		return field.Invalid(nil, nil, "limits.cpu & limits.memory are Mandatory")
+	}
 	return nil
 }

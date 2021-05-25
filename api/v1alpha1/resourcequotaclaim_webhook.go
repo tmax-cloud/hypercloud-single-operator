@@ -92,7 +92,7 @@ func (r *ResourceQuotaClaim) ValidateCreate() error {
 func (r *ResourceQuotaClaim) ValidateUpdate(old runtime.Object) error {
 	resourcequotaclaimlog.Info("validate update", "name", r.Name)
 	// TODO(user): fill in your validation logic upon object update.
-	return nil
+	return r.validateRqc()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
@@ -116,10 +116,15 @@ func (r *ResourceQuotaClaim) validateRqc() error {
 }
 
 func (r *ResourceQuotaClaim) validateRqcSpec() *field.Error {
+	checkRequireNameList := []string{}
 	for resourceName, _ := range r.Spec.Hard {
 		if !contains(ResourceNameList, resourceName.String()) {
 			return field.Invalid(field.NewPath(resourceName.String()), resourceName.String(), "Invalid ResourceQuotaSpecName")
 		}
+		checkRequireNameList = append(checkRequireNameList, resourceName.String())
+	}
+	if !(contains(checkRequireNameList, string(v1.ResourceLimitsCPU)) && contains(checkRequireNameList, string(v1.ResourceLimitsMemory))) {
+		return field.Invalid(nil, nil, "limits.cpu & limits.memory are Mandatory")
 	}
 	return nil
 }
