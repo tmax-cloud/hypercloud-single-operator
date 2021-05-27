@@ -1,22 +1,22 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
--e 
+
 <!-------------------- v5.0.12.0 start -------------------->
--e 
+
 ## HyperCloud-Single-Operator_5.0.12.0 (2021. 05. 27. (목) 15:01:43 KST)
--e 
+
 ### Added
--e 
+
 ### Changed
   - [mod] NS 만든 유저에게 namespace-owner 권한 부여 by Seungwon Lee
--e 
+
 ### Fixed
   - [ims][260530] limits.cpu limits.memory 웹훅으로 검증하도록 수정 by Seungwon Lee
--e 
+
 ### CRD yaml
--e 
+
 ### Etc
--e 
+
 <!--------------------- v5.0.12.0 end --------------------->
 
 <!-------------------- v5.0.11.4 start -------------------->
@@ -34,21 +34,21 @@ All notable changes to this project will be documented in this file.
 ### Etc
 
 <!--------------------- v5.0.11.4 end --------------------->
--e 
+
 <!-------------------- v5.0.11.1 start -------------------->
--e 
+
 ## HyperCloud-Single-Operator_5.0.11.1 (2021. 05. 21. (금) 17:27:45 KST)
--e 
+
 ### Added
--e 
+
 ### Changed
--e 
+
 ### Fixed
--e 
+
 ### CRD yaml
--e 
+
 ### Etc
--e 
+
 <!--------------------- v5.0.11.1 end --------------------->
 
 <!-------------------- v5.0.11.0 start -------------------->
