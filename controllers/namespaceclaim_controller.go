@@ -317,7 +317,7 @@ func (r *NamespaceClaimReconciler) createNSCRoleBinding(namespaceClaim *claim.Na
 			RoleRef: rbacApi.RoleRef{
 				Kind:     "ClusterRole",
 				APIGroup: util.RBAC_API_GROUP,
-				Name:     "namespace-listget",
+				Name:     "namespace-owner",
 			},
 		}
 		if err := r.Create(context.TODO(), rbForNscUser); err != nil && errors.IsNotFound(err) {
