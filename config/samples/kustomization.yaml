@@ -3,4 +3,5 @@ resources:
 - claim_v1alpha1_namespaceclaim.yaml
 - claim_v1alpha1_rolebindingclaim.yaml
 - claim_v1alpha1_resourcequotaclaim.yaml
+- core_v1_resourcequota.yaml
 # +kubebuilder:scaffold:manifestskustomizesamples

@@ -149,6 +149,14 @@ func main() {
 		setupLog.Error(err, "unable to create webhook", "webhook", "NamespaceClaim")
 		os.Exit(1)
 	}
+	if err = (&k8scontroller.ResourceQuotaReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("ResourceQuota"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ResourceQuota")
+		os.Exit(1)
+	}
 	// +kubebuilder:scaffold:builder
 
 	// Set Trial Timer
