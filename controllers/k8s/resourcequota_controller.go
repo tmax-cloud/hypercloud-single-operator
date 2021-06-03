@@ -19,7 +19,6 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"reflect"
 
 	"github.com/go-logr/logr"
 	claim "github.com/tmax-cloud/hypercloud-single-operator/api/v1alpha1"
@@ -64,11 +63,11 @@ func (r *ResourceQuotaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 
 	if err := r.Get(context.TODO(), req.NamespacedName, resourcequota); err != nil {
 		if errors.IsNotFound(err) {
-			reqLogger.Info("ResourceQuota resource not found. Ignoring since object must be deleted.")
-			return ctrl.Result{}, nil
+			reqLogger.Info("ResourceQuota [ " + resourcequota.Name + "] is deleted")
+		} else {
+			reqLogger.Error(err, "Failed to get ResourceQuota")
+			return ctrl.Result{}, err
 		}
-		reqLogger.Error(err, "Failed to get ResourceQuota")
-		return ctrl.Result{}, err
 	}
 
 	//set helper
@@ -88,17 +87,14 @@ func (r *ResourceQuotaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		}
 	}()
 
-	if resourcequota.Status.Phase == "Terminating" {
-		if resourcequota.Labels != nil && resourcequota.Labels["fromClaim"] != "" {
-			reqLogger.Info("ResourceQuota from Claim [ " + resourcequota.Name + " ] is in Terminating Status")
-			if resourcequota.Finalizers != nil {
-				resourcequota.Finalizers = util.RemoveValue(resourcequota.Finalizers, "resourcequota/finalizers")
-			}
-			reqLogger.Info("Delete Finalizer [ resourcequota/finalizers ] Success")
-
-			reqLogger.Info("Update ResourceQuotaClaim [ " + resourcequota.Labels["fromClaim"] + " ] Status to ResourceQuota Deleted")
-			r.replaceRQCStatus(resourcequota.Labels["fromClaim"], resourcequota.Name, claim.ResourceQuotaClaimStatusTypeDeleted)
+	if resourcequota.Labels != nil && resourcequota.Labels["fromClaim"] != "" {
+		if resourcequota.Finalizers != nil {
+			resourcequota.Finalizers = util.RemoveValue(resourcequota.Finalizers, "resourcequota/finalizers")
 		}
+		reqLogger.Info("Delete Finalizer [ resourcequota/finalizers ] Success")
+
+		reqLogger.Info("Update ResourceQuotaClaim [ " + resourcequota.Labels["fromClaim"] + " ] Status to ResourceQuota Deleted")
+		r.replaceRQCStatus(resourcequota.Labels["fromClaim"], resourcequota.Name, claim.ResourceQuotaClaimStatusTypeDeleted)
 	}
 
 	return ctrl.Result{}, nil
@@ -110,38 +106,28 @@ func (r *ResourceQuotaReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&v1.ResourceQuota{}).
 		WithEventFilter(
 			predicate.Funcs{
-				// Only reconciling if the status.status change
-				UpdateFunc: func(e event.UpdateEvent) bool {
-					oldNsStatus := e.ObjectOld.(*v1.ResourceQuota).DeepCopy().Status.Phase
-					newNsStatus := e.ObjectNew.(*v1.ResourceQuota).DeepCopy().Status.Phase
-
-					oldNsLabels := e.ObjectOld.(*v1.ResourceQuota).DeepCopy().Labels
-					newNsLabels := e.ObjectNew.(*v1.ResourceQuota).DeepCopy().Labels
-
-					if !reflect.DeepEqual(oldNsStatus, newNsStatus) || !reflect.DeepEqual(oldNsLabels, newNsLabels) {
-						return true
-					} else {
-						return false
-					}
+				// Reconciling only when resource quota is deleted
+				DeleteFunc: func(e event.DeleteEvent) bool {
+					return !e.DeleteStateUnknown
 				},
 			},
 		).
 		Complete(r)
 }
 
-func (r *ResourceQuotaReconciler) replaceRQCStatus(nscName string, nsName string, status string) {
+func (r *ResourceQuotaReconciler) replaceRQCStatus(rqcName string, rqName string, status string) {
 	reqLogger := r.Log
 	rqcFound := &claim.ResourceQuotaClaim{}
-	if err := r.Get(context.TODO(), types.NamespacedName{Name: nscName}, rqcFound); err != nil && errors.IsNotFound(err) {
-		reqLogger.Info("ResourceQuotaClaim [ " + nscName + " ] Not Exists, Do Nothing")
+	if err := r.Get(context.TODO(), types.NamespacedName{Name: rqcName}, rqcFound); err != nil && errors.IsNotFound(err) {
+		reqLogger.Info("ResourceQuotaClaim [ " + rqcName + " ] Not Exists, Do Nothing")
 	} else {
 		rqcFound.Status.Status = status
-		rqcFound.Status.Reason = "ResourceQuota [ " + nsName + " ] Deleted"
+		rqcFound.Status.Reason = "ResourceQuota [ " + rqName + " ] Deleted"
 		if err := r.Status().Update(context.TODO(), rqcFound); err != nil {
-			reqLogger.Error(err, "Failed to Update ResourceQuotaClaim [ "+nscName+" ]")
-			panic("Failed to Update ResourceQuotaClaim [ " + nscName + " ]")
+			reqLogger.Error(err, "Failed to Update ResourceQuotaClaim [ "+rqcName+" ]")
+			panic("Failed to Update ResourceQuotaClaim [ " + rqcName + " ]")
 		} else {
-			reqLogger.Info("Update ResourceQuotaClaim [ " + nscName + " ] Success")
+			reqLogger.Info("Update ResourceQuotaClaim [ " + rqcName + " ] Success")
 		}
 	}
 }
