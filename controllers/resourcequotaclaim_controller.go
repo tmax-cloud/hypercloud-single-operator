@@ -84,10 +84,20 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 		// 	v1.ResourceLimitsMemory.String(): resourceQuotaClaim.SpecLimit.LimitCpu,
 		// }
 
+		rqcLabels := make(map[string]string)
+		if resourceQuotaClaim.Labels != nil {
+			rqcLabels = resourceQuotaClaim.Labels
+		}
+		rqcLabels["fromClaim"] = resourceQuotaClaim.Name
+
 		resourceQuota := &v1.ResourceQuota{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      resourceQuotaClaim.ResourceName,
 				Namespace: resourceQuotaClaim.Namespace,
+				Labels:    rqcLabels,
+				Finalizers: []string{
+					"resourcequota/finalizers",
+				},
 			},
 			Spec: v1.ResourceQuotaSpec{
 				//Scopes:        resourceQuotaClaim.Spec.Scopes,

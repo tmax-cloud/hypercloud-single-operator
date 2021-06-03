@@ -42,18 +42,8 @@ type ResourceQuotaReconciler struct {
 	patchHelper *patch.Helper
 }
 
-//+kubebuilder:rbac:groups=core,resources=resourcequota,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=core,resources=resourcequota/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=*,resources=*,verbs=*
 
-// Reconcile is part of the main kubernetes reconciliation loop which aims to
-// move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the ResourceQuota object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
-//
-// For more details, check Reconcile and its Result here:
-// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.6.4/pkg/reconcile
 func (r *ResourceQuotaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
 	reqLogger := r.Log
@@ -63,7 +53,8 @@ func (r *ResourceQuotaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 
 	if err := r.Get(context.TODO(), req.NamespacedName, resourcequota); err != nil {
 		if errors.IsNotFound(err) {
-			reqLogger.Info("ResourceQuota [ " + resourcequota.Name + "] is deleted")
+			reqLogger.Info("ResourceQuota resource not found. Ignoring since object must be deleted.")
+			return ctrl.Result{}, nil
 		} else {
 			reqLogger.Error(err, "Failed to get ResourceQuota")
 			return ctrl.Result{}, err
@@ -93,8 +84,8 @@ func (r *ResourceQuotaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		}
 		reqLogger.Info("Delete Finalizer [ resourcequota/finalizers ] Success")
 
+		r.replaceRQCStatus(resourcequota.Labels["fromClaim"], resourcequota.Name, resourcequota.Namespace, claim.ResourceQuotaClaimStatusTypeDeleted)
 		reqLogger.Info("Update ResourceQuotaClaim [ " + resourcequota.Labels["fromClaim"] + " ] Status to ResourceQuota Deleted")
-		r.replaceRQCStatus(resourcequota.Labels["fromClaim"], resourcequota.Name, claim.ResourceQuotaClaimStatusTypeDeleted)
 	}
 
 	return ctrl.Result{}, nil
@@ -115,10 +106,10 @@ func (r *ResourceQuotaReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func (r *ResourceQuotaReconciler) replaceRQCStatus(rqcName string, rqName string, status string) {
+func (r *ResourceQuotaReconciler) replaceRQCStatus(rqcName string, rqName string, rqNamespace string, status string) {
 	reqLogger := r.Log
 	rqcFound := &claim.ResourceQuotaClaim{}
-	if err := r.Get(context.TODO(), types.NamespacedName{Name: rqcName}, rqcFound); err != nil && errors.IsNotFound(err) {
+	if err := r.Get(context.TODO(), types.NamespacedName{Name: rqcName, Namespace: rqNamespace}, rqcFound); err != nil && errors.IsNotFound(err) {
 		reqLogger.Info("ResourceQuotaClaim [ " + rqcName + " ] Not Exists, Do Nothing")
 	} else {
 		rqcFound.Status.Status = status
