@@ -76,10 +76,20 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 		roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeAwaiting
 		roleBindingClaim.Status.Reason = "Please Wait for Administrator Approval"
 	case claim.RoleBindingClaimStatusTypeSuccess:
+		rbcLabels := make(map[string]string)
+		if roleBindingClaim.Labels != nil {
+			rbcLabels = roleBindingClaim.Labels
+		}
+		rbcLabels["fromClaim"] = roleBindingClaim.Name
+
 		roleBinding := &rbacApi.RoleBinding{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      roleBindingClaim.ResourceName,
 				Namespace: roleBindingClaim.Namespace,
+				Labels:    rbcLabels,
+				Finalizers: []string{
+					"rolebinding/finalizers",
+				},
 			},
 			Subjects: roleBindingClaim.Subjects,
 			RoleRef:  roleBindingClaim.RoleRef,

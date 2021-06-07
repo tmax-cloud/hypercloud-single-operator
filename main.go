@@ -34,6 +34,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	"github.com/robfig/cron"
+
 	claimv1alpha1 "github.com/tmax-cloud/hypercloud-single-operator/api/v1alpha1"
 	"github.com/tmax-cloud/hypercloud-single-operator/controllers"
 	k8scontroller "github.com/tmax-cloud/hypercloud-single-operator/controllers/k8s"
@@ -155,6 +156,14 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "ResourceQuota")
+		os.Exit(1)
+	}
+	if err = (&k8scontroller.RoleBindingReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("RoleBinding"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "RoleBinding")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder
