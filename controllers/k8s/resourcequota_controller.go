@@ -81,8 +81,8 @@ func (r *ResourceQuotaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 	if resourcequota.Labels != nil && resourcequota.Labels["fromClaim"] != "" {
 		if resourcequota.Finalizers != nil {
 			resourcequota.Finalizers = util.RemoveValue(resourcequota.Finalizers, "resourcequota/finalizers")
+			reqLogger.Info("Delete Finalizer [ resourcequota/finalizers ] Success")
 		}
-		reqLogger.Info("Delete Finalizer [ resourcequota/finalizers ] Success")
 
 		r.replaceRQCStatus(resourcequota.Labels["fromClaim"], resourcequota.Name, resourcequota.Namespace, claim.ResourceQuotaClaimStatusTypeDeleted)
 		reqLogger.Info("Update ResourceQuotaClaim [ " + resourcequota.Labels["fromClaim"] + " ] Status to ResourceQuota Deleted")
@@ -97,9 +97,19 @@ func (r *ResourceQuotaReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&v1.ResourceQuota{}).
 		WithEventFilter(
 			predicate.Funcs{
-				// Reconciling only when resource quota is deleted
+				// Reconciling only when ResourceQuota is deleted
 				DeleteFunc: func(e event.DeleteEvent) bool {
-					return !e.DeleteStateUnknown
+					//oldRq := e.Object.(*v1.ResourceQuota).DeepCopy()
+					return true
+				},
+				CreateFunc: func(e event.CreateEvent) bool {
+					return false
+				},
+				UpdateFunc: func(e event.UpdateEvent) bool {
+					return false
+				},
+				GenericFunc: func(e event.GenericEvent) bool {
+					return false
 				},
 			},
 		).

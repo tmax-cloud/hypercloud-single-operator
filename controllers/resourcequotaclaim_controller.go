@@ -95,9 +95,9 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 				Name:      resourceQuotaClaim.ResourceName,
 				Namespace: resourceQuotaClaim.Namespace,
 				Labels:    rqcLabels,
-				Finalizers: []string{
-					"resourcequota/finalizers",
-				},
+				// Finalizers: []string{
+				// 	"resourcequota/finalizers",
+				// },
 			},
 			Spec: v1.ResourceQuotaSpec{
 				//Scopes:        resourceQuotaClaim.Spec.Scopes,
