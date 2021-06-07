@@ -17,6 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
+	err "errors"
+
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -92,6 +94,18 @@ func (r *ResourceQuotaClaim) ValidateCreate() error {
 func (r *ResourceQuotaClaim) ValidateUpdate(old runtime.Object) error {
 	resourcequotaclaimlog.Info("validate update", "name", r.Name)
 	// TODO(user): fill in your validation logic upon object update.
+	old_status := old.(*ResourceQuotaClaim).DeepCopy().Status.Status
+	now_status := r.Status.Status
+
+	if (old_status == ResourceQuotaClaimStatusTypeSuccess && (now_status != ResourceQuotaClaimStatusTypeSuccess && now_status != ResourceQuotaClaimStatusTypeDeleted && now_status != ResourceQuotaClaimStatusTypeError)) ||
+		(old_status == ResourceQuotaClaimStatusTypeDeleted && now_status != ResourceQuotaClaimStatusTypeDeleted) {
+		return errors.NewForbidden(
+			schema.GroupResource{Group: "claim.tmax.io", Resource: r.Name},
+			"",
+			err.New("cannot update ResourceQuotaClaim in Approved or Deleted status"),
+		)
+	}
+
 	return r.validateRqc()
 }
 
