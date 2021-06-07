@@ -18,11 +18,9 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-logr/logr"
 	claim "github.com/tmax-cloud/hypercloud-single-operator/api/v1alpha1"
-	"github.com/tmax-cloud/hypercloud-single-operator/util"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -49,45 +47,8 @@ func (r *ResourceQuotaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 	reqLogger := r.Log
 
 	reqLogger.Info("Reconciling ResourceQuota")
-	resourcequota := &v1.ResourceQuota{}
 
-	if err := r.Get(context.TODO(), req.NamespacedName, resourcequota); err != nil {
-		if errors.IsNotFound(err) {
-			reqLogger.Info("ResourceQuota resource not found. Ignoring since object must be deleted.")
-			return ctrl.Result{}, nil
-		} else {
-			reqLogger.Error(err, "Failed to get ResourceQuota")
-			return ctrl.Result{}, err
-		}
-	}
-
-	//set helper
-	if helper, err := patch.NewHelper(resourcequota, r.Client); err != nil {
-		return ctrl.Result{}, err
-	} else {
-		r.patchHelper = helper
-	}
-	defer func() {
-		r.patchHelper.Patch(context.TODO(), resourcequota)
-	}()
-
-	defer func() {
-		s := recover()
-		if s != nil {
-			fmt.Println("Error !! : ", s)
-		}
-	}()
-
-	if resourcequota.Labels != nil && resourcequota.Labels["fromClaim"] != "" {
-		if resourcequota.Finalizers != nil {
-			resourcequota.Finalizers = util.RemoveValue(resourcequota.Finalizers, "resourcequota/finalizers")
-			reqLogger.Info("Delete Finalizer [ resourcequota/finalizers ] Success")
-		}
-
-		r.replaceRQCStatus(resourcequota.Labels["fromClaim"], resourcequota.Name, resourcequota.Namespace, claim.ResourceQuotaClaimStatusTypeDeleted)
-		reqLogger.Info("Update ResourceQuotaClaim [ " + resourcequota.Labels["fromClaim"] + " ] Status to ResourceQuota Deleted")
-	}
-
+	r.replaceRQCStatus(req.Name, req.Namespace, claim.ResourceQuotaClaimStatusTypeDeleted)
 	return ctrl.Result{}, nil
 }
 
@@ -99,7 +60,6 @@ func (r *ResourceQuotaReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			predicate.Funcs{
 				// Reconciling only when ResourceQuota is deleted
 				DeleteFunc: func(e event.DeleteEvent) bool {
-					//oldRq := e.Object.(*v1.ResourceQuota).DeepCopy()
 					return true
 				},
 				CreateFunc: func(e event.CreateEvent) bool {
@@ -116,14 +76,14 @@ func (r *ResourceQuotaReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func (r *ResourceQuotaReconciler) replaceRQCStatus(rqcName string, rqName string, rqNamespace string, status string) {
+func (r *ResourceQuotaReconciler) replaceRQCStatus(rqcName string, rqNamespace string, status string) {
 	reqLogger := r.Log
 	rqcFound := &claim.ResourceQuotaClaim{}
 	if err := r.Get(context.TODO(), types.NamespacedName{Name: rqcName, Namespace: rqNamespace}, rqcFound); err != nil && errors.IsNotFound(err) {
 		reqLogger.Info("ResourceQuotaClaim [ " + rqcName + " ] Not Exists, Do Nothing")
 	} else {
 		rqcFound.Status.Status = status
-		rqcFound.Status.Reason = "ResourceQuota [ " + rqName + " ] Deleted"
+		rqcFound.Status.Reason = "ResourceQuota [ " + rqcName + " ] Deleted"
 		if err := r.Status().Update(context.TODO(), rqcFound); err != nil {
 			reqLogger.Error(err, "Failed to Update ResourceQuotaClaim [ "+rqcName+" ]")
 			panic("Failed to Update ResourceQuotaClaim [ " + rqcName + " ]")

@@ -63,7 +63,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 	}
 
 	found := &v1.ResourceQuota{}
-	err := r.Get(context.TODO(), types.NamespacedName{Name: resourceQuotaClaim.ResourceName, Namespace: resourceQuotaClaim.Namespace}, found)
+	err := r.Get(context.TODO(), types.NamespacedName{Name: resourceQuotaClaim.Name, Namespace: resourceQuotaClaim.Namespace}, found)
 
 	reqLogger.Info("ResourceQuotaClaim status:" + resourceQuotaClaim.Status.Status)
 	if err != nil && !errors.IsNotFound(err) {
@@ -92,7 +92,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 
 		resourceQuota := &v1.ResourceQuota{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      resourceQuotaClaim.ResourceName,
+				Name:      resourceQuotaClaim.Name,
 				Namespace: resourceQuotaClaim.Namespace,
 				Labels:    rqcLabels,
 				// Finalizers: []string{
@@ -110,7 +110,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 		}
 
 		if err != nil && errors.IsNotFound(err) {
-			reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.ResourceName + " ] not Exists, Create ResourceQuota.")
+			reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.Name + " ] not Exists, Create ResourceQuota.")
 			if err := r.Create(context.TODO(), resourceQuota); err != nil {
 				reqLogger.Error(err, "Failed to create ResourceQuota.")
 				resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeError
@@ -121,7 +121,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 				resourceQuotaClaim.Status.Reason = "Create ResourceQuota Success"
 			}
 		} else {
-			reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.ResourceName + " ] Exists, Update ResourceQuota.")
+			reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.Name + " ] Exists, Update ResourceQuota.")
 			if err := r.Delete(context.TODO(), resourceQuota); err != nil {
 				reqLogger.Error(err, "Failed to delete Exists ResourceQuota.")
 				resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeError

@@ -64,7 +64,7 @@ func (r *NamespaceClaim) ValidateUpdate(old runtime.Object) error {
 		return errors.NewForbidden(
 			schema.GroupResource{Group: "claim.tmax.io", Resource: r.Name},
 			"",
-			err.New("cannot update NamespaceClaim in Success or Deleted status"),
+			err.New("cannot update NamespaceClaim in Approved or Deleted status"),
 		)
 	}
 
