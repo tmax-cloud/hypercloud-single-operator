@@ -12,3 +12,23 @@ rules:
   - '*'
   verbs:
   - '*'
+- apiGroups:
+  - rbac.authorization.k8s.io.tmax.io
+  resources:
+  - rolebindings
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rbac.authorization.k8s.io.tmax.io
+  resources:
+  - rolebindings/status
+  verbs:
+  - get
+  - patch
+  - update

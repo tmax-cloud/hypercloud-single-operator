@@ -43,3 +43,21 @@ webhooks:
     - UPDATE
     resources:
     - resourcequotaclaims
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: webhook-service
+      namespace: system
+      path: /validate-claim-tmax-io-v1alpha1-rolebindingclaim
+  failurePolicy: Fail
+  name: vrolebindingclaim.kb.io
+  rules:
+  - apiGroups:
+    - claim.tmax.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - rolebindingclaims/status
