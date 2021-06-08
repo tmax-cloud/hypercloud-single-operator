@@ -217,6 +217,7 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 					r.createNSCRoleBinding(namespaceClaim)
 				}
 				namespaceClaim.Status.Reason = "Create Namespace Success"
+
 			}
 		} else {
 			reqLogger.Info("Update namespace.")

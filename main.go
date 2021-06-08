@@ -50,6 +50,8 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(claimv1alpha1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
+	grafanaId, grafanaPw := util.GetGrafanauser()
+
 }
 
 func main() {
