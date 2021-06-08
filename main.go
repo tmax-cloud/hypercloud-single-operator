@@ -166,6 +166,10 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "RoleBinding")
 		os.Exit(1)
 	}
+	if err = (&claimv1alpha1.RoleBindingClaim{}).SetupWebhookWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create webhook", "webhook", "RoleBindingClaim")
+		os.Exit(1)
+	}
 	// +kubebuilder:scaffold:builder
 
 	// Set Trial Timer
