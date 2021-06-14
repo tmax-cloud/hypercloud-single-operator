@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.14.1 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.14.1 (2021. 06. 14. (월) 17:13:11 KST)
+
+### Added
+
+### Changed
+
+### Fixed
+  - [ims][260530] RQC의 status변화를 웹훅에서 감지하도록 수정 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.14.1 end --------------------->
+
 <!-------------------- v5.0.14.0 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.14.0 (2021. 06. 10. (목) 20:20:42 KST)
