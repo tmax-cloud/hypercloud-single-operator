@@ -43,6 +43,7 @@ webhooks:
     - UPDATE
     resources:
     - resourcequotaclaims
+    - resourcequotaclaims/status
 - clientConfig:
     caBundle: Cg==
     service:
