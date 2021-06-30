@@ -1,6 +1,76 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.16.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.16.0 (2021. 06. 25. (금) 11:07:51 KST)
+
+### Added
+
+### Changed
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.16.0 end --------------------->
+
+<!-------------------- v5.0.15.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.15.0 (2021. 06. 17. (목) 15:10:05 KST)
+
+### Added
+
+### Changed
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.15.0 end --------------------->
+
+<!-------------------- v5.0.14.1 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.14.1 (2021. 06. 14. (월) 17:13:11 KST)
+
+### Added
+
+### Changed
+
+### Fixed
+  - [ims][260530] RQC의 status변화를 웹훅에서 감지하도록 수정 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.14.1 end --------------------->
+
+<!-------------------- v5.0.14.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.14.0 (2021. 06. 10. (목) 20:20:42 KST)
+
+### Added
+
+### Changed
+  - [mod] ims 261115번 구현 방법 변경 by Seungwon Lee
+
+### Fixed
+  - [ims][262777] RBC가 Approved, Deleted 상태에서는 상태변경 불가하도록 수정 by Seungwon Lee
+  - [ims][262777] claim으로 만든 RB 삭제 시, 해당 claim status 변경 by Seungwon Lee
+  - [ims][261115] RQC가 Approved, Deleted 상태에서는 상태변경 불가하도록 수정 by Seungwon Lee
+  - [ims][261115] claim으로 만든 ResourceQuota삭제시 해당 claim status 변경 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.14.0 end --------------------->
+
 <!-------------------- v5.0.13.1 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.13.1 (2021. 06. 03. (목) 18:54:36 KST)
