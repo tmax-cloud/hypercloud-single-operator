@@ -2,15 +2,9 @@ package util
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
-
-	"encoding/json"
-
-	"io/ioutil"
-	"os"
 
 	"github.com/go-logr/logr"
 	"gopkg.in/gomail.v2"
@@ -217,25 +211,4 @@ func RemoveValue(slice []string, value string) []string {
 		}
 	}
 	return temp
-}
-
-type GrafanaUser struct {
-	Id       string `json:"id"`
-	Password string `json:"password"`
-}
-
-func GetGrafanauser() (string, string) {
-	jsonFile, err := os.Open("users.json")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("Successfully Opened grafanausers.json")
-	defer jsonFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	var grafanaUser GrafanaUser
-
-	json.Unmarshal(byteValue, &grafanaUser)
-	return grafanaUser.Id, grafanaUser.Password
 }

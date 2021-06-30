@@ -5,6 +5,8 @@ const (
 	HYPERCLOUD_NAMESPACE                = "hypercloud5-system"
 	DEFAULT_NETWORK_POLICY_CONFIG_MAP   = "default-networkpolicy-configmap"
 	NETWORK_POLICY_YAML                 = "networkpolicies.yaml"
+	GRAFANA_URI                         = "grafana.monitoring.svc.cluster.local:3000/"
+	HYPERCLOUD_API_SERVER_URI           = "hypercloud5-api-server-service.hypercloud5-system.svc.cluster.local:443/"
 	TRIAL_SUCCESS_CONFIRM_MAIL_CONTENTS = "<!DOCTYPE html>\r\n" +
 		"<html lang=\"en\">\r\n" +
 		"<head>\r\n" +
