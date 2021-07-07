@@ -18,6 +18,8 @@ package controllers
 
 import (
 	"context"
+	"crypto/tls"
+	"net/http"
 	"reflect"
 
 	"github.com/tmax-cloud/hypercloud-single-operator/util"
@@ -105,6 +107,15 @@ func (r *NamespaceReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			reqLogger.Info("Update NamespaceClaim [ " + namespace.Labels["fromClaim"] + " ] Status to Namespace Deleted")
 			r.replaceNSCStatus(namespace.Labels["fromClaim"], namespace.Name, claim.NamespaceClaimStatueTypeDeleted)
 		}
+		httpgrafanaurl := "https://" + util.HYPERCLOUD_API_SERVER_URI + "grafanaDashboard?namespace=" + namespace.Name
+		request, _ := http.NewRequest("DELETE", httpgrafanaurl, nil)
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		client := &http.Client{}
+		resp, err := client.Do(request)
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
 	}
 
 	if namespace.Labels != nil && namespace.Labels["trial"] != "" && namespace.Labels["period"] != "" && namespace.Annotations["owner"] != "" {
