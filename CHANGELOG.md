@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.18.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.18.0 (2021. 07. 09. (금) 09:37:25 KST)
+
+### Added
+
+### Changed
+
+### Fixed
+  - [ims][259922] manager container의 memory limit 증가 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.18.0 end --------------------->
+
 <!-------------------- v5.0.17.0 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.17.0 (2021. 07. 01. (목) 17:42:04 KST)
