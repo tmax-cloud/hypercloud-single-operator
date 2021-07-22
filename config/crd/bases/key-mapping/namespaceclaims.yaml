@@ -41,7 +41,6 @@ spec:
         metadata:
           type: "object"
         resourceName:
-          title: "namespaceName"
           description: "%namespaceclaims.yaml.spec.validation.openAPIV3Schema.properties.resourceName"
           type: "string"
         spec:
@@ -57,19 +56,8 @@ spec:
                 x-kubernetes-int-or-string: true
               description: "%namespaceclaims.yaml.spec.validation.openAPIV3Schema.properties.spec.properties.hard"
               type: "object"
-          type: "object"
-        specLimit:
-          description: "%namespaceclaims.yaml.spec.validation.openAPIV3Schema.properties.specLimit"
-          properties:
-            limitCpu:
-              description: "%namespaceclaims.yaml.spec.validation.openAPIV3Schema.properties.specLimit.properties.limitCpu"
-              type: "string"
-            limitMemory:
-              description: "%namespaceclaims.yaml.spec.validation.openAPIV3Schema.properties.specLimit.properties.limitMemory"
-              type: "string"
           required:
-          - "limitCpu"
-          - "limitMemory"
+          - "hard"
           type: "object"
         status:
           description: "%namespaceclaims.yaml.spec.validation.openAPIV3Schema.properties.status"
@@ -96,7 +84,7 @@ spec:
           type: "object"
       required:
       - "resourceName"
-      - "specLimit"
+      - "spec"
       type: "object"
   version: "v1alpha1"
   versions:

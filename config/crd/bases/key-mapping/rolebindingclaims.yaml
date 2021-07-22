@@ -41,7 +41,6 @@ spec:
         metadata:
           type: "object"
         resourceName:
-          title: "rolebindingName"
           description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.resourceName"
           type: "string"
         roleRef:
