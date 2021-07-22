@@ -113,9 +113,10 @@ func (r *NamespaceReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		client := &http.Client{}
 		resp, err := client.Do(request)
 		if err != nil {
-			panic(err)
+			reqLogger.Error(err, "Grafana Failed")
+		} else {
+			defer resp.Body.Close()
 		}
-		defer resp.Body.Close()
 	}
 
 	if namespace.Labels != nil && namespace.Labels["trial"] != "" && namespace.Labels["period"] != "" && namespace.Annotations["owner"] != "" {

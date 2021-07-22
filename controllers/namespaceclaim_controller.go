@@ -233,9 +233,10 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 				client := &http.Client{}
 				resp, err := client.Do(request)
 				if err != nil {
-					panic(err)
+					reqLogger.Error(err, "Grafana Failed")
+				} else {
+					defer resp.Body.Close()
 				}
-				defer resp.Body.Close()
 			}
 		} else {
 			reqLogger.Info("Update namespace.")
