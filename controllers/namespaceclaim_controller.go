@@ -319,10 +319,10 @@ func (r *NamespaceClaimReconciler) createNSCRoleBinding(namespaceClaim *claim.Na
 	reqLogger.Info("Create RoleBinding For NamespaceClaim user Start")
 	rbForNscUserFound := &rbacApi.RoleBinding{}
 
-	if err := r.Get(context.TODO(), types.NamespacedName{Name: namespaceClaim.ResourceName + "-ns-listget", Namespace: namespaceClaim.ResourceName}, rbForNscUserFound); err != nil && errors.IsNotFound(err) {
+	if err := r.Get(context.TODO(), types.NamespacedName{Name: namespaceClaim.ResourceName + "-ns-owner", Namespace: namespaceClaim.ResourceName}, rbForNscUserFound); err != nil && errors.IsNotFound(err) {
 		rbForNscUser := &rbacApi.RoleBinding{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:        namespaceClaim.ResourceName + "-ns-listget",
+				Name:        namespaceClaim.ResourceName + "-ns-owner",
 				Namespace:   namespaceClaim.ResourceName,
 				Labels:      namespaceClaim.Labels,
 				Annotations: namespaceClaim.Annotations,
@@ -341,9 +341,9 @@ func (r *NamespaceClaimReconciler) createNSCRoleBinding(namespaceClaim *claim.Na
 			},
 		}
 		if err := r.Create(context.TODO(), rbForNscUser); err != nil && errors.IsNotFound(err) {
-			reqLogger.Info("RoleBinding for NameSpace [ " + namespaceClaim.ResourceName + "-ns-listget ] Already Exists")
+			reqLogger.Info("RoleBinding for NameSpace [ " + namespaceClaim.ResourceName + "-ns-owner ] Already Exists")
 		} else {
-			reqLogger.Info("Create RoleBinding [ " + namespaceClaim.ResourceName + "-ns-listget ] Success")
+			reqLogger.Info("Create RoleBinding [ " + namespaceClaim.ResourceName + "-ns-owner ] Success")
 		}
 	} else {
 		reqLogger.Info("RoleBinding for NameSpace [ " + namespaceClaim.ResourceName + " ] Already Exists")
