@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.23.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.23.0 (2021. 08. 12. (목) 13:05:05 KST)
+
+### Added
+
+### Changed
+  - [mod] rolebinding 이름 변경 ns-listget -> ns-owner by GitHub
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.23.0 end --------------------->
+
 <!-------------------- v5.0.22.3 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.22.3 (2021. 08. 06. (금) 11:45:28 KST)
