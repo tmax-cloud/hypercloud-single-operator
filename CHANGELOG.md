@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.2 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.2 (2021. 09. 03. (금) 17:38:31 KST)
+
+### Added
+
+### Changed
+  - [mod] resourcequota 이름 중복 로직 제거 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.2 end --------------------->
+
 <!-------------------- v5.0.25.1 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.1 (2021. 09. 03. (금) 17:19:52 KST)
