@@ -18,12 +18,14 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
 	claim "github.com/tmax-cloud/hypercloud-single-operator/api/v1alpha1"
 
 	"github.com/go-logr/logr"
 	rbacApi "k8s.io/api/rbac/v1"
+	v1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -46,6 +48,7 @@ type RoleBindingClaimReconciler struct {
 func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
 	reqLogger := r.Log
+
 	// your logic here
 	reqLogger.Info("Reconciling RoleBindingClaim")
 	roleBindingClaim := &claim.RoleBindingClaim{}
@@ -59,6 +62,24 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 		reqLogger.Error(err, "Failed to get RoleBindingClaim")
 		return ctrl.Result{}, err
 	}
+
+	defer func() {
+		s := recover()
+		if s != nil {
+			fmt.Println("Error !! : ", s)
+			var errString string
+			switch x := s.(type) {
+			case string:
+				errString = x
+			case error:
+				errString = x.Error()
+			default:
+				errString = "unknown error"
+			}
+			roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
+			roleBindingClaim.Status.Reason = errString
+		}
+	}()
 
 	found := &rbacApi.RoleBinding{}
 	err := r.Get(context.TODO(), types.NamespacedName{Name: roleBindingClaim.ResourceName, Namespace: roleBindingClaim.Namespace}, found)
@@ -85,6 +106,21 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 				rbc.ResourceName == roleBindingClaim.ResourceName {
 				flag = true
 				break
+			}
+		}
+
+		if !flag {
+			rbList := &v1.RoleBindingList{}
+			if err := r.List(context.TODO(), rbList); err != nil {
+				reqLogger.Error(err, "Failed to get RoleBinding List")
+				panic(err)
+			}
+
+			for _, rb := range rbList.Items {
+				if rb.Name == roleBindingClaim.Name && rb.Namespace == roleBindingClaim.Namespace {
+					flag = true
+					break
+				}
 			}
 		}
 

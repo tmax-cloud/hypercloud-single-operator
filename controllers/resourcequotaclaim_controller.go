@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
 	"github.com/go-logr/logr"
@@ -62,6 +63,24 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 		reqLogger.Error(err, "Failed to get ResourceQuotaClaim")
 		return ctrl.Result{}, err
 	}
+
+	defer func() {
+		s := recover()
+		if s != nil {
+			fmt.Println("Error !! : ", s)
+			var errString string
+			switch x := s.(type) {
+			case string:
+				errString = x
+			case error:
+				errString = x.Error()
+			default:
+				errString = "unknown error"
+			}
+			resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeError
+			resourceQuotaClaim.Status.Reason = errString
+		}
+	}()
 
 	found := &v1.ResourceQuota{}
 	err := r.Get(context.TODO(), types.NamespacedName{Name: resourceQuotaClaim.ResourceName, Namespace: resourceQuotaClaim.Namespace}, found)
