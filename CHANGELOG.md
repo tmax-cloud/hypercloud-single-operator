@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
   - [ims][269751] request, limit 값이 정상적으로 들어가도록 수정 by Seungwon Lee
+  - [ims][269816] rolebindingclaim, resourcequotaclaim의 resourceName 중복 검사 로직 추가
 
 ### CRD yaml
 
