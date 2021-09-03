@@ -129,20 +129,21 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 
 		flag := false
 		for _, nsc := range nscList.Items {
-			if nsc.Status.Status == claim.NamespaceClaimStatusTypeAwaiting && nsc.ResourceName == namespaceClaim.ResourceName {
+			if (nsc.Status.Status == claim.NamespaceClaimStatusTypeAwaiting || nsc.Status.Status == claim.NamespaceClaimStatusTypeSuccess) &&
+				nsc.ResourceName == namespaceClaim.ResourceName {
 				flag = true
 				break
 			}
 		}
 
 		if err != nil && errors.IsNotFound(err) && !flag {
-			reqLogger.Info("Namespace [ " + namespaceClaim.ResourceName + " ] Not found.")
+			reqLogger.Info("New NamespaceClaim Added")
 			namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeAwaiting
 			namespaceClaim.Status.Reason = "Please Wait for administrator approval"
 		} else {
 			reqLogger.Info("Namespace [ " + namespaceClaim.ResourceName + " ] Already Exists.")
 			namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeReject
-			namespaceClaim.Status.Reason = "Duplicated NameSpaceName"
+			namespaceClaim.Status.Reason = "Duplicated NameSpace Name"
 		}
 
 	case claim.NamespaceClaimStatusTypeSuccess:

@@ -72,9 +72,31 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 	switch roleBindingClaim.Status.Status {
 
 	case "":
-		reqLogger.Info("New RoleBindingClaim Added")
-		roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeAwaiting
-		roleBindingClaim.Status.Reason = "Please Wait for Administrator Approval"
+		rbcList := &claim.RoleBindingClaimList{}
+		if err := r.List(context.TODO(), rbcList); err != nil {
+			reqLogger.Error(err, "Failed to get RoleBindingClaim List")
+			panic(err)
+		}
+
+		flag := false
+		for _, rbc := range rbcList.Items {
+			if (rbc.Status.Status == claim.RoleBindingClaimStatusTypeAwaiting || rbc.Status.Status == claim.RoleBindingClaimStatusTypeSuccess) &&
+				rbc.Namespace == roleBindingClaim.Namespace &&
+				rbc.ResourceName == roleBindingClaim.ResourceName {
+				flag = true
+				break
+			}
+		}
+
+		if err != nil && errors.IsNotFound(err) && !flag {
+			reqLogger.Info("New RoleBindingClaim Added")
+			roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeAwaiting
+			roleBindingClaim.Status.Reason = "Please Wait for administrator approval"
+		} else {
+			reqLogger.Info("Namespace [ " + roleBindingClaim.ResourceName + " ] Already Exists.")
+			roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeReject
+			roleBindingClaim.Status.Reason = "Duplicated ResourceQuota Name"
+		}
 	case claim.RoleBindingClaimStatusTypeSuccess:
 		rbcLabels := make(map[string]string)
 		if roleBindingClaim.Labels != nil {
@@ -108,13 +130,8 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 			}
 		} else {
 			reqLogger.Info("RoleBinding [ " + roleBindingClaim.ResourceName + " ] Exists, Update RoleBinding.")
-			if err := r.Delete(context.TODO(), roleBinding); err != nil {
-				reqLogger.Error(err, "Failed to delete Exists RoleBinding.")
-				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
-				roleBindingClaim.Status.Reason = "Failed to update RoleBinding"
-				roleBindingClaim.Status.Message = err.Error()
-			} else if err := r.Create(context.TODO(), roleBinding); err != nil {
-				reqLogger.Error(err, "Failed to re-create RoleBinding.")
+			if err := r.Update(context.TODO(), roleBinding); err != nil {
+				reqLogger.Error(err, "Failed to update RoleBinding.")
 				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
 				roleBindingClaim.Status.Reason = "Failed to update RoleBinding"
 				roleBindingClaim.Status.Message = err.Error()

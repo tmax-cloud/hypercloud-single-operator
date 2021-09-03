@@ -75,9 +75,31 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 	switch resourceQuotaClaim.Status.Status {
 
 	case "":
-		reqLogger.Info("New ResourceQuotaClaim Added")
-		resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeAwaiting
-		resourceQuotaClaim.Status.Reason = "Please Wait for administrator approval"
+		rqcList := &claim.ResourceQuotaClaimList{}
+		if err := r.List(context.TODO(), rqcList); err != nil {
+			reqLogger.Error(err, "Failed to get ResourceQuotaClaim List")
+			panic(err)
+		}
+
+		flag := false
+		for _, rqc := range rqcList.Items {
+			if (rqc.Status.Status == claim.ResourceQuotaClaimStatusTypeAwaiting || rqc.Status.Status == claim.ResourceQuotaClaimStatusTypeSuccess) &&
+				rqc.Namespace == resourceQuotaClaim.Namespace &&
+				rqc.ResourceName == resourceQuotaClaim.ResourceName {
+				flag = true
+				break
+			}
+		}
+
+		if err != nil && errors.IsNotFound(err) && !flag {
+			reqLogger.Info("New ResourceQuotaClaim Added")
+			resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeAwaiting
+			resourceQuotaClaim.Status.Reason = "Please Wait for administrator approval"
+		} else {
+			reqLogger.Info("Namespace [ " + resourceQuotaClaim.ResourceName + " ] Already Exists.")
+			resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeReject
+			resourceQuotaClaim.Status.Reason = "Duplicated ResourceQuota Name"
+		}
 	case claim.ResourceQuotaClaimStatusTypeSuccess:
 		// hards := v1.ResourceList{
 
