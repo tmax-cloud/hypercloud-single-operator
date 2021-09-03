@@ -1,6 +1,25 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.1 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.1 (2021. 09. 03. (금) 17:19:52 KST)
+
+### Added
+
+### Changed
+  - [mod] 이미 존재하는 RB에 대해 이름 중복 체크, panic 시 pod 재기동 방지 by Seungwon Lee
+
+### Fixed
+  - [ims][269751] request, limit 값이 정상적으로 들어가도록 수정 by Seungwon Lee
+  - [ims][269816] rolebindingclaim, resourcequotaclaim의 resourceName 중복 검사 로직 추가
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.1 end --------------------->
+
 <!-------------------- v5.0.25.0 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.0 (2021. 08. 27. (금) 18:52:44 KST)
