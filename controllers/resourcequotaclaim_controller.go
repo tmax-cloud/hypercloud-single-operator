@@ -23,6 +23,7 @@ import (
 	"github.com/go-logr/logr"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -99,15 +100,33 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 					"resourcequota/finalizers",
 				},
 			},
-			Spec: v1.ResourceQuotaSpec{
-				//Scopes:        resourceQuotaClaim.Spec.Scopes,
-				//ScopeSelector: resourceQuotaClaim.Spec.ScopeSelector,
-				Hard: v1.ResourceList{
-					v1.ResourceCPU:    resourceQuotaClaim.Spec.Hard["limits.cpu"],
-					v1.ResourceMemory: resourceQuotaClaim.Spec.Hard["limits.memory"],
-				},
-			},
+			// Spec: v1.ResourceQuotaSpec{
+			// 	//Scopes:        resourceQuotaClaim.Spec.Scopes,
+			// 	//ScopeSelector: resourceQuotaClaim.Spec.ScopeSelector,
+			// 	Hard: v1.ResourceList{
+			// 		v1.ResourceCPU:    resourceQuotaClaim.Spec.Hard["limits.cpu"],
+			// 		v1.ResourceMemory: resourceQuotaClaim.Spec.Hard["limits.memory"],
+			// 	},
+			// },
 		}
+
+		hardList := make(map[v1.ResourceName]resource.Quantity)
+		hardList[v1.ResourceLimitsCPU] = resourceQuotaClaim.Spec.Hard["limits.cpu"]
+		hardList[v1.ResourceLimitsMemory] = resourceQuotaClaim.Spec.Hard["limits.memory"]
+
+		if (resourceQuotaClaim.Spec.Hard["requests.cpu"] != resource.Quantity{}) {
+			hardList[v1.ResourceRequestsCPU] = resourceQuotaClaim.Spec.Hard["requests.cpu"]
+		} else if (resourceQuotaClaim.Spec.Hard["cpu"] != resource.Quantity{}) {
+			hardList[v1.ResourceRequestsCPU] = resourceQuotaClaim.Spec.Hard["cpu"]
+		}
+
+		if (resourceQuotaClaim.Spec.Hard["requests.memory"] != resource.Quantity{}) {
+			hardList[v1.ResourceRequestsMemory] = resourceQuotaClaim.Spec.Hard["requests.memory"]
+		} else if (resourceQuotaClaim.Spec.Hard["memory"] != resource.Quantity{}) {
+			hardList[v1.ResourceRequestsMemory] = resourceQuotaClaim.Spec.Hard["memory"]
+		}
+
+		resourceQuota.Spec.Hard = hardList
 
 		if err != nil && errors.IsNotFound(err) {
 			reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.ResourceName + " ] not Exists, Create ResourceQuota.")
@@ -122,13 +141,8 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 			}
 		} else {
 			reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.ResourceName + " ] Exists, Update ResourceQuota.")
-			if err := r.Delete(context.TODO(), resourceQuota); err != nil {
-				reqLogger.Error(err, "Failed to delete Exists ResourceQuota.")
-				resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeError
-				resourceQuotaClaim.Status.Reason = "Failed to update ResourceQuota"
-				resourceQuotaClaim.Status.Message = err.Error()
-			} else if err := r.Create(context.TODO(), resourceQuota); err != nil {
-				reqLogger.Error(err, "Failed to re-create ResourceQuota.")
+			if err := r.Update(context.TODO(), resourceQuota); err != nil {
+				reqLogger.Error(err, "Failed to update ResourceQuota.")
 				resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeError
 				resourceQuotaClaim.Status.Reason = "Failed to update ResourceQuota"
 				resourceQuotaClaim.Status.Message = err.Error()
