@@ -131,7 +131,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 		} else {
 			reqLogger.Info("Namespace [ " + roleBindingClaim.ResourceName + " ] Already Exists.")
 			roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeReject
-			roleBindingClaim.Status.Reason = "Duplicated ResourceQuota Name"
+			roleBindingClaim.Status.Reason = "Duplicated Rolebinding Name"
 		}
 	case claim.RoleBindingClaimStatusTypeSuccess:
 		rbcLabels := make(map[string]string)
