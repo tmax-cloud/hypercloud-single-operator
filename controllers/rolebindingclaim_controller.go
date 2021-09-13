@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/google/go-cmp/cmp"
 	claim "github.com/tmax-cloud/hypercloud-single-operator/api/v1alpha1"
 
 	"github.com/go-logr/logr"
@@ -166,7 +167,13 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 			}
 		} else {
 			reqLogger.Info("RoleBinding [ " + roleBindingClaim.ResourceName + " ] Exists, Update RoleBinding.")
-			if err := r.Update(context.TODO(), roleBinding); err != nil {
+
+			if cmp.Equal(roleBindingClaim.Subjects, roleBinding.Subjects) {
+				reqLogger.Info("Same resourceName already exists, modify resourceName and retry.")
+				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
+				roleBindingClaim.Status.Reason = "Same resourceName already exists, modify resourceName and retry"
+				roleBindingClaim.Status.Message = fmt.Errorf("Same resourceName already exists").Error()
+			} else if err := r.Update(context.TODO(), roleBinding); err != nil {
 				reqLogger.Error(err, "Failed to update RoleBinding.")
 				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
 				roleBindingClaim.Status.Reason = "Failed to update RoleBinding"
