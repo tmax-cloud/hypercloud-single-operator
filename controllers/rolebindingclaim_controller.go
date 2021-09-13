@@ -168,7 +168,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 		} else {
 			reqLogger.Info("RoleBinding [ " + roleBindingClaim.ResourceName + " ] Exists, Update RoleBinding.")
 
-			if cmp.Equal(roleBindingClaim.Subjects, roleBinding.Subjects) {
+			if !cmp.Equal(roleBindingClaim.Subjects, roleBinding.Subjects) {
 				reqLogger.Info("Same resourceName already exists, modify resourceName and retry.")
 				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
 				roleBindingClaim.Status.Reason = "Same resourceName already exists, modify resourceName and retry"
