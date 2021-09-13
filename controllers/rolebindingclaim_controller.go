@@ -64,6 +64,12 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 		return ctrl.Result{}, err
 	}
 
+	for idx, _ := range roleBindingClaim.Subjects {
+		if roleBindingClaim.Subjects[idx].APIGroup == "" {
+			roleBindingClaim.Subjects[idx].APIGroup = "rbac.authorization.k8s.io"
+		}
+	}
+
 	defer func() {
 		s := recover()
 		if s != nil {
@@ -168,7 +174,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 		} else {
 			reqLogger.Info("RoleBinding [ " + roleBindingClaim.ResourceName + " ] Exists, Update RoleBinding.")
 
-			if !cmp.Equal(roleBindingClaim.Subjects, roleBinding.Subjects) {
+			if !cmp.Equal(roleBindingClaim.Subjects, found.Subjects) || !cmp.Equal(roleBindingClaim.RoleRef, found.RoleRef) {
 				reqLogger.Info("Same resourceName already exists, modify resourceName and retry.")
 				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
 				roleBindingClaim.Status.Reason = "Same resourceName already exists, modify resourceName and retry"
