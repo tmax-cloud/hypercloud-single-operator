@@ -1,6 +1,25 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.4 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.4 (2021. 09. 13. (월) 16:32:13 KST)
+
+### Added
+
+### Changed
+
+### Fixed
+  - [ims][270054] subjects 비교를 위해 rbc 생성시 자동으로 API group 넣어주는 로직 생성 by Seungwon Lee
+  - [ims][270054] rejected 상태에서는 resourceName 변경 전까지는 update 못 하도록 수정 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+  - [etc] CLI 테스트 방법 추가 by Seungwon Lee
+
+<!--------------------- v5.0.25.4 end --------------------->
+
 <!-------------------- v5.0.25.3 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.3 (2021. 09. 06. (월) 13:56:51 KST)
