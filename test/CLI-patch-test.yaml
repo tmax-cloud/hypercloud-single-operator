@@ -10,6 +10,35 @@ resourceName: swlee-test
 
 ---
 
+apiVersion: claim.tmax.io/v1alpha1
+kind: ResourceQuotaClaim
+metadata:
+  name: swlee-test-rqc
+  #namespace: swlee-test
+spec:
+  hard:
+    limits.cpu: 1
+    limits.memory: 100
+resourceName: swlee-test-rqc
+
+---
+
+apiVersion: claim.tmax.io/v1alpha1
+kind: RoleBindingClaim
+metadata:
+  name: swlee-test-rbc
+  #namespace: swlee-test
+resourceName: swlee-test-rbc
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- kind: User
+  name: swlee
+
+---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:

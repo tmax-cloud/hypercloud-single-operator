@@ -1,5 +1,6 @@
+#!/bin/bash
 # 1. 클러스터 이름을 참조하는 API 서버를 가리킨다.
-CLUSTER_NAME = kubectl config view -o jsonpath="{.clusters[0].name}"
+CLUSTER_NAME=$(kubectl config view -o jsonpath="{.clusters[0].name}")
 APISERVER=$(kubectl config view -o jsonpath="{.clusters[?(@.name==\"$CLUSTER_NAME\")].cluster.server}")
 
 
