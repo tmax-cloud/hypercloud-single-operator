@@ -93,10 +93,10 @@ func (r *NamespaceClaim) validateNscRq() error {
 
 func (r *NamespaceClaim) validateNscRqSpec() *field.Error {
 	checkRequireNameList := []string{}
-	for resourceName, _ := range r.Spec.Hard {
-		if !contains(ResourceNameList, resourceName.String()) {
-			return field.Invalid(field.NewPath(resourceName.String()), resourceName.String(), "Invalid ResourceQuotaSpecName")
-		}
+	for resourceName := range r.Spec.Hard {
+		// if !contains(ResourceNameList, resourceName.String()) {
+		// 	return field.Invalid(field.NewPath(resourceName.String()), resourceName.String(), "Invalid ResourceQuotaSpecName")
+		// }
 		checkRequireNameList = append(checkRequireNameList, resourceName.String())
 	}
 	if !(contains(checkRequireNameList, string(v1.ResourceLimitsCPU)) && contains(checkRequireNameList, string(v1.ResourceLimitsMemory))) {

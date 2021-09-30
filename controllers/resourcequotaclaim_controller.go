@@ -130,19 +130,16 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 		}
 
 		hardList := make(map[v1.ResourceName]resource.Quantity)
-		hardList[v1.ResourceLimitsCPU] = resourceQuotaClaim.Spec.Hard["limits.cpu"]
-		hardList[v1.ResourceLimitsMemory] = resourceQuotaClaim.Spec.Hard["limits.memory"]
 
-		if (resourceQuotaClaim.Spec.Hard["requests.cpu"] != resource.Quantity{}) {
-			hardList[v1.ResourceRequestsCPU] = resourceQuotaClaim.Spec.Hard["requests.cpu"]
-		} else if (resourceQuotaClaim.Spec.Hard["cpu"] != resource.Quantity{}) {
-			hardList[v1.ResourceRequestsCPU] = resourceQuotaClaim.Spec.Hard["cpu"]
-		}
-
-		if (resourceQuotaClaim.Spec.Hard["requests.memory"] != resource.Quantity{}) {
-			hardList[v1.ResourceRequestsMemory] = resourceQuotaClaim.Spec.Hard["requests.memory"]
-		} else if (resourceQuotaClaim.Spec.Hard["memory"] != resource.Quantity{}) {
-			hardList[v1.ResourceRequestsMemory] = resourceQuotaClaim.Spec.Hard["memory"]
+		for resourceName := range resourceQuotaClaim.Spec.Hard {
+			if resourceName == "cpu" {
+				hardList[v1.ResourceRequestsCPU] = resourceQuotaClaim.Spec.Hard["cpu"]
+				continue
+			} else if resourceName == "memory" {
+				hardList[v1.ResourceRequestsMemory] = resourceQuotaClaim.Spec.Hard["memory"]
+				continue
+			}
+			hardList[resourceName] = resourceQuotaClaim.Spec.Hard[resourceName]
 		}
 
 		resourceQuota.Spec.Hard = hardList
