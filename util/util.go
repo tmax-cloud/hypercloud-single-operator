@@ -2,6 +2,7 @@ package util
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 	"strings"
 	"time"
@@ -13,8 +14,29 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/kubernetes"
+	restclient "k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+var Clientset *kubernetes.Clientset
+var config *restclient.Config
+var ResourceList []string
+
+func init() {
+	var err error
+	config, err = restclient.InClusterConfig()
+	if err != nil {
+		panic(err.Error())
+	}
+	// creates the clientset
+	config.Burst = 100
+	config.QPS = 100
+	Clientset, err = kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+}
 
 const (
 	TEST = "<!DOCTYPE html>\r\n" +
@@ -211,4 +233,39 @@ func RemoveValue(slice []string, value string) []string {
 		}
 	}
 	return temp
+}
+
+func UpdateResourceList(reqLogger logr.Logger) {
+	ResourceList = []string{}
+	apiGroupList := &metav1.APIGroupList{}
+	data, err := Clientset.RESTClient().Get().AbsPath("/apis/").DoRaw(context.TODO())
+	if err != nil {
+		reqLogger.Error(err, "Failed to get api group from k8s")
+	}
+	if err := json.Unmarshal(data, apiGroupList); err != nil {
+		reqLogger.Error(err, "Failed to unmarshal api group")
+	}
+
+	for _, apiGroup := range apiGroupList.Groups {
+		for _, version := range apiGroup.Versions {
+			apiResourceList := &metav1.APIResourceList{}
+			path := strings.Replace("/apis/{GROUPVERSION}", "{GROUPVERSION}", version.GroupVersion, -1)
+			data, err := Clientset.RESTClient().Get().AbsPath(path).DoRaw(context.TODO())
+			if err != nil {
+				reqLogger.Error(err, "Failed to get api reousrce list from k8s")
+			}
+			if err := json.Unmarshal(data, apiResourceList); err != nil {
+				reqLogger.Error(err, "Failed to unmarshal api resource list")
+			}
+
+			for _, apiResource := range apiResourceList.APIResources {
+				fullName := version.GroupVersion
+				idx := strings.Index(fullName, "/")
+				fullName = fullName[:idx]
+				fullName += "/"
+				fullName += apiResource.Name
+				ResourceList = append(ResourceList, fullName)
+			}
+		}
+	}
 }

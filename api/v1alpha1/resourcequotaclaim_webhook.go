@@ -19,6 +19,7 @@ package v1alpha1
 import (
 	err "errors"
 
+	"github.com/tmax-cloud/hypercloud-single-operator/util"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -132,9 +133,14 @@ func (r *ResourceQuotaClaim) validateRqc() error {
 func (r *ResourceQuotaClaim) validateRqcSpec() *field.Error {
 	checkRequireNameList := []string{}
 	for resourceName := range r.Spec.Hard {
-		// if !contains(ResourceNameList, resourceName.String()) {
-		// 	return field.Invalid(field.NewPath(resourceName.String()), resourceName.String(), "Invalid ResourceQuotaSpecName")
-		// }
+		if !contains(ResourceNameList, resourceName.String()) {
+			if !contains(util.ResourceList, resourceName.String()) {
+				util.UpdateResourceList(resourcequotaclaimlog)
+				if !contains(util.ResourceList, resourceName.String()) {
+					return field.Invalid(field.NewPath(resourceName.String()), resourceName.String(), "Invalid ResourceQuotaSpecName")
+				}
+			}
+		}
 		checkRequireNameList = append(checkRequireNameList, resourceName.String())
 	}
 	if !(contains(checkRequireNameList, string(v1.ResourceLimitsCPU)) && contains(checkRequireNameList, string(v1.ResourceLimitsMemory))) {

@@ -71,6 +71,7 @@ func main() {
 	w := io.MultiWriter(file, os.Stdout)
 
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true), zap.WriteTo(w)))
+	util.UpdateResourceList(setupLog)
 
 	// Logging Cron Job
 	cronJob := cron.New()
