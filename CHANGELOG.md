@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.5 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.5 (2021. 09. 30. (목) 12:01:26 KST)
+
+### Added
+
+### Changed
+  - [mod] resourcequota가 custom resource도 받을 수 있도록 수정 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.5 end --------------------->
+
 <!-------------------- v5.0.25.4 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.4 (2021. 09. 13. (월) 16:32:13 KST)
