@@ -19,18 +19,20 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"math"
+	"math/big"
 	"reflect"
 
 	"github.com/google/go-cmp/cmp"
 	claim "github.com/tmax-cloud/hypercloud-single-operator/api/v1alpha1"
 
+	"crypto/rand"
+
 	"github.com/go-logr/logr"
 	rbacApi "k8s.io/api/rbac/v1"
-	v1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
@@ -88,11 +90,13 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 		}
 	}()
 
-	found := &rbacApi.RoleBinding{}
-	err := r.Get(context.TODO(), types.NamespacedName{Name: roleBindingClaim.ResourceName, Namespace: roleBindingClaim.Namespace}, found)
+	found := &rbacApi.RoleBindingList{}
+	//err := r.Get(context.TODO(), types.NamespacedName{Name: roleBindingClaim.ResourceName, Namespace: roleBindingClaim.Namespace}, found)
+	labels := map[string]string{"fromClaim": roleBindingClaim.Name}
+	err := r.List(context.TODO(), found, client.InNamespace(roleBindingClaim.Namespace), client.MatchingLabels(labels))
 
 	reqLogger.Info("RoleBindingClaim status:" + roleBindingClaim.Status.Status)
-	if err != nil && !errors.IsNotFound(err) {
+	if err != nil {
 		reqLogger.Error(err, "Failed to get RoleBinding info")
 		return ctrl.Result{}, err
 	}
@@ -101,44 +105,47 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 
 	case "":
 		rbcList := &claim.RoleBindingClaimList{}
-		if err := r.List(context.TODO(), rbcList); err != nil {
+		if err := r.List(context.TODO(), rbcList, &client.ListOptions{
+			Namespace: roleBindingClaim.Namespace,
+		}); err != nil {
 			reqLogger.Error(err, "Failed to get RoleBindingClaim List")
 			panic(err)
 		}
 
-		flag := false
+		isExistSameName := false
+		// 같은 이름의 RBC가 존재하는지 체크
 		for _, rbc := range rbcList.Items {
 			if (rbc.Status.Status == claim.RoleBindingClaimStatusTypeAwaiting || rbc.Status.Status == claim.RoleBindingClaimStatusTypeSuccess) &&
-				rbc.Namespace == roleBindingClaim.Namespace &&
-				rbc.ResourceName == roleBindingClaim.ResourceName {
-				flag = true
+				rbc.Name == roleBindingClaim.Name {
+				isExistSameName = true
 				break
 			}
 		}
 
-		if !flag {
-			rbList := &v1.RoleBindingList{}
-			if err := r.List(context.TODO(), rbList); err != nil {
-				reqLogger.Error(err, "Failed to get RoleBinding List")
-				panic(err)
-			}
+		// 같은 resourceName의 RB가 이미 존재하는지 체크
+		// if !isExistSameName {
+		// 	rbList := &v1.RoleBindingList{}
+		// 	if err := r.List(context.TODO(), rbList); err != nil {
+		// 		reqLogger.Error(err, "Failed to get RoleBinding List")
+		// 		panic(err)
+		// 	}
 
-			for _, rb := range rbList.Items {
-				if rb.Name == roleBindingClaim.Name && rb.Namespace == roleBindingClaim.Namespace {
-					flag = true
-					break
-				}
-			}
-		}
+		// 	for _, rb := range rbList.Items {
+		// 		if rb.Name == roleBindingClaim.Name && rb.Namespace == roleBindingClaim.Namespace {
+		// 			isExistSameName = true
+		// 			break
+		// 		}
+		// 	}
+		// }
 
-		if err != nil && errors.IsNotFound(err) && !flag {
+		if len(found.Items) < 1 && !isExistSameName {
 			reqLogger.Info("New RoleBindingClaim Added")
 			roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeAwaiting
 			roleBindingClaim.Status.Reason = "Please Wait for administrator approval"
 		} else {
-			reqLogger.Info("Namespace [ " + roleBindingClaim.ResourceName + " ] Already Exists.")
+			reqLogger.Info("RoleBinding [ " + roleBindingClaim.ResourceName + " ] Already Exists.")
 			roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeReject
-			roleBindingClaim.Status.Reason = "Duplicated Rolebinding Name"
+			roleBindingClaim.Status.Reason = "Duplicated RolebindingClaim Name"
 		}
 	case claim.RoleBindingClaimStatusTypeSuccess:
 		rbcLabels := make(map[string]string)
@@ -149,7 +156,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 
 		roleBinding := &rbacApi.RoleBinding{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      roleBindingClaim.ResourceName,
+				Name:      roleBindingClaim.Name + "-" + MakeRandomHexNumber(),
 				Namespace: roleBindingClaim.Namespace,
 				Labels:    rbcLabels,
 				Finalizers: []string{
@@ -160,8 +167,8 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 			RoleRef:  roleBindingClaim.RoleRef,
 		}
 
-		if err != nil && errors.IsNotFound(err) {
-			reqLogger.Info("RoleBinding [ " + roleBindingClaim.ResourceName + " ] not Exists, Create RoleBinding.")
+		if len(found.Items) < 1 {
+			reqLogger.Info("RoleBinding [ " + roleBindingClaim.Name + " ] not Exists, Create RoleBinding.")
 			if err := r.Create(context.TODO(), roleBinding); err != nil {
 				reqLogger.Error(err, "Failed to create RoleBinding.")
 				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
@@ -172,9 +179,9 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 				roleBindingClaim.Status.Reason = "Create RoleBinding Success"
 			}
 		} else {
-			reqLogger.Info("RoleBinding [ " + roleBindingClaim.ResourceName + " ] Exists, Update RoleBinding.")
+			reqLogger.Info("RoleBinding [ " + roleBindingClaim.Name + " ] Exists, Update RoleBinding.")
 
-			if !cmp.Equal(roleBindingClaim.Subjects, found.Subjects) || !cmp.Equal(roleBindingClaim.RoleRef, found.RoleRef) {
+			if !cmp.Equal(roleBindingClaim.Subjects, found.Items[0].Subjects) || !cmp.Equal(roleBindingClaim.RoleRef, found.Items[0].RoleRef) {
 				reqLogger.Info("Same resourceName already exists, modify resourceName and retry.")
 				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
 				roleBindingClaim.Status.Reason = "Same resourceName already exists, modify resourceName and retry"
@@ -218,4 +225,10 @@ func (r *RoleBindingClaimReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			},
 		).
 		Complete(r)
+}
+
+func MakeRandomHexNumber() string {
+	random, _ := rand.Int(rand.Reader, big.NewInt(math.MaxInt32))
+	hexRandom := fmt.Sprintf("%x", random)
+	return hexRandom
 }
