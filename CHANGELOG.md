@@ -1,6 +1,26 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.6 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.6 (2021. 10. 05. (화) 16:15:39 KST)
+
+### Added
+
+### Changed
+  - [mod] operator 재기동 시 RB 재생성되는 버그 수정 by Seungwon Lee
+  - [mod] rqc approved 시에 최초 한번만 업데이트 하도록 수정, rqc/rbc에 patchHelper 및 owner annotation 추가, nsc 상태 오타 수정 by Seungwon Lee
+  - [mod] RB resourceName을 난수로 생성, RB 중복 체크하는 로직을  라벨셀렉터로 변경 by Seungwon Lee
+  - [mod] k8s 기본 리소스 + 커스텀 리소스에 대한 검증 로직 추가 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.6 end --------------------->
+
 <!-------------------- v5.0.25.5 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.5 (2021. 09. 30. (목) 12:01:26 KST)
