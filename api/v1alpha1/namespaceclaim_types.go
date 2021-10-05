@@ -27,8 +27,8 @@ const (
 	NamespaceClaimStatusTypeAwaiting = "Awaiting"
 	NamespaceClaimStatusTypeSuccess  = "Approved"
 	NamespaceClaimStatusTypeReject   = "Rejected"
-	NamespaceClaimStatueTypeError    = "Error"
-	NamespaceClaimStatueTypeDeleted  = "Namespace Deleted"
+	NamespaceClaimStatusTypeError    = "Error"
+	NamespaceClaimStatusTypeDeleted  = "Namespace Deleted"
 )
 
 // NamespaceClaimStatus defines the observed state of NamespaceClaim

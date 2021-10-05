@@ -33,6 +33,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"sigs.k8s.io/cluster-api/util/patch"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
@@ -42,8 +43,9 @@ import (
 // RoleBindingClaimReconciler reconciles a RoleBindingClaim object
 type RoleBindingClaimReconciler struct {
 	client.Client
-	Log    logr.Logger
-	Scheme *runtime.Scheme
+	Log         logr.Logger
+	Scheme      *runtime.Scheme
+	patchHelper *patch.Helper
 }
 
 // +kubebuilder:rbac:groups=*,resources=*,verbs=*
@@ -61,10 +63,20 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 			reqLogger.Info("RoleBindingClaim resource not found. Ignoring since object must be deleted.")
 			return ctrl.Result{}, nil
 		}
-
 		reqLogger.Error(err, "Failed to get RoleBindingClaim")
 		return ctrl.Result{}, err
 	}
+
+	//set helper
+	if helper, err := patch.NewHelper(roleBindingClaim, r.Client); err != nil {
+		return ctrl.Result{}, err
+	} else {
+		r.patchHelper = helper
+	}
+	defer func() {
+		r.patchHelper.Patch(context.TODO(), roleBindingClaim)
+		// klog.Flush()
+	}()
 
 	for idx, _ := range roleBindingClaim.Subjects {
 		if roleBindingClaim.Subjects[idx].APIGroup == "" {
@@ -104,6 +116,12 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 	switch roleBindingClaim.Status.Status {
 
 	case "":
+		// Set Owner Annotation from Annotation 'Creator'
+		if roleBindingClaim.Annotations != nil && roleBindingClaim.Annotations["creator"] != "" && roleBindingClaim.Annotations["owner"] == "" {
+			reqLogger.Info("Set Owner Annotation from Annotation 'Creator'")
+			roleBindingClaim.Annotations["owner"] = roleBindingClaim.Annotations["creator"]
+		}
+
 		rbcList := &claim.RoleBindingClaimList{}
 		if err := r.List(context.TODO(), rbcList, &client.ListOptions{
 			Namespace: roleBindingClaim.Namespace,
@@ -156,9 +174,10 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 
 		roleBinding := &rbacApi.RoleBinding{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      roleBindingClaim.Name + "-" + MakeRandomHexNumber(),
-				Namespace: roleBindingClaim.Namespace,
-				Labels:    rbcLabels,
+				Name:        roleBindingClaim.Name + "-" + MakeRandomHexNumber(),
+				Namespace:   roleBindingClaim.Namespace,
+				Labels:      rbcLabels,
+				Annotations: roleBindingClaim.Annotations,
 				Finalizers: []string{
 					"rolebinding/finalizers",
 				},

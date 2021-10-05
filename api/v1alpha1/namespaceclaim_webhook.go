@@ -60,8 +60,8 @@ func (r *NamespaceClaim) ValidateUpdate(old runtime.Object) error {
 	old_status := old.(*NamespaceClaim).DeepCopy().Status.Status
 	now_status := r.Status.Status
 
-	if (old_status == NamespaceClaimStatusTypeSuccess && (now_status != NamespaceClaimStatusTypeSuccess && now_status != NamespaceClaimStatueTypeDeleted && now_status != NamespaceClaimStatueTypeError)) ||
-		(old_status == NamespaceClaimStatueTypeDeleted && now_status != NamespaceClaimStatueTypeDeleted) {
+	if (old_status == NamespaceClaimStatusTypeSuccess && (now_status != NamespaceClaimStatusTypeSuccess && now_status != NamespaceClaimStatusTypeDeleted && now_status != NamespaceClaimStatusTypeError)) ||
+		(old_status == NamespaceClaimStatusTypeDeleted && now_status != NamespaceClaimStatusTypeDeleted) {
 		return errors.NewForbidden(
 			schema.GroupResource{Group: "claim.tmax.io", Resource: r.Name},
 			"",

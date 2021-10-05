@@ -83,7 +83,6 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 	defer func() {
 		r.patchHelper.Patch(context.TODO(), namespaceClaim)
 		// klog.Flush()
-
 	}()
 
 	defer func() {
@@ -99,7 +98,7 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 			default:
 				errString = "unknown error"
 			}
-			namespaceClaim.Status.Status = claim.NamespaceClaimStatueTypeError
+			namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
 			namespaceClaim.Status.Reason = errString
 		}
 	}()
@@ -186,12 +185,12 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 			reqLogger.Info("Create namespace.")
 			if err := r.Create(context.TODO(), namespace); err != nil {
 				reqLogger.Error(err, "Failed to create Namespace.")
-				namespaceClaim.Status.Status = claim.NamespaceClaimStatueTypeError
+				namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
 				namespaceClaim.Status.Reason = "Failed to create Namespace"
 				namespaceClaim.Status.Message = err.Error()
 			} else if err := r.Create(context.TODO(), resourceQuota); err != nil {
 				reqLogger.Error(err, "Failed to create ResourceQuota.")
-				namespaceClaim.Status.Status = claim.NamespaceClaimStatueTypeError
+				namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
 				namespaceClaim.Status.Reason = "Failed to create Namespace ResourceQuota"
 				namespaceClaim.Status.Message = err.Error()
 			} else {
@@ -243,12 +242,12 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 			reqLogger.Info("Update namespace.")
 			if err := r.Update(context.TODO(), namespace); err != nil {
 				reqLogger.Error(err, "Failed to update Namespace.")
-				namespaceClaim.Status.Status = claim.NamespaceClaimStatueTypeError
+				namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
 				namespaceClaim.Status.Reason = "Failed to update Namespace"
 				namespaceClaim.Status.Message = err.Error()
 			} else if err := r.Update(context.TODO(), resourceQuota); err != nil {
 				reqLogger.Error(err, "Failed to update ResourceQuota.")
-				namespaceClaim.Status.Status = claim.NamespaceClaimStatueTypeError
+				namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
 				namespaceClaim.Status.Reason = "Failed to update Namespace ResourceQuota"
 				namespaceClaim.Status.Message = err.Error()
 			} else {
