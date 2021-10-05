@@ -23,7 +23,6 @@ import (
 	"math/big"
 	"reflect"
 
-	"github.com/google/go-cmp/cmp"
 	claim "github.com/tmax-cloud/hypercloud-single-operator/api/v1alpha1"
 
 	"crypto/rand"
@@ -198,22 +197,22 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 				roleBindingClaim.Status.Reason = "Create RoleBinding Success"
 			}
 		} else {
-			reqLogger.Info("RoleBinding [ " + roleBindingClaim.Name + " ] Exists, Update RoleBinding.")
+			reqLogger.Info("RoleBinding [ " + roleBindingClaim.Name + " ] Exists.")
 
-			if !cmp.Equal(roleBindingClaim.Subjects, found.Items[0].Subjects) || !cmp.Equal(roleBindingClaim.RoleRef, found.Items[0].RoleRef) {
-				reqLogger.Info("Same resourceName already exists, modify resourceName and retry.")
-				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
-				roleBindingClaim.Status.Reason = "Same resourceName already exists, modify resourceName and retry"
-				roleBindingClaim.Status.Message = fmt.Errorf("Same resourceName already exists").Error()
-			} else if err := r.Update(context.TODO(), roleBinding); err != nil {
-				reqLogger.Error(err, "Failed to update RoleBinding.")
-				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
-				roleBindingClaim.Status.Reason = "Failed to update RoleBinding"
-				roleBindingClaim.Status.Message = err.Error()
-			} else {
-				reqLogger.Info("Update RoleBinding Success.")
-				roleBindingClaim.Status.Reason = "Update RoleBinding Success"
-			}
+			// if !cmp.Equal(roleBindingClaim.Subjects, found.Items[0].Subjects) || !cmp.Equal(roleBindingClaim.RoleRef, found.Items[0].RoleRef) {
+			// 	reqLogger.Info("Same resourceName already exists, modify resourceName and retry.")
+			// 	roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
+			// 	roleBindingClaim.Status.Reason = "Same resourceName already exists, modify resourceName and retry"
+			// 	roleBindingClaim.Status.Message = fmt.Errorf("Same resourceName already exists").Error()
+			// } else if err := r.Update(context.TODO(), &found.Items[0]); err != nil {
+			// 	reqLogger.Error(err, "Failed to update RoleBinding.")
+			// 	roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
+			// 	roleBindingClaim.Status.Reason = "Failed to update RoleBinding"
+			// 	roleBindingClaim.Status.Message = err.Error()
+			// } else {
+			// 	reqLogger.Info("Update RoleBinding Success.")
+			// 	roleBindingClaim.Status.Reason = "Update RoleBinding Success"
+			// }
 		}
 	}
 
