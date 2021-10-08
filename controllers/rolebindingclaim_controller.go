@@ -19,13 +19,11 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"math"
-	"math/big"
+	"math/rand"
 	"reflect"
+	"time"
 
 	claim "github.com/tmax-cloud/hypercloud-single-operator/api/v1alpha1"
-
-	"crypto/rand"
 
 	"github.com/go-logr/logr"
 	rbacApi "k8s.io/api/rbac/v1"
@@ -173,7 +171,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 
 		roleBinding := &rbacApi.RoleBinding{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:        roleBindingClaim.Name + "-" + MakeRandomHexNumber(),
+				Name:        roleBindingClaim.Name + "-" + RandomString(5),
 				Namespace:   roleBindingClaim.Namespace,
 				Labels:      rbcLabels,
 				Annotations: roleBindingClaim.Annotations,
@@ -245,8 +243,13 @@ func (r *RoleBindingClaimReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func MakeRandomHexNumber() string {
-	random, _ := rand.Int(rand.Reader, big.NewInt(math.MaxInt32))
-	hexRandom := fmt.Sprintf("%x", random)
-	return hexRandom
+func RandomString(n int) string {
+	rand.Seed(time.Now().UnixNano())
+	var letters = []rune("0123456789abcdefghijklmnopqrstuvwxyz")
+
+	s := make([]rune, n)
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(s)
 }
