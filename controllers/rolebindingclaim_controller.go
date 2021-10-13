@@ -60,7 +60,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 			reqLogger.Info("RoleBindingClaim resource not found. Ignoring since object must be deleted.")
 			return ctrl.Result{}, nil
 		}
-		reqLogger.Error(err, "Failed to get RoleBindingClaim")
+		reqLogger.Error(err, "Failed to get RoleBindingClaim ["+req.Name+"]")
 		return ctrl.Result{}, err
 	}
 
@@ -216,7 +216,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 
 	roleBindingClaim.Status.LastTransitionTime = metav1.Now()
 	if err := r.Status().Update(context.TODO(), roleBindingClaim); err != nil {
-		reqLogger.Error(err, "Failed to update roleBindingClaim status.")
+		reqLogger.Error(err, "Failed to update ["+roleBindingClaim.Name+"] status.")
 		return ctrl.Result{}, err
 	}
 

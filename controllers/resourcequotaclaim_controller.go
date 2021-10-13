@@ -61,7 +61,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 			reqLogger.Info("ResourceQuotaClaim resource not found. Ignoring since object must be deleted.")
 			return ctrl.Result{}, nil
 		}
-		reqLogger.Error(err, "Failed to get ResourceQuotaClaim")
+		reqLogger.Error(err, "Failed to get ResourceQuotaClaim ["+req.Name+"]")
 		return ctrl.Result{}, err
 	}
 
@@ -202,7 +202,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 
 	resourceQuotaClaim.Status.LastTransitionTime = metav1.Now()
 	if err := r.Status().Update(context.TODO(), resourceQuotaClaim); err != nil {
-		reqLogger.Error(err, "Failed to update ResourceQuotaClaim status.")
+		reqLogger.Error(err, "Failed to update ["+resourceQuotaClaim.Name+"] status.")
 		return ctrl.Result{}, err
 	}
 

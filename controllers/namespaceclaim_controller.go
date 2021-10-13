@@ -70,7 +70,7 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 			reqLogger.Info("NamespaceClaim resource not found. Ignoring since object must be deleted.")
 			return ctrl.Result{}, nil
 		}
-		reqLogger.Error(err, "Failed to get NamespaceClaim")
+		reqLogger.Error(err, "Failed to get NamespaceClaim ["+req.Name+"]")
 		return ctrl.Result{}, err
 	}
 
