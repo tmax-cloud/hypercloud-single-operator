@@ -158,7 +158,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 			roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeAwaiting
 			roleBindingClaim.Status.Reason = "Please Wait for administrator approval"
 		} else {
-			reqLogger.Info("RoleBinding [ " + roleBindingClaim.ResourceName + " ] Already Exists.")
+			reqLogger.Info("RoleBinding [ " + roleBindingClaim.Name + " ] Already Exists.")
 			roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeReject
 			roleBindingClaim.Status.Reason = "Duplicated RolebindingClaim Name"
 		}

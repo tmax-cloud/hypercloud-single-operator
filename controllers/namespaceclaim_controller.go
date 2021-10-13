@@ -166,7 +166,7 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 
 		resourceQuota := &v1.ResourceQuota{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:        namespaceClaim.ResourceName,
+				Name:        namespaceClaim.ResourceName + "-rq",
 				Namespace:   namespaceClaim.ResourceName,
 				Labels:      nscLabels,
 				Annotations: namespaceClaim.Annotations,
@@ -239,21 +239,21 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 				}
 			}
 		} else {
-			reqLogger.Info("Update namespace.")
-			if err := r.Update(context.TODO(), namespace); err != nil {
-				reqLogger.Error(err, "Failed to update Namespace.")
-				namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
-				namespaceClaim.Status.Reason = "Failed to update Namespace"
-				namespaceClaim.Status.Message = err.Error()
-			} else if err := r.Update(context.TODO(), resourceQuota); err != nil {
-				reqLogger.Error(err, "Failed to update ResourceQuota.")
-				namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
-				namespaceClaim.Status.Reason = "Failed to update Namespace ResourceQuota"
-				namespaceClaim.Status.Message = err.Error()
-			} else {
-				reqLogger.Info("Update Namespace Success")
-				namespaceClaim.Status.Reason = "Update Namespace Success"
-			}
+			reqLogger.Info("Namespace [ " + namespaceClaim.Name + " ] Exists.")
+			// if err := r.Update(context.TODO(), namespace); err != nil {
+			// 	reqLogger.Error(err, "Failed to update Namespace.")
+			// 	namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
+			// 	namespaceClaim.Status.Reason = "Failed to update Namespace"
+			// 	namespaceClaim.Status.Message = err.Error()
+			// } else if err := r.Update(context.TODO(), resourceQuota); err != nil {
+			// 	reqLogger.Error(err, "Failed to update ResourceQuota.")
+			// 	namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
+			// 	namespaceClaim.Status.Reason = "Failed to update Namespace ResourceQuota"
+			// 	namespaceClaim.Status.Message = err.Error()
+			// } else {
+			// 	reqLogger.Info("Update Namespace Success")
+			// 	namespaceClaim.Status.Reason = "Update Namespace Success"
+			// }
 		}
 	case claim.NamespaceClaimStatusTypeReject:
 		if namespaceClaim.Labels != nil && namespaceClaim.Labels["trial"] != "" && namespaceClaim.Annotations != nil && namespaceClaim.Annotations["owner"] != "" && namespaceClaim.Status.Message != "reject mail sent" {

@@ -61,15 +61,12 @@ type CustomHard struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:shortName=rqc
-// +kubebuilder:printcolumn:name="ResourceName",type=string,JSONPath=`.resourceName`
 // +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
 // +kubebuilder:printcolumn:name="Reason",type=string,JSONPath=`.status.reason`
 // ResourceQuotaClaim is the Schema for the resourcequotaclaims API
 type ResourceQuotaClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=.metadata"`
-	// resourcequotaName is name of the resource quota which will be created
-	ResourceName string `json:"resourceName"`
 	// Spec is ResourceQuotaSpec of NamespaceClaim
 	Spec v1.ResourceQuotaSpec `json:"spec"`
 	// Status shows the present status of the ResourceQuotaClaim

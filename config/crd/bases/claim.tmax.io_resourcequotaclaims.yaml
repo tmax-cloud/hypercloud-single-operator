@@ -9,9 +9,6 @@ metadata:
   name: resourcequotaclaims.claim.tmax.io
 spec:
   additionalPrinterColumns:
-  - JSONPath: .resourceName
-    name: ResourceName
-    type: string
   - JSONPath: .status.status
     name: Status
     type: string
@@ -45,10 +42,6 @@ spec:
           type: string
         metadata:
           type: object
-        resourceName:
-          description: resourcequotaName is name of the resource quota which will
-            be created
-          type: string
         spec:
           description: Spec is ResourceQuotaSpec of NamespaceClaim
           properties:
@@ -91,7 +84,6 @@ spec:
               type: string
           type: object
       required:
-      - resourceName
       - spec
       type: object
   version: v1alpha1
