@@ -166,7 +166,7 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 
 		resourceQuota := &v1.ResourceQuota{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:        namespaceClaim.ResourceName + "-rq",
+				Name:        namespaceClaim.ResourceName,
 				Namespace:   namespaceClaim.ResourceName,
 				Labels:      nscLabels,
 				Annotations: namespaceClaim.Annotations,

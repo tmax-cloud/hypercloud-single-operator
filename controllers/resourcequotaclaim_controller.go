@@ -95,7 +95,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 	}()
 
 	found := &v1.ResourceQuota{}
-	err := r.Get(context.TODO(), types.NamespacedName{Name: resourceQuotaClaim.Namespace + "-rq", Namespace: resourceQuotaClaim.Namespace}, found)
+	err := r.Get(context.TODO(), types.NamespacedName{Name: resourceQuotaClaim.Namespace, Namespace: resourceQuotaClaim.Namespace}, found)
 
 	reqLogger.Info("ResourceQuotaClaim status:" + resourceQuotaClaim.Status.Status)
 	if err != nil && !errors.IsNotFound(err) {
@@ -141,7 +141,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 
 			resourceQuota := &v1.ResourceQuota{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:        resourceQuotaClaim.Namespace + "-rq",
+					Name:        resourceQuotaClaim.Namespace,
 					Namespace:   resourceQuotaClaim.Namespace,
 					Labels:      rqcLabels,
 					Annotations: resourceQuotaClaim.Annotations,
@@ -175,7 +175,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 			resourceQuota.Spec.Hard = hardList
 
 			if err != nil && errors.IsNotFound(err) {
-				reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.Namespace + "-rq" + " ] not Exists, Create ResourceQuota.")
+				reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.Namespace + " ] not Exists, Create ResourceQuota.")
 				if err := r.Create(context.TODO(), resourceQuota); err != nil {
 					reqLogger.Error(err, "Failed to create ResourceQuota.")
 					resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeError
@@ -186,7 +186,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 					resourceQuotaClaim.Status.Reason = "Create ResourceQuota Success"
 				}
 			} else {
-				reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.Namespace + "-rq" + " ] Exists, Update ResourceQuota.")
+				reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.Namespace + " ] Exists, Update ResourceQuota.")
 				if err := r.Update(context.TODO(), resourceQuota); err != nil {
 					reqLogger.Error(err, "Failed to update ResourceQuota.")
 					resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeError
