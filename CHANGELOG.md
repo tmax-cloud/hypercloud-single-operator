@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.8 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.8 (2021. 10. 13. (수) 16:12:19 KST)
+
+### Added
+
+### Changed
+
+### Fixed
+  - [ims][269821] nsc에 의해 생기는 rq 이름 통일, rqc와 rbc의 resourceName 삭제 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.8 end --------------------->
+
 <!-------------------- v5.0.25.7 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.7 (2021. 10. 13. (수) 14:37:09 KST)
