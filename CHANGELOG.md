@@ -1,6 +1,24 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.7 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.7 (2021. 10. 13. (수) 14:37:09 KST)
+
+### Added
+
+### Changed
+  - [mod] random string 생성 방식 변경 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+  - [etc] error 로그에 claim 이름 명시 by Seungwon Lee
+
+<!--------------------- v5.0.25.7 end --------------------->
+
 <!-------------------- v5.0.25.6 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.6 (2021. 10. 05. (화) 16:15:39 KST)
