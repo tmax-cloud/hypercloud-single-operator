@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.9 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.9 (2021. 10. 13. (수) 16:25:43 KST)
+
+### Added
+
+### Changed
+
+### Fixed
+  - [ims][269821] RQ의 이름을 네임스페이스 이름과 동일하게 처리 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.9 end --------------------->
+
 <!-------------------- v5.0.25.8 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.8 (2021. 10. 13. (수) 16:12:19 KST)
