@@ -14,6 +14,7 @@ webhooks:
       path: /validate-claim-tmax-io-v1alpha1-namespaceclaim
   failurePolicy: Fail
   name: vnamespaceclaim.kb.io
+  admissionReviewVersions: ["v1beta1", "v1"]
   rules:
   - apiGroups:
     - claim.tmax.io
@@ -33,6 +34,7 @@ webhooks:
       path: /validate-claim-tmax-io-v1alpha1-resourcequotaclaim
   failurePolicy: Fail
   name: vresourcequotaclaim.kb.io
+  admissionReviewVersions: ["v1beta1", "v1"]
   rules:
   - apiGroups:
     - claim.tmax.io
@@ -52,6 +54,7 @@ webhooks:
       path: /validate-claim-tmax-io-v1alpha1-rolebindingclaim
   failurePolicy: Fail
   name: vrolebindingclaim.kb.io
+  admissionReviewVersions: ["v1beta1", "v1"]
   rules:
   - apiGroups:
     - claim.tmax.io
