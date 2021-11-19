@@ -296,7 +296,7 @@ func (r *NamespaceClaimReconciler) sendConfirmMail(namespaceClaim *claim.Namespa
 		body = util.TRIAL_SUCCESS_CONFIRM_MAIL_CONTENTS
 		body = strings.ReplaceAll(body, "%%NAMESPACE_NAME%%", namespaceClaim.ResourceName)
 		body = strings.ReplaceAll(body, "%%TRIAL_START_TIME%%", createTime.Format("2006-01-02"))
-		body = strings.ReplaceAll(body, "%%TRIAL_END_TIME%%", createTime.AddDate(0, 0, 30).Format("2006-01-02"))
+		body = strings.ReplaceAll(body, "%%TRIAL_END_TIME%%", createTime.AddDate(0, 0, util.Trial_DueDate).Format("2006-01-02"))
 		imgPath = "/img/trial-approval.png"
 		imgCid = "trial-approval"
 

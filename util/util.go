@@ -3,6 +3,7 @@ package util
 import (
 	"context"
 	"encoding/json"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -19,9 +20,15 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-var Clientset *kubernetes.Clientset
-var config *restclient.Config
-var ResourceList []string
+var (
+	Clientset    *kubernetes.Clientset
+	config       *restclient.Config
+	ResourceList []string
+
+	Trial_DueDate       int
+	Trial_AlarmDateDiff int
+	Trial_MailDate      int
+)
 
 func init() {
 	var err error
@@ -36,6 +43,19 @@ func init() {
 	if err != nil {
 		panic(err.Error())
 	}
+
+	Trial_DueDate = getenv("TRIAL_DUEDATE", 30)
+	Trial_AlarmDateDiff = getenv("TRIAL_ALARMDATEDIFF", 7)
+	Trial_MailDate = Trial_DueDate - Trial_AlarmDateDiff
+}
+
+func getenv(key string, fallback int) int {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	v, _ := strconv.Atoi(value)
+	return v
 }
 
 const (
@@ -103,15 +123,15 @@ func SetTrialNSTimer(ns *v1.Namespace, client client.Client, reqLogger logr.Logg
 	currentTime := time.Now()
 	createTime := ns.CreationTimestamp.Time
 	reqLogger.Info(" [Trial Timer] CreateTime of Trial NS[ " + ns.Name + " ] : " + createTime.String())
-	mailTime := createTime.AddDate(0, 0, 23)
+	mailTime := createTime.AddDate(0, 0, Trial_MailDate)
 	// mailTime := createTime.Add(time.Second * 23)  // for test
-	deleteTime := createTime.AddDate(0, 0, 30)
+	deleteTime := createTime.AddDate(0, 0, Trial_DueDate)
 	// deleteTime := createTime.Add(time.Second * 30)  // for test
 
 	if ns.Labels["period"] != "" {
 		period, _ := strconv.Atoi(ns.Labels["period"])
 		deleteTime = createTime.AddDate(0, 0, period*30)
-		mailTime = deleteTime.AddDate(0, 0, -7)
+		mailTime = deleteTime.AddDate(0, 0, -Trial_AlarmDateDiff)
 	}
 	if mailTime.After(currentTime) {
 		time.AfterFunc(time.Duration((mailTime.UnixNano() - currentTime.UnixNano())), func() {
