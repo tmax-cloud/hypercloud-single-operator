@@ -133,7 +133,7 @@ func SetTrialNSTimer(ns *v1.Namespace, client client.Client, reqLogger logr.Logg
 					subject := " 신청해주신 Trial NameSpace [ " + nsFound.Name + " ] 만료 안내 "
 					body := TRIAL_TIME_OUT_CONTENTS
 					body = strings.ReplaceAll(body, "%%TRIAL_END_TIME%%", deleteTime.Format("2006-01-02"))
-					SendMail(nsFound.Annotations["owner"], subject, body, "/home/tmax/hypercloud4-operator/_html/img/service-timeout.png", "service-timeout", reqLogger)
+					SendMail(nsFound.Annotations["owner"], subject, body, "/img/service-timeout.png", "service-timeout", reqLogger)
 				} else {
 					reqLogger.Info(" [Trial Timer] Paid NameSpace, Nothing to do")
 				}
