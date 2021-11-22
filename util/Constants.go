@@ -40,9 +40,9 @@ const (
 		"                Trial 기한 : %%TRIAL_START_TIME%% ~ %%TRIAL_END_TIME%% <br>\r\n" +
 		"                <br>\r\n" +
 		"                리소스 정보 <br>\r\n" +
-		"                -CPU : 1 Core <br>\r\n" +
-		"                -Memory : 4 GIB <br>\r\n" +
-		"                -Storage : 4 GIB <br>\r\n" +
+		"                -CPU : %%TRIAL_CPU%% Core <br>\r\n" +
+		"                -Memory : %%TRIAL_MEMORY%% GIB <br>\r\n" +
+		"                -Storage : %%TRIAL_STORAGE%% GIB <br>\r\n" +
 		"                <br>\r\n" +
 		"<!--                <span style=\"font-weight: 600;\">승인사유</span> <br>-->\r\n" +
 		"                <br>\r\n" +

@@ -290,6 +290,13 @@ func (r *NamespaceClaimReconciler) sendConfirmMail(namespaceClaim *claim.Namespa
 	var body string
 	var imgPath string
 	var imgCid string
+	spec_cpu := namespaceClaim.Spec.Hard["limits.cpu"]
+	spec_memory := namespaceClaim.Spec.Hard["limits.memory"]
+	spec_storage := namespaceClaim.Spec.Hard["limits.ephemeral-storage"]
+	cpu := spec_cpu.String()
+	memory := spec_memory.String()
+	storage := spec_storage.String()
+
 	email := namespaceClaim.Annotations["owner"]
 	if isSuccess {
 		subject = "HyperCloud 서비스 신청 승인 완료"
@@ -297,6 +304,9 @@ func (r *NamespaceClaimReconciler) sendConfirmMail(namespaceClaim *claim.Namespa
 		body = strings.ReplaceAll(body, "%%NAMESPACE_NAME%%", namespaceClaim.ResourceName)
 		body = strings.ReplaceAll(body, "%%TRIAL_START_TIME%%", createTime.Format("2006-01-02"))
 		body = strings.ReplaceAll(body, "%%TRIAL_END_TIME%%", createTime.AddDate(0, 0, util.Trial_DueDate).Format("2006-01-02"))
+		body = strings.ReplaceAll(body, "%%TRIAL_CPU%%", cpu)
+		body = strings.ReplaceAll(body, "%%TRIAL_MEMORY%%", memory)
+		body = strings.ReplaceAll(body, "%%TRIAL_STORAGE%%", storage)
 		imgPath = "/img/trial-approval.png"
 		imgCid = "trial-approval"
 
