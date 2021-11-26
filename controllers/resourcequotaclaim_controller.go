@@ -164,12 +164,11 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 			for resourceName := range resourceQuotaClaim.Spec.Hard {
 				if resourceName == "cpu" {
 					hardList[v1.ResourceRequestsCPU] = resourceQuotaClaim.Spec.Hard["cpu"]
-					continue
 				} else if resourceName == "memory" {
 					hardList[v1.ResourceRequestsMemory] = resourceQuotaClaim.Spec.Hard["memory"]
-					continue
+				} else {
+					hardList[resourceName] = resourceQuotaClaim.Spec.Hard[resourceName]
 				}
-				hardList[resourceName] = resourceQuotaClaim.Spec.Hard[resourceName]
 			}
 
 			resourceQuota.Spec.Hard = hardList

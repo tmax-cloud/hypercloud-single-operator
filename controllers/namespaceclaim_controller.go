@@ -27,6 +27,7 @@ import (
 
 	v1 "k8s.io/api/core/v1"
 	rbacApi "k8s.io/api/rbac/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/cluster-api/util/patch"
@@ -171,15 +172,29 @@ func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 				Labels:      nscLabels,
 				Annotations: namespaceClaim.Annotations,
 			},
-			Spec: v1.ResourceQuotaSpec{
-				//Scopes:        namespaceClaim.Spec.Scopes,
-				//ScopeSelector: namespaceClaim.Spec.ScopeSelector,
-				Hard: v1.ResourceList{
-					v1.ResourceCPU:    namespaceClaim.Spec.Hard["limits.cpu"],
-					v1.ResourceMemory: namespaceClaim.Spec.Hard["limits.memory"],
-				},
-			},
+			// Spec: v1.ResourceQuotaSpec{
+			// 	//Scopes:        namespaceClaim.Spec.Scopes,
+			// 	//ScopeSelector: namespaceClaim.Spec.ScopeSelector,
+			// 	Hard: v1.ResourceList{
+			// 		v1.ResourceCPU:    namespaceClaim.Spec.Hard["limits.cpu"],
+			// 		v1.ResourceMemory: namespaceClaim.Spec.Hard["limits.memory"],
+			// 	},
+			// },
 		}
+
+		hardList := make(map[v1.ResourceName]resource.Quantity)
+
+		for resourceName := range namespaceClaim.Spec.Hard {
+			if resourceName == "cpu" {
+				hardList[v1.ResourceRequestsCPU] = namespaceClaim.Spec.Hard["cpu"]
+			} else if resourceName == "memory" {
+				hardList[v1.ResourceRequestsMemory] = namespaceClaim.Spec.Hard["memory"]
+			} else {
+				hardList[resourceName] = namespaceClaim.Spec.Hard[resourceName]
+			}
+		}
+
+		resourceQuota.Spec.Hard = hardList
 
 		if err != nil && errors.IsNotFound(err) {
 			reqLogger.Info("Create namespace.")
