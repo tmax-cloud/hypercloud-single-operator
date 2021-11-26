@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.11 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.11 (2021. 11. 26. (금) 15:06:29 KST)
+
+### Added
+
+### Changed
+
+### Fixed
+  - [ims][274710] nsc 생성 시, resourcequota에 적은 모든 key값 반영 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.11 end --------------------->
+
 <!-------------------- v5.0.25.10 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.10 (2021. 11. 26. (금) 15:00:52 KST)
