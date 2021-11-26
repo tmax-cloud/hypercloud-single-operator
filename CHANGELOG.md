@@ -1,6 +1,25 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.10 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.10 (2021. 11. 26. (금) 15:00:52 KST)
+
+### Added
+
+### Changed
+  - [mod] trial 승인 메일 전송 시, cpu/memory/storage limit 값 신청한대로 치환 by Seungwon Lee
+  - [mod] trial 기한 변수화 by Seungwon Lee
+  - [mod] 잘못된 이미지 경로 수정 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.10 end --------------------->
+
 <!-------------------- v5.0.25.9 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.9 (2021. 10. 13. (수) 16:25:43 KST)
