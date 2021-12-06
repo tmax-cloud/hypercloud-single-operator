@@ -54,7 +54,7 @@ type RoleBindingReconciler struct {
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.6.4/pkg/reconcile
-func (r *RoleBindingReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+func (r *RoleBindingReconciler) Reconcile(_ context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
 	reqLogger := r.Log
 

@@ -51,7 +51,7 @@ type NamespaceReconciler struct {
 
 // +kubebuilder:rbac:groups=*,resources=*,verbs=*
 
-func (r *NamespaceReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
 	reqLogger := r.Log
 	// your logic here

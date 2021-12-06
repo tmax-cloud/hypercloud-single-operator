@@ -49,7 +49,7 @@ type ResourceQuotaClaimReconciler struct {
 
 // +kubebuilder:rbac:groups=*,resources=*,verbs=*
 
-func (r *ResourceQuotaClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+func (r *ResourceQuotaClaimReconciler) Reconcile(_ context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
 	reqLogger := r.Log
 	// your logic here

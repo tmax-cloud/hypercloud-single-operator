@@ -47,7 +47,7 @@ type RoleBindingClaimReconciler struct {
 
 // +kubebuilder:rbac:groups=*,resources=*,verbs=*
 
-func (r *RoleBindingClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+func (r *RoleBindingClaimReconciler) Reconcile(_ context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
 	reqLogger := r.Log
 

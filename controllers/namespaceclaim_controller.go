@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"regexp"
 	"time"
 
 	v1 "k8s.io/api/core/v1"
@@ -44,6 +45,7 @@ import (
 
 	claim "github.com/tmax-cloud/hypercloud-single-operator/api/v1alpha1"
 	"github.com/tmax-cloud/hypercloud-single-operator/util"
+	ingressRoute "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
 
 	networkv1 "k8s.io/api/networking/v1"
 	"sigs.k8s.io/yaml"
@@ -59,7 +61,7 @@ type NamespaceClaimReconciler struct {
 
 // +kubebuilder:rbac:groups=*,resources=*,verbs=*
 
-func (r *NamespaceClaimReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+func (r *NamespaceClaimReconciler) Reconcile(_ context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
 	reqLogger := r.Log
 	reqLogger.Info("Reconciling NamespaceClaim")
@@ -307,7 +309,7 @@ func (r *NamespaceClaimReconciler) sendConfirmMail(namespaceClaim *claim.Namespa
 	var imgCid string
 	spec_cpu := namespaceClaim.Spec.Hard["limits.cpu"]
 	spec_memory := namespaceClaim.Spec.Hard["limits.memory"]
-	spec_storage := namespaceClaim.Spec.Hard["limits.ephemeral-storage"]
+	spec_storage := namespaceClaim.Spec.Hard["requests.storage"] // shoulde be modified...
 	cpu := spec_cpu.String()
 	memory := spec_memory.String()
 	storage := spec_storage.String()
@@ -322,6 +324,16 @@ func (r *NamespaceClaimReconciler) sendConfirmMail(namespaceClaim *claim.Namespa
 		body = strings.ReplaceAll(body, "%%TRIAL_CPU%%", cpu)
 		body = strings.ReplaceAll(body, "%%TRIAL_MEMORY%%", memory)
 		body = strings.ReplaceAll(body, "%%TRIAL_STORAGE%%", storage)
+		irFound := &ingressRoute.IngressRoute{}
+		if err := r.Get(context.TODO(), types.NamespacedName{Name: util.INGRESS_ROUTE_NAME, Namespace: util.INGRESS_ROUTE_NAMESPACE}, irFound); err != nil {
+			reqLogger.Info("SomeStruct [ " + util.INGRESS_ROUTE_NAME + " ] Not Found, Use Default Console URL")
+			body = strings.ReplaceAll(body, "%%CONSOLE_URL%%", util.DEFAULT_CONSOLE_URL)
+		} else {
+			reg, _ := regexp.Compile("console\\.([a-z0-9\\w]+\\.*)+")
+			console_url := reg.FindString(irFound.Spec.Routes[0].Match)
+			body = strings.ReplaceAll(body, "%%CONSOLE_URL%%", console_url)
+		}
+
 		imgPath = "/img/trial-approval.png"
 		imgCid = "trial-approval"
 

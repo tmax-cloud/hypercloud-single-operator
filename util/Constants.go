@@ -7,6 +7,9 @@ const (
 	NETWORK_POLICY_YAML                 = "networkpolicies.yaml"
 	GRAFANA_URI                         = "grafana.monitoring.svc.cluster.local:3000/"
 	HYPERCLOUD_API_SERVER_URI           = "hypercloud5-api-server-service.hypercloud5-system.svc.cluster.local:443/"
+	DEFAULT_CONSOLE_URL                 = "console.tmaxcloud.org"
+	INGRESS_ROUTE_NAME                  = "console-ingressroute"
+	INGRESS_ROUTE_NAMESPACE             = "api-gateway-system"
 	TRIAL_SUCCESS_CONFIRM_MAIL_CONTENTS = "<!DOCTYPE html>\r\n" +
 		"<html lang=\"en\">\r\n" +
 		"<head>\r\n" +
@@ -51,7 +54,7 @@ const (
 		"                TmaxCloud 드림.\r\n" +
 		"            </p>\r\n" +
 		"            <p style=\"margin: 3rem 0;\">\r\n" +
-		"                <a href=\"https://console.tmaxcloud.com\">Tmax Console 바로가기 ></a>\r\n" +
+		"                <a href=\"https://%%CONSOLE_URL%%\">Tmax Console 바로가기 ></a>\r\n" +
 		"            </p>\r\n" +
 		"        </div>\r\n" +
 		"    </section>\r\n" +
