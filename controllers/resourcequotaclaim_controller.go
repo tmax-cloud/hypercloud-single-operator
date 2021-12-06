@@ -116,6 +116,9 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(_ context.Context, req ctrl.Req
 			resourceQuotaClaim.Labels = make(map[string]string)
 		}
 		resourceQuotaClaim.Labels["make"] = "yet"
+		if err := r.Update(context.TODO(), resourceQuotaClaim); err != nil {
+			reqLogger.Error(err, "Failed to update labels[\"make\"]")
+		}
 
 		reqLogger.Info("New ResourceQuotaClaim Added")
 		resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeAwaiting
@@ -130,7 +133,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(_ context.Context, req ctrl.Req
 		if resourceQuotaClaim.Labels["make"] == "yet" { // run only when entering for the first time
 			delete(resourceQuotaClaim.Labels, "make") // remove ["make"] label
 			if err := r.Update(context.TODO(), resourceQuotaClaim); err != nil {
-				reqLogger.Error(err, "Failed to remove labels[\"make\"]")
+				reqLogger.Error(err, "Failed to update labels[\"make\"]")
 			}
 			rqcLabels := make(map[string]string)
 			if resourceQuotaClaim.Labels != nil {
