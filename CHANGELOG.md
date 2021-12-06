@@ -1,6 +1,25 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.12 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.12 (2021. 12. 06. (월) 14:28:01 KST)
+
+### Added
+
+### Changed
+  - [mod] resourcequota claim 라벨 생성 안되는 버그 수정 by Seungwon Lee
+
+### Fixed
+  - [ims][247349] console 주소 파싱 및 패키지 버전 업 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+  - [etc] cpu/memory limit 증가 by Seungwon Lee
+
+<!--------------------- v5.0.25.12 end --------------------->
+
 <!-------------------- v5.0.25.11 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.11 (2021. 11. 26. (금) 15:06:29 KST)
