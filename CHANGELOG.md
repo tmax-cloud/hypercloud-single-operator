@@ -1,6 +1,24 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.13 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.13 (2021. 12. 07. (화) 19:15:11 KST)
+
+### Added
+
+### Changed
+  - [mod] cpu/memory limits 재수정 by Seungwon Lee
+
+### Fixed
+  - [ims][274854] serviceAccount 자체 생성 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.13 end --------------------->
+
 <!-------------------- v5.0.25.12 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.12 (2021. 12. 06. (월) 14:28:01 KST)
