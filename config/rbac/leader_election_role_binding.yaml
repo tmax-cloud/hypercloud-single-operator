@@ -8,5 +8,5 @@ roleRef:
   name: leader-election-role
 subjects:
 - kind: ServiceAccount
-  name: default
-  namespace: system
+  name: hypercloud5-single-operator-service-account
+  namespace: hypercloud5-system
