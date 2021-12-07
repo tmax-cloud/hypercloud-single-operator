@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.14 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.14 (2021. 12. 07. (화) 19:25:44 KST)
+
+### Added
+
+### Changed
+  - [mod] manager 컨테이너에 SA 추가 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.14 end --------------------->
+
 <!-------------------- v5.0.25.13 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.13 (2021. 12. 07. (화) 19:15:11 KST)
