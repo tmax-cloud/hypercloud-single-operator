@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.15 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.15 (2021. 12. 08. (수) 12:12:03 KST)
+
+### Added
+  - [feat] tmaxcloud issuer certmanager 적용 by Seungwon Lee
+
+### Changed
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.15 end --------------------->
+
 <!-------------------- v5.0.25.14 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.14 (2021. 12. 07. (화) 19:25:44 KST)
