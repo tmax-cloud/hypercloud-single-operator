@@ -1,6 +1,24 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.16 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.16 (2021. 12. 09. (목) 11:43:34 KST)
+
+### Added
+
+### Changed
+  - [mod] serviceAccountName으로 키 값 변경 by Seungwon Lee
+
+### Fixed
+  - [ims][274854] service account token 마운트 설정 추가 by Seungwon Lee
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.16 end --------------------->
+
 <!-------------------- v5.0.25.15 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.15 (2021. 12. 08. (수) 12:12:03 KST)
