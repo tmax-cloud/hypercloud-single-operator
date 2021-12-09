@@ -38,3 +38,12 @@ spec:
           requests:
             cpu: 100m
             memory: 20Mi
+        volumeMounts:
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: hypercloud-single-operator-service-account-token
+          readOnly: true
+      volumes:
+      - name: hypercloud-single-operator-service-account-token
+        secret:
+          defaultMode: 420
+          secretName: hypercloud-single-operator-service-account-token
