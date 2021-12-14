@@ -19,7 +19,6 @@ spec:
   hard:
     limits.cpu: 1
     limits.memory: 100
-resourceName: swlee-test-rqc
 
 ---
 
@@ -28,7 +27,6 @@ kind: RoleBindingClaim
 metadata:
   name: swlee-test-rbc
   #namespace: swlee-test
-resourceName: swlee-test-rbc
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
