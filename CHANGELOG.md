@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.25.17 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.25.17 (2021. 12. 14. (화) 15:13:46 KST)
+
+### Added
+  - [feat] k8s 1.22 버전 업그레이드에 따른 apiVersion 업그레이드 by Seungwon Lee
+
+### Changed
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.25.17 end --------------------->
+
 <!-------------------- v5.0.25.16 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.16 (2021. 12. 09. (목) 11:43:34 KST)
