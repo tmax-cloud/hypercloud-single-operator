@@ -1,5 +1,5 @@
 ---
-apiVersion: "apiextensions.k8s.io/v1beta1"
+apiVersion: "apiextensions.k8s.io/v1"
 kind: "CustomResourceDefinition"
 metadata:
   annotations:
@@ -7,16 +7,6 @@ metadata:
   creationTimestamp: null
   name: "rolebindingclaims.claim.tmax.io"
 spec:
-  additionalPrinterColumns:
-  - JSONPath: ".resourceName"
-    name: "ResourceName"
-    type: "string"
-  - JSONPath: ".status.status"
-    name: "Status"
-    type: "string"
-  - JSONPath: ".status.reason"
-    name: "Reason"
-    type: "string"
   group: "claim.tmax.io"
   names:
     kind: "RoleBindingClaim"
@@ -26,94 +16,96 @@ spec:
     - "rbc"
     singular: "rolebindingclaim"
   scope: "Namespaced"
-  subresources:
-    status: {}
-  validation:
-    openAPIV3Schema:
-      description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema"
-      properties:
-        apiVersion:
-          description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.apiVersion"
-          type: "string"
-        kind:
-          description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.kind"
-          type: "string"
-        metadata:
-          type: "object"
-        resourceName:
-          description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.resourceName"
-          type: "string"
-        roleRef:
-          description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.roleRef"
-          properties:
-            apiGroup:
-              description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.roleRef.properties.apiGroup"
-              type: "string"
-            kind:
-              description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.roleRef.properties.kind"
-              type: "string"
-            name:
-              description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.roleRef.properties.name"
-              type: "string"
-          required:
-          - "apiGroup"
-          - "kind"
-          - "name"
-          type: "object"
-        status:
-          description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.status"
-          properties:
-            lastTransitionTime:
-              description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.status.properties.lastTransitionTime"
-              format: "date-time"
-              type: "string"
-            message:
-              description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.status.properties.message"
-              type: "string"
-            reason:
-              description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.status.properties.reason"
-              type: "string"
-            status:
-              description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.status.properties.status"
-              enum:
-              - "Awaiting"
-              - "Approved"
-              - "Rejected"
-              - "Error"
-              - "Role Binding Deleted"
-              type: "string"
-          type: "object"
-        subjects:
-          description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.subjects"
-          items:
-            description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.subjects.items"
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: ".status.status"
+      name: "Status"
+      type: "string"
+    - jsonPath: ".status.reason"
+      name: "Reason"
+      type: "string"
+    name: "v1alpha1"
+    schema:
+      openAPIV3Schema:
+        description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema"
+        properties:
+          apiVersion:
+            description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.apiVersion"
+            type: "string"
+          kind:
+            description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.kind"
+            type: "string"
+          metadata:
+            type: "object"
+          roleRef:
+            description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.roleRef"
             properties:
               apiGroup:
-                description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.subjects.items.properties.apiGroup"
+                description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.roleRef.properties.apiGroup"
                 type: "string"
               kind:
-                description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.subjects.items.properties.kind"
+                description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.roleRef.properties.kind"
                 type: "string"
               name:
-                description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.subjects.items.properties.name"
-                type: "string"
-              namespace:
-                description: "%rolebindingclaims.yaml.spec.validation.openAPIV3Schema.properties.subjects.items.properties.namespace"
+                description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.roleRef.properties.name"
                 type: "string"
             required:
+            - "apiGroup"
             - "kind"
             - "name"
             type: "object"
-          type: "array"
-      required:
-      - "resourceName"
-      - "roleRef"
-      type: "object"
-  version: "v1alpha1"
-  versions:
-  - name: "v1alpha1"
+          status:
+            description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.status"
+            properties:
+              lastTransitionTime:
+                description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.status.properties.lastTransitionTime"
+                format: "date-time"
+                type: "string"
+              message:
+                description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.status.properties.message"
+                type: "string"
+              reason:
+                description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.status.properties.reason"
+                type: "string"
+              status:
+                description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.status.properties.status"
+                enum:
+                - "Awaiting"
+                - "Approved"
+                - "Rejected"
+                - "Error"
+                - "Role Binding Deleted"
+                type: "string"
+            type: "object"
+          subjects:
+            description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.subjects"
+            items:
+              description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.subjects.items"
+              properties:
+                apiGroup:
+                  description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.subjects.items.properties.apiGroup"
+                  type: "string"
+                kind:
+                  description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.subjects.items.properties.kind"
+                  type: "string"
+                name:
+                  description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.subjects.items.properties.name"
+                  type: "string"
+                namespace:
+                  description: "%rolebindingclaims.yaml.spec.versions.schema.openAPIV3Schema.properties.subjects.items.properties.namespace"
+                  type: "string"
+              required:
+              - "kind"
+              - "name"
+              type: "object"
+            type: "array"
+        required:
+        - "roleRef"
+        type: "object"
     served: true
     storage: true
+    subresources:
+      status: {}
 status:
   acceptedNames:
     kind: ""
