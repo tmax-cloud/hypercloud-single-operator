@@ -1,6 +1,24 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.26.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.26.0 (2022. 05. 19. (목) 11:34:02 KST)
+
+### Added
+  - [feat] k8s 1.22버전 호환을 위해 CRD 버전 v1으로 업그레이드 by Seungwon Lee
+
+### Changed
+  - [mod] kube-rbac-proxy 컨테이너에 SA secret token 마운트 추가 by GitHub
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.26.0 end --------------------->
+
 <!-------------------- v5.0.25.28 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.28 (2021. 12. 22. (수) 18:52:14 KST)
