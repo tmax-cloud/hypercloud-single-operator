@@ -6,16 +6,16 @@ metadata:
   creationTimestamp: null
   name: validating-webhook-configuration
 webhooks:
-- clientConfig:
-    caBundle: Cg==
+- admissionReviewVersions:
+  - v1beta1
+  - v1
+  clientConfig:
     service:
       name: webhook-service
       namespace: system
       path: /validate-claim-tmax-io-v1alpha1-namespaceclaim
   failurePolicy: Fail
   name: vnamespaceclaim.kb.io
-  admissionReviewVersions: ["v1beta1", "v1"]
-  sideEffects: NoneOnDryRun
   rules:
   - apiGroups:
     - claim.tmax.io
@@ -27,16 +27,17 @@ webhooks:
     resources:
     - namespaceclaims
     - namespaceclaims/status
-- clientConfig:
-    caBundle: Cg==
+  sideEffects: NoneOnDryRun
+- admissionReviewVersions:
+  - v1beta1
+  - v1
+  clientConfig:
     service:
       name: webhook-service
       namespace: system
       path: /validate-claim-tmax-io-v1alpha1-resourcequotaclaim
   failurePolicy: Fail
   name: vresourcequotaclaim.kb.io
-  admissionReviewVersions: ["v1beta1", "v1"]
-  sideEffects: NoneOnDryRun
   rules:
   - apiGroups:
     - claim.tmax.io
@@ -48,16 +49,39 @@ webhooks:
     resources:
     - resourcequotaclaims
     - resourcequotaclaims/status
-- clientConfig:
-    caBundle: Cg==
+  sideEffects: NoneOnDryRun
+- admissionReviewVersions:
+  - v1beta1
+  - v1
+  clientConfig:
+    service:
+      name: webhook-service
+      namespace: system
+      path: /validate-claim-tmax-io-v1alpha1-namespaceclaim
+  failurePolicy: Fail
+  name: vnamespaceclaim.kb.io
+  rules:
+  - apiGroups:
+    - claim.tmax.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - namespaceclaims
+    - namespaceclaims/status
+  sideEffects: NoneOnDryRun
+- admissionReviewVersions:
+  - v1beta1
+  - v1
+  clientConfig:
     service:
       name: webhook-service
       namespace: system
       path: /validate-claim-tmax-io-v1alpha1-rolebindingclaim
   failurePolicy: Fail
   name: vrolebindingclaim.kb.io
-  admissionReviewVersions: ["v1beta1", "v1"]
-  sideEffects: NoneOnDryRun
   rules:
   - apiGroups:
     - claim.tmax.io
@@ -68,3 +92,26 @@ webhooks:
     - UPDATE
     resources:
     - rolebindingclaims/status
+  sideEffects: NoneOnDryRun
+- admissionReviewVersions:
+  - v1beta1
+  - v1
+  clientConfig:
+    service:
+      name: webhook-service
+      namespace: system
+      path: /validate-claim-tmax-io-v1alpha1-namespaceclaim
+  failurePolicy: Fail
+  name: vnamespaceclaim.kb.io
+  rules:
+  - apiGroups:
+    - claim.tmax.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - namespaceclaims
+    - namespaceclaims/status
+  sideEffects: NoneOnDryRun

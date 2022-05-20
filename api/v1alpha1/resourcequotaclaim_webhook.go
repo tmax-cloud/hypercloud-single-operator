@@ -80,7 +80,8 @@ func (r *ResourceQuotaClaim) SetupWebhookWithManager(mgr ctrl.Manager) error {
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
-// +kubebuilder:webhook:verbs=create;update,path=/validate-claim-tmax-io-v1alpha1-resourcequotaclaim,mutating=false,failurePolicy=fail,groups=claim.tmax.io,resources=resourcequotaclaims;resourcequotaclaims/status,versions=v1alpha1,name=vresourcequotaclaim.kb.io
+// +kubebuilder:webhook:verbs=create;update,path=/validate-claim-tmax-io-v1alpha1-resourcequotaclaim,mutating=false,failurePolicy=fail,groups=claim.tmax.io,resources=resourcequotaclaims;resourcequotaclaims/status,versions=v1alpha1,name=vresourcequotaclaim.kb.io,admissionReviewVersions=v1beta1;v1,sideEffects=NoneOnDryRun
+// +kubebuilder:webhook:verbs=create;update,path=/validate-claim-tmax-io-v1alpha1-namespaceclaim,mutating=false,failurePolicy=fail,groups=claim.tmax.io,resources=namespaceclaims;namespaceclaims/status,versions=v1alpha1,name=vnamespaceclaim.kb.io,admissionReviewVersions=v1beta1;v1,sideEffects=NoneOnDryRun,admissionReviewVersions=v1beta1;v1,sideEffects=NoneOnDryRun
 
 var _ webhook.Validator = &ResourceQuotaClaim{}
 
