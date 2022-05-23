@@ -25,6 +25,9 @@ spec:
       containers:
       - command:
         - /manager
+        env:
+        - name: TZ
+          value: Asia/Seoul
         args:
         - --enable-leader-election
         image: controller:latest
@@ -42,6 +45,4 @@ spec:
       volumes:
       - name: operator-log-mnt
         emptyDir:
-        #hostPath:
-          #path: /root/woo/go-workspace/src/hypercloud-single-operator/logs
       terminationGracePeriodSeconds: 10
