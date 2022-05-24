@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.27.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.27.0 (2022. 05. 24. (화) 15:41:28 KST)
+
+### Added
+
+### Changed
+  - [mod] TimeZone 환경변수 추가 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.27.0 end --------------------->
+
 <!-------------------- v5.0.26.1 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.26.1 (2022. 05. 20. (금) 14:57:05 KST)
