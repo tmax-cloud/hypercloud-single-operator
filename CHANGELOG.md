@@ -8,7 +8,6 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 ### Changed
-  - [mod] TimeZone 환경변수 추가 by Seungwon Lee
 
 ### Fixed
 
