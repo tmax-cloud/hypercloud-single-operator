@@ -18,16 +18,11 @@ spec:
       tolerations:
       - key: node-role.kubernetes.io/master
         operator: Equal
-        effect: "NoSchedule"
-      #nodeSelector:
-      #  kubernetes.io/hostname: master-1      
+        effect: "NoSchedule"   
       dnsPolicy: "ClusterFirstWithHostNet"
       containers:
       - command:
         - /manager
-        env:
-        - name: TZ
-          value: Asia/Seoul
         args:
         - --enable-leader-election
         image: controller:latest
