@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 ### CRD yaml
 
 ### Etc
+  - [etc] DockerFile에서 TimeZone 설정 제거 by Seungwon Lee
 
 <!--------------------- v5.0.27.0 end --------------------->
 
