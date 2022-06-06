@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## HyperCloud-Single-Operator_5.0.27.0 (2022. 05. 24. (화) 15:41:28 KST)
 
 ### Added
+  - [feat] k8s 1.22버전 호환을 위해 CRD 버전 v1으로 업그레이드 by Seungwon Lee
 
 ### Changed
 
@@ -32,6 +33,7 @@ All notable changes to this project will be documented in this file.
 
 ### Etc
   - [etc] Makefile 수정하여 v1 버전에 맞게 자동 빌드되도록 수정 by Seungwon Lee
+  - [etc] DockerFile에서 TimeZone 설정 제거 by Seungwon Lee
 
 <!--------------------- v5.0.26.1 end --------------------->
 
@@ -40,7 +42,6 @@ All notable changes to this project will be documented in this file.
 ## HyperCloud-Single-Operator_5.0.26.0 (2022. 05. 19. (목) 11:34:02 KST)
 
 ### Added
-  - [feat] k8s 1.22버전 호환을 위해 CRD 버전 v1으로 업그레이드 by Seungwon Lee
 
 ### Changed
   - [mod] kube-rbac-proxy 컨테이너에 SA secret token 마운트 추가 by GitHub
@@ -50,6 +51,8 @@ All notable changes to this project will be documented in this file.
 ### CRD yaml
 
 ### Etc
+  - [etc] k8s 1.22 버전 호환에서 1.19 버전 호환으로 변경
+  - [etc] DockerFile에서 TimeZone 설정 제거 by Seungwon Lee
 
 <!--------------------- v5.0.26.0 end --------------------->
 
