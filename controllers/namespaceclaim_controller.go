@@ -17,11 +17,8 @@ limitations under the License.
 package controllers
 
 import (
-	"bytes"
 	"context"
-	"crypto/tls"
 	"fmt"
-	"net/http"
 	"reflect"
 	"regexp"
 	"time"
@@ -238,22 +235,6 @@ func (r *NamespaceClaimReconciler) Reconcile(_ context.Context, req ctrl.Request
 				}
 
 				namespaceClaim.Status.Reason = "Create Namespace Success"
-
-				httpgrafanaurl := "https://" + util.HYPERCLOUD_API_SERVER_URI + "grafanaDashboard"
-				GrafanaBody := `{
-					"email": "` + namespaceClaim.Annotations["owner"] + `",
-					"namespace": "` + namespaceClaim.ResourceName + `"
-				}`
-				reqLogger.Info("Request Body : " + GrafanaBody)
-				request, _ := http.NewRequest("POST", httpgrafanaurl, bytes.NewBuffer([]byte(GrafanaBody)))
-				http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-				client := &http.Client{}
-				resp, err := client.Do(request)
-				if err != nil {
-					reqLogger.Error(err, "Grafana Failed")
-				} else {
-					defer resp.Body.Close()
-				}
 			}
 		} else {
 			reqLogger.Info("Namespace [ " + namespaceClaim.Name + " ] Exists.")
