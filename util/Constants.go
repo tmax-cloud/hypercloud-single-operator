@@ -5,7 +5,6 @@ const (
 	HYPERCLOUD_NAMESPACE                = "hypercloud5-system"
 	DEFAULT_NETWORK_POLICY_CONFIG_MAP   = "default-networkpolicy-configmap"
 	NETWORK_POLICY_YAML                 = "networkpolicies.yaml"
-	GRAFANA_URI                         = "grafana.monitoring.svc.cluster.local:3000/"
 	HYPERCLOUD_API_SERVER_URI           = "hypercloud5-api-server-service.hypercloud5-system.svc.cluster.local:443/"
 	DEFAULT_CONSOLE_URL                 = "console.tmaxcloud.org"
 	INGRESS_ROUTE_NAME                  = "console-ingressroute"
