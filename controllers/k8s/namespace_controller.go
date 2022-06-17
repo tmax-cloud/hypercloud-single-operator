@@ -19,6 +19,7 @@ package controllers
 import (
 	"context"
 	"crypto/tls"
+	"io/ioutil"
 	"net/http"
 	"reflect"
 
@@ -117,6 +118,17 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 		} else {
 			defer resp.Body.Close()
 		}
+	} else { // if the namespace is created
+		url := "https://" + util.HYPERCLOUD_API_SERVER_URI + "namespace"
+		resp, err := http.Post(url, "", nil)
+		if err != nil {
+			reqLogger.Error(err, "Failed to broadcast namespace create event")
+		}
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			reqLogger.Error(err, "Failed to read response body")
+		}
+		reqLogger.Info(string(body))
 	}
 
 	if namespace.Labels != nil && namespace.Labels["trial"] != "" && namespace.Labels["period"] != "" && namespace.Annotations["owner"] != "" {
@@ -144,6 +156,9 @@ func (r *NamespaceReconciler) SetupWithManager(mgr ctrl.Manager) error {
 					} else {
 						return false
 					}
+				},
+				CreateFunc: func(e event.CreateEvent) bool {
+					return true
 				},
 			},
 		).
