@@ -1,6 +1,25 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.28.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.28.0 (2022. 06. 20. (월) 12:30:46 KST)
+
+### Added
+  - [feat] namespace 생성 시, hypercloud-api-server가 broadcast 하도록 API 호출 by Seungwon Lee
+
+### Changed
+  - [mod] namespace 삭제 시에도 broadcast 하도록 수정 및 tls skip 설정 추가 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+  - [etc] 5.0.26.x의 crd 버전을 v1beta1으로 원복 by Seungwon Lee
+
+<!--------------------- v5.0.28.0 end --------------------->
+
 <!-------------------- v5.0.27.0 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.27.0 (2022. 05. 24. (화) 15:41:28 KST)
