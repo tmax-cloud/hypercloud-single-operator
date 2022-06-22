@@ -1,6 +1,24 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.28.1 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.28.1 (2022. 06. 22. (수) 19:30:00 KST)
+
+### Added
+
+### Changed
+  - [mod] namespace reconciler를 삭제/변경, 생성 2가지로 분리 by Seungwon Lee
+  - [mod] namespace 생성/삭제 시, POST 콜의 request body 형식 변경 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.28.1 end --------------------->
+
 <!-------------------- v5.0.28.0 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.28.0 (2022. 06. 20. (월) 12:30:46 KST)
