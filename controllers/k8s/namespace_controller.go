@@ -17,8 +17,11 @@ limitations under the License.
 package controllers
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/json"
+	goError "errors"
 	"io/ioutil"
 	"net/http"
 	"reflect"
@@ -69,17 +72,6 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 	if err := r.Get(context.TODO(), req.NamespacedName, namespace); err != nil {
 		if errors.IsNotFound(err) {
 			reqLogger.Info("Namespace resource not found. Ignoring since object must be deleted.")
-			// if the namespace is deleted
-			// request broadcast to hypercloud-api-server
-			resp, err := http.Post(url, "", nil)
-			if err != nil {
-				reqLogger.Error(err, "Failed to broadcast namespace create event")
-			}
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				reqLogger.Error(err, "Failed to read response body")
-			}
-			reqLogger.Info(string(body))
 			return ctrl.Result{}, nil
 		}
 		reqLogger.Error(err, "Failed to get Namespace")
@@ -113,8 +105,8 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 	}()
 
 	if namespace.Status.Phase == "Terminating" {
+		reqLogger.Info(namespace.Name + " is in Terminating Status")
 		if namespace.Labels != nil && namespace.Labels["fromClaim"] != "" {
-			reqLogger.Info("Namespace from Claim [ " + namespace.Name + " ] is in Terminating Status")
 			if namespace.Finalizers != nil {
 				namespace.Finalizers = util.RemoveValue(namespace.Finalizers, "namespace/finalizers")
 			}
@@ -126,6 +118,14 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 			reqLogger.Info("Update NamespaceClaim [ " + namespace.Labels["fromClaim"] + " ] Status to Namespace Deleted")
 			r.replaceNSCStatus(namespace.Labels["fromClaim"], namespace.Name, claim.NamespaceClaimStatusTypeDeleted)
 		}
+		// if namespace is deleted
+		// request broadcast to hypercloud-api-server
+		response, err := r.postRequestToHypercloudApiServer(namespace, "DELETED")
+		if err != nil {
+			reqLogger.Error(err, " Failed to broadcast namespace delete event")
+		}
+		reqLogger.Info(response)
+
 		httpgrafanaurl := "https://" + util.HYPERCLOUD_API_SERVER_URI + "grafanaDashboard?namespace=" + namespace.Name
 		request, _ := http.NewRequest("DELETE", httpgrafanaurl, nil)
 		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
@@ -137,17 +137,13 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 			defer resp.Body.Close()
 		}
 	} else {
-		// if the namespace is created
+		// if namespace is created
 		// request broadcast to hypercloud-api-server
-		resp, err := http.Post(url, "", nil)
+		response, err := r.postRequestToHypercloudApiServer(namespace, "ADDED")
 		if err != nil {
 			reqLogger.Error(err, "Failed to broadcast namespace create event")
 		}
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			reqLogger.Error(err, "Failed to read response body")
-		}
-		reqLogger.Info(string(body))
+		reqLogger.Info(response)
 	}
 
 	if namespace.Labels != nil && namespace.Labels["trial"] != "" && namespace.Labels["period"] != "" && namespace.Annotations["owner"] != "" {
@@ -215,4 +211,52 @@ func (r *NamespaceReconciler) deleteCRBForNSCUser(namespace *v1.Namespace) {
 			reqLogger.Info("Delete ClusterRoleBinding [ CRB-" + namespace.Name + " ] Success")
 		}
 	}
+}
+
+// postRequestToHypercloudApiServer requests POST API to Hypercloud API Server,
+// which broadcasts namespace change event to all websocket clients.
+// The events has 3 types; "ADDED", "DELETED", "MODIFIED".
+func (r *NamespaceReconciler) postRequestToHypercloudApiServer(ns *v1.Namespace, event string) (string, error) {
+	reqLogger := r.Log
+
+	byte, err := json.Marshal(ns)
+	if err != nil {
+		reqLogger.Error(err, " Failed to marshal")
+		return "", err
+	}
+
+	var ns_body string
+	switch event {
+	case "ADDED":
+		ns_body = `{ "type": "ADDED", "object": `
+	case "DELETED":
+		ns_body = `{ "type": "DELETED", "object": `
+	case "MODIFIED":
+		ns_body = `{ "type": "MODIFIED", "object": `
+	default:
+		err := goError.New("Invalid event type")
+		reqLogger.Error(err, "")
+		return "", err
+	}
+
+	ns_body += string(byte) + `}`
+
+	ns_body_bytes, err := json.Marshal(ns_body)
+	if err != nil {
+		reqLogger.Error(err, "Failed to marshal")
+		return "", err
+	}
+	ns_body_io_reader := bytes.NewBuffer(ns_body_bytes)
+
+	resp, err := http.Post(url, "application/json", ns_body_io_reader)
+	if err != nil {
+		reqLogger.Error(err, " Failed to broadcast namespace create event")
+		return "", err
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		reqLogger.Error(err, " Failed to read response body")
+		return "", err
+	}
+	return string(body), nil
 }
