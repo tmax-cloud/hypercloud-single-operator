@@ -24,7 +24,6 @@ import (
 	goError "errors"
 	"io/ioutil"
 	"net/http"
-	"reflect"
 
 	"github.com/tmax-cloud/hypercloud-single-operator/util"
 
@@ -42,7 +41,9 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
 // NamespaceReconciler reconciles a Namespace object
@@ -137,11 +138,11 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 			defer resp.Body.Close()
 		}
 	} else {
-		// if namespace is created
+		// if namespace is modified
 		// request broadcast to hypercloud-api-server
-		response, err := r.postRequestToHypercloudApiServer(namespace, "ADDED")
+		response, err := r.postRequestToHypercloudApiServer(namespace, "MODIFIED")
 		if err != nil {
-			reqLogger.Error(err, "Failed to broadcast namespace create event")
+			reqLogger.Error(err, "Failed to broadcast namespace modify event")
 		}
 		reqLogger.Info(response)
 	}
@@ -154,30 +155,87 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 }
 
 func (r *NamespaceReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewControllerManagedBy(mgr).
+	controller, err := ctrl.NewControllerManagedBy(mgr).
 		For(&v1.Namespace{}).
 		WithEventFilter(
 			predicate.Funcs{
-				// Only reconciling if the status.status change
 				UpdateFunc: func(e event.UpdateEvent) bool {
-					oldNsStatus := e.ObjectOld.(*v1.Namespace).DeepCopy().Status.Phase
-					newNsStatus := e.ObjectNew.(*v1.Namespace).DeepCopy().Status.Phase
+					// Only reconciling if the status.status change
+					// oldNsStatus := e.ObjectOld.(*v1.Namespace).DeepCopy().Status.Phase
+					// newNsStatus := e.ObjectNew.(*v1.Namespace).DeepCopy().Status.Phase
 
-					oldNsLabels := e.ObjectOld.(*v1.Namespace).DeepCopy().Labels
-					newNsLabels := e.ObjectNew.(*v1.Namespace).DeepCopy().Labels
+					// oldNsLabels := e.ObjectOld.(*v1.Namespace).DeepCopy().Labels
+					// newNsLabels := e.ObjectNew.(*v1.Namespace).DeepCopy().Labels
 
-					if !reflect.DeepEqual(oldNsStatus, newNsStatus) || !reflect.DeepEqual(oldNsLabels, newNsLabels) {
-						return true
-					} else {
-						return false
-					}
+					// if !reflect.DeepEqual(oldNsStatus, newNsStatus) || !reflect.DeepEqual(oldNsLabels, newNsLabels) {
+					// 	return true
+					// } else {
+					// 	return false
+					// }
+					return true
 				},
 				CreateFunc: func(e event.CreateEvent) bool {
+					return false
+				},
+				DeleteFunc: func(e event.DeleteEvent) bool {
 					return true
+				},
+				GenericFunc: func(e event.GenericEvent) bool {
+					return false
 				},
 			},
 		).
-		Complete(r)
+		Build(r)
+
+	if err != nil {
+		return err
+	}
+
+	return controller.Watch(
+		&source.Kind{Type: &v1.Namespace{}},
+		handler.EnqueueRequestsFromMapFunc(r.reconcileNamespaceForCreateEvent),
+		predicate.Funcs{
+			UpdateFunc: func(e event.UpdateEvent) bool {
+				return false
+			},
+			CreateFunc: func(e event.CreateEvent) bool {
+				return true
+			},
+			DeleteFunc: func(e event.DeleteEvent) bool {
+				return false
+			},
+			GenericFunc: func(e event.GenericEvent) bool {
+				return false
+			},
+		},
+	)
+}
+
+func (r *NamespaceReconciler) reconcileNamespaceForCreateEvent(o client.Object) []ctrl.Request {
+	reqLogger := r.Log
+
+	ns_name := o.GetName()
+	ns_namespace := o.GetNamespace()
+	namespace := &v1.Namespace{}
+
+	if err := r.Get(context.TODO(), types.NamespacedName{Name: ns_name, Namespace: ns_namespace}, namespace); err != nil {
+		if errors.IsNotFound(err) {
+			reqLogger.Info("Namespace resource not found. Ignoring since object must be deleted.")
+			return nil
+		}
+		reqLogger.Error(err, "Failed to get Namespace")
+		return nil
+	}
+
+	// if namespace is created
+	// request broadcast to hypercloud-api-server
+	response, err := r.postRequestToHypercloudApiServer(namespace, "ADDED")
+	if err != nil {
+		reqLogger.Error(err, "Failed to broadcast namespace create event")
+		return nil
+	}
+	reqLogger.Info(response)
+	return nil
 }
 
 func (r *NamespaceReconciler) replaceNSCStatus(nscName string, nsName string, status string) {
