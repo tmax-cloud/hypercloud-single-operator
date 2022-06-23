@@ -126,17 +126,6 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 			reqLogger.Error(err, " Failed to broadcast namespace delete event")
 		}
 		reqLogger.Info(response)
-
-		httpgrafanaurl := "https://" + util.HYPERCLOUD_API_SERVER_URI + "grafanaDashboard?namespace=" + namespace.Name
-		request, _ := http.NewRequest("DELETE", httpgrafanaurl, nil)
-		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		client := &http.Client{}
-		resp, err := client.Do(request)
-		if err != nil {
-			reqLogger.Error(err, "Grafana Failed")
-		} else {
-			defer resp.Body.Close()
-		}
 	} else {
 		// if namespace is modified
 		// request broadcast to hypercloud-api-server

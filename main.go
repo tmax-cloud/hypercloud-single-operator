@@ -51,9 +51,6 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(claimv1alpha1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
-
-	///// get grafana api key
-
 }
 
 func main() {
