@@ -35,6 +35,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	rbacApi "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/cluster-api/util/patch"
@@ -73,6 +74,24 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 	if err := r.Get(context.TODO(), req.NamespacedName, namespace); err != nil {
 		if errors.IsNotFound(err) {
 			reqLogger.Info("Namespace resource not found. Ignoring since object must be deleted.")
+
+			// if namespace is deleted
+			// request broadcast to hypercloud-api-server
+			namespace = &v1.Namespace{
+				TypeMeta: metav1.TypeMeta{
+					Kind:       "Namespace",
+					APIVersion: "v1",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: req.Name,
+				},
+			}
+			response, err := r.postRequestToHypercloudApiServer(namespace, "DELETED")
+			if err != nil {
+				reqLogger.Error(err, " Failed to broadcast namespace delete event")
+			}
+			reqLogger.Info(response)
+
 			return ctrl.Result{}, nil
 		}
 		reqLogger.Error(err, "Failed to get Namespace")
@@ -119,11 +138,11 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 			reqLogger.Info("Update NamespaceClaim [ " + namespace.Labels["fromClaim"] + " ] Status to Namespace Deleted")
 			r.replaceNSCStatus(namespace.Labels["fromClaim"], namespace.Name, claim.NamespaceClaimStatusTypeDeleted)
 		}
-		// if namespace is deleted
+		// if namespace is terminating
 		// request broadcast to hypercloud-api-server
-		response, err := r.postRequestToHypercloudApiServer(namespace, "DELETED")
+		response, err := r.postRequestToHypercloudApiServer(namespace, "MODIFIED")
 		if err != nil {
-			reqLogger.Error(err, " Failed to broadcast namespace delete event")
+			reqLogger.Error(err, " Failed to broadcast namespace terminating event")
 		}
 		reqLogger.Info(response)
 
