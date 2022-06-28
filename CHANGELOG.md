@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.29.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.29.0 (2022. 06. 28. (화) 11:23:26 KST)
+
+### Added
+
+### Changed
+  - [mod] grafana 관련 로직 제거 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.29.0 end --------------------->
+
 <!-------------------- v5.0.28.2 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.28.2 (2022. 06. 24. (금) 15:04:20 KST)
