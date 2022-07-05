@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.26.2 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.26.2 (2022. 07. 05. (화) 12:04:20 KST)
+
+### Added
+  - [feat] namespace websocket 기능을 위한 로직 추가 by Seungwon Lee
+
+### Changed
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.26.2 end --------------------->
+
 <!-------------------- v5.0.25.28 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.25.28 (2021. 12. 22. (수) 18:52:14 KST)
