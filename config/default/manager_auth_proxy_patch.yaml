@@ -27,6 +27,10 @@ spec:
           requests:
             cpu: 100m
             memory: 20Mi
+        volumeMounts:
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: hypercloud-single-operator-service-account-token
+          readOnly: true
       - name: manager
         args:
         - "--metrics-addr=127.0.0.1:8080"
