@@ -46,7 +46,7 @@ var _ webhook.Validator = &RoleBindingClaim{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
 func (r *RoleBindingClaim) ValidateCreate() error {
-	rolebindingclaimlog.Info("validate create", "name", r.Name)
+	rolebindingclaimlog.V(3).Info("validate create", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object creation.
 	return nil
@@ -54,7 +54,7 @@ func (r *RoleBindingClaim) ValidateCreate() error {
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
 func (r *RoleBindingClaim) ValidateUpdate(old runtime.Object) error {
-	rolebindingclaimlog.Info("validate update", "name", r.Name)
+	rolebindingclaimlog.V(3).Info("validate update", "name", r.Name)
 	// TODO(user): fill in your validation logic upon object update.
 
 	old_status := old.(*RoleBindingClaim).DeepCopy().Status.Status
@@ -74,7 +74,7 @@ func (r *RoleBindingClaim) ValidateUpdate(old runtime.Object) error {
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
 func (r *RoleBindingClaim) ValidateDelete() error {
-	rolebindingclaimlog.Info("validate delete", "name", r.Name)
+	rolebindingclaimlog.V(3).Info("validate delete", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object deletion.
 	return nil

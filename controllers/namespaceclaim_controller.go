@@ -61,16 +61,16 @@ type NamespaceClaimReconciler struct {
 func (r *NamespaceClaimReconciler) Reconcile(_ context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
 	reqLogger := r.Log
-	reqLogger.Info("Reconciling NamespaceClaim")
+	reqLogger.V(3).Info("Reconciling NamespaceClaim")
 
 	namespaceClaim := &claim.NamespaceClaim{}
 
 	if err := r.Get(context.TODO(), req.NamespacedName, namespaceClaim); err != nil {
 		if errors.IsNotFound(err) {
-			reqLogger.Info("NamespaceClaim resource not found. Ignoring since object must be deleted.")
+			reqLogger.V(3).Info("NamespaceClaim resource not found. Ignoring since object must be deleted.")
 			return ctrl.Result{}, nil
 		}
-		reqLogger.Error(err, "Failed to get NamespaceClaim ["+req.Name+"]")
+		reqLogger.V(1).Error(err, "Failed to get NamespaceClaim ["+req.Name+"]")
 		return ctrl.Result{}, err
 	}
 
@@ -106,9 +106,9 @@ func (r *NamespaceClaimReconciler) Reconcile(_ context.Context, req ctrl.Request
 	nsFound := &v1.Namespace{}
 	err := r.Get(context.TODO(), types.NamespacedName{Name: namespaceClaim.ResourceName}, nsFound)
 
-	reqLogger.Info("NamespaceClaim status:" + string(namespaceClaim.Status.Status))
+	reqLogger.V(3).Info("NamespaceClaim status:" + string(namespaceClaim.Status.Status))
 	if err != nil && !errors.IsNotFound(err) {
-		reqLogger.Error(err, "Failed to get Namespace info")
+		reqLogger.V(1).Error(err, "Failed to get Namespace info")
 		return ctrl.Result{}, err
 	}
 
@@ -116,13 +116,13 @@ func (r *NamespaceClaimReconciler) Reconcile(_ context.Context, req ctrl.Request
 	case "":
 		// Set Owner Annotation from Annotation 'Creator'
 		if namespaceClaim.Annotations != nil && namespaceClaim.Annotations["creator"] != "" && namespaceClaim.Annotations["owner"] == "" {
-			reqLogger.Info("Set Owner Annotation from Annotation 'Creator'")
+			reqLogger.V(3).Info("Set Owner Annotation from Annotation 'Creator'")
 			namespaceClaim.Annotations["owner"] = namespaceClaim.Annotations["creator"]
 		}
 
 		nscList := &claim.NamespaceClaimList{}
 		if err := r.List(context.TODO(), nscList); err != nil {
-			reqLogger.Error(err, "Failed to get NamespaceClaim List")
+			reqLogger.V(1).Error(err, "Failed to get NamespaceClaim List")
 			panic(err)
 		}
 
@@ -136,11 +136,11 @@ func (r *NamespaceClaimReconciler) Reconcile(_ context.Context, req ctrl.Request
 		}
 
 		if err != nil && errors.IsNotFound(err) && !flag {
-			reqLogger.Info("New NamespaceClaim Added")
+			reqLogger.V(3).Info("New NamespaceClaim Added")
 			namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeAwaiting
 			namespaceClaim.Status.Reason = "Please Wait for administrator approval"
 		} else {
-			reqLogger.Info("Namespace [ " + namespaceClaim.ResourceName + " ] Already Exists.")
+			reqLogger.V(3).Info("Namespace [ " + namespaceClaim.ResourceName + " ] Already Exists.")
 			namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeReject
 			namespaceClaim.Status.Reason = "Duplicated NameSpace Name"
 		}
@@ -196,19 +196,19 @@ func (r *NamespaceClaimReconciler) Reconcile(_ context.Context, req ctrl.Request
 		resourceQuota.Spec.Hard = hardList
 
 		if err != nil && errors.IsNotFound(err) {
-			reqLogger.Info("Create namespace.")
+			reqLogger.V(3).Info("Create namespace.")
 			if err := r.Create(context.TODO(), namespace); err != nil {
-				reqLogger.Error(err, "Failed to create Namespace.")
+				reqLogger.V(1).Error(err, "Failed to create Namespace.")
 				namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
 				namespaceClaim.Status.Reason = "Failed to create Namespace"
 				namespaceClaim.Status.Message = err.Error()
 			} else if err := r.Create(context.TODO(), resourceQuota); err != nil {
-				reqLogger.Error(err, "Failed to create ResourceQuota.")
+				reqLogger.V(1).Error(err, "Failed to create ResourceQuota.")
 				namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
 				namespaceClaim.Status.Reason = "Failed to create Namespace ResourceQuota"
 				namespaceClaim.Status.Message = err.Error()
 			} else {
-				reqLogger.Info("Create namespace [ " + namespaceClaim.ResourceName + " ] Success")
+				reqLogger.V(3).Info("Create namespace [ " + namespaceClaim.ResourceName + " ] Success")
 				//CRB-"ns Name" for nsc user
 				r.createCRBForNSCUser(namespaceClaim)
 
@@ -222,7 +222,7 @@ func (r *NamespaceClaimReconciler) Reconcile(_ context.Context, req ctrl.Request
 					// Set Timers to Send Mail (3 weeks later), Delete Trial NS (1 month later)
 					nsResult := &v1.Namespace{}
 					if err := r.Get(context.TODO(), types.NamespacedName{Name: namespaceClaim.ResourceName}, nsResult); err != nil {
-						reqLogger.Error(err, "Failed to Read Namespace  [ "+namespaceClaim.ResourceName+" ]")
+						reqLogger.V(1).Error(err, "Failed to Read Namespace  [ "+namespaceClaim.ResourceName+" ]")
 						panic("Failed to Read Namespace  [ " + namespaceClaim.ResourceName + " ]")
 					}
 					util.SetTrialNSTimer(nsResult, r.Client, reqLogger)
@@ -237,19 +237,19 @@ func (r *NamespaceClaimReconciler) Reconcile(_ context.Context, req ctrl.Request
 				namespaceClaim.Status.Reason = "Create Namespace Success"
 			}
 		} else {
-			reqLogger.Info("Namespace [ " + namespaceClaim.Name + " ] Exists.")
+			reqLogger.V(3).Info("Namespace [ " + namespaceClaim.Name + " ] Exists.")
 			// if err := r.Update(context.TODO(), namespace); err != nil {
-			// 	reqLogger.Error(err, "Failed to update Namespace.")
+			// 	reqLogger.V(1).Error(err, "Failed to update Namespace.")
 			// 	namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
 			// 	namespaceClaim.Status.Reason = "Failed to update Namespace"
 			// 	namespaceClaim.Status.Message = err.Error()
 			// } else if err := r.Update(context.TODO(), resourceQuota); err != nil {
-			// 	reqLogger.Error(err, "Failed to update ResourceQuota.")
+			// 	reqLogger.V(1).Error(err, "Failed to update ResourceQuota.")
 			// 	namespaceClaim.Status.Status = claim.NamespaceClaimStatusTypeError
 			// 	namespaceClaim.Status.Reason = "Failed to update Namespace ResourceQuota"
 			// 	namespaceClaim.Status.Message = err.Error()
 			// } else {
-			// 	reqLogger.Info("Update Namespace Success")
+			// 	reqLogger.V(3).Info("Update Namespace Success")
 			// 	namespaceClaim.Status.Reason = "Update Namespace Success"
 			// }
 		}
@@ -307,7 +307,7 @@ func (r *NamespaceClaimReconciler) sendConfirmMail(namespaceClaim *claim.Namespa
 		body = strings.ReplaceAll(body, "%%TRIAL_STORAGE%%", storage)
 		irFound := &ingressRoute.IngressRoute{}
 		if err := r.Get(context.TODO(), types.NamespacedName{Name: util.INGRESS_ROUTE_NAME, Namespace: util.INGRESS_ROUTE_NAMESPACE}, irFound); err != nil {
-			reqLogger.Info("SomeStruct [ " + util.INGRESS_ROUTE_NAME + " ] Not Found, Use Default Console URL")
+			reqLogger.V(3).Info("SomeStruct [ " + util.INGRESS_ROUTE_NAME + " ] Not Found, Use Default Console URL")
 			body = strings.ReplaceAll(body, "%%CONSOLE_URL%%", util.DEFAULT_CONSOLE_URL)
 		} else {
 			reg, _ := regexp.Compile("console\\.([a-z0-9\\w]+\\.*)+")
@@ -334,7 +334,7 @@ func (r *NamespaceClaimReconciler) sendConfirmMail(namespaceClaim *claim.Namespa
 
 func (r *NamespaceClaimReconciler) createNSCRoleBinding(namespaceClaim *claim.NamespaceClaim) {
 	reqLogger := r.Log
-	reqLogger.Info("Create RoleBinding For NamespaceClaim user Start")
+	reqLogger.V(3).Info("Create RoleBinding For NamespaceClaim user Start")
 	rbForNscUserFound := &rbacApi.RoleBinding{}
 
 	if err := r.Get(context.TODO(), types.NamespacedName{Name: namespaceClaim.ResourceName + "-ns-owner", Namespace: namespaceClaim.ResourceName}, rbForNscUserFound); err != nil && errors.IsNotFound(err) {
@@ -359,18 +359,18 @@ func (r *NamespaceClaimReconciler) createNSCRoleBinding(namespaceClaim *claim.Na
 			},
 		}
 		if err := r.Create(context.TODO(), rbForNscUser); err != nil && errors.IsNotFound(err) {
-			reqLogger.Info("RoleBinding for NameSpace [ " + namespaceClaim.ResourceName + "-ns-owner ] Already Exists")
+			reqLogger.V(3).Info("RoleBinding for NameSpace [ " + namespaceClaim.ResourceName + "-ns-owner ] Already Exists")
 		} else {
-			reqLogger.Info("Create RoleBinding [ " + namespaceClaim.ResourceName + "-ns-owner ] Success")
+			reqLogger.V(3).Info("Create RoleBinding [ " + namespaceClaim.ResourceName + "-ns-owner ] Success")
 		}
 	} else {
-		reqLogger.Info("RoleBinding for NameSpace [ " + namespaceClaim.ResourceName + " ] Already Exists")
+		reqLogger.V(3).Info("RoleBinding for NameSpace [ " + namespaceClaim.ResourceName + " ] Already Exists")
 	}
 }
 
 func (r *NamespaceClaimReconciler) createTrialRB(namespaceClaim *claim.NamespaceClaim) {
 	reqLogger := r.Log
-	reqLogger.Info("Create Trial-RoleBinding For NamespaceClaim user Start")
+	reqLogger.V(3).Info("Create Trial-RoleBinding For NamespaceClaim user Start")
 	rbForTrialUserFound := &rbacApi.RoleBinding{}
 
 	if err := r.Get(context.TODO(), types.NamespacedName{Name: "trial-" + namespaceClaim.ResourceName, Namespace: namespaceClaim.ResourceName}, rbForTrialUserFound); err != nil && errors.IsNotFound(err) {
@@ -395,18 +395,18 @@ func (r *NamespaceClaimReconciler) createTrialRB(namespaceClaim *claim.Namespace
 			},
 		}
 		if err := r.Create(context.TODO(), rbForTrialUser); err != nil && errors.IsNotFound(err) {
-			reqLogger.Info("RoleBinding for Trial NameSpace [ trial-" + namespaceClaim.ResourceName + " ] Already Exists")
+			reqLogger.V(3).Info("RoleBinding for Trial NameSpace [ trial-" + namespaceClaim.ResourceName + " ] Already Exists")
 		} else {
-			reqLogger.Info("Create RoleBinding [ trial-" + namespaceClaim.ResourceName + " ] Success")
+			reqLogger.V(3).Info("Create RoleBinding [ trial-" + namespaceClaim.ResourceName + " ] Success")
 		}
 	} else {
-		reqLogger.Info("TrialRoleBinding for Trial NameSpace [ " + namespaceClaim.ResourceName + " ] Already Exists")
+		reqLogger.V(3).Info("TrialRoleBinding for Trial NameSpace [ " + namespaceClaim.ResourceName + " ] Already Exists")
 	}
 }
 
 func (r *NamespaceClaimReconciler) createDefaultNetPol(namespaceClaim *claim.NamespaceClaim) {
 	reqLogger := r.Log
-	reqLogger.Info("Create Network Policy for new Namespace [ " + namespaceClaim.ResourceName + " ] Start")
+	reqLogger.V(3).Info("Create Network Policy for new Namespace [ " + namespaceClaim.ResourceName + " ] Start")
 	netPolConfigFound := &v1.ConfigMap{}
 	if err := r.Get(context.TODO(), types.NamespacedName{Name: util.DEFAULT_NETWORK_POLICY_CONFIG_MAP, Namespace: util.HYPERCLOUD_NAMESPACE}, netPolConfigFound); err != nil && errors.IsNotFound(err) {
 		// Make ConfigMap default-networkpolicy-configmap With Empty Data in hypercloud5-system Namespace
@@ -420,18 +420,18 @@ func (r *NamespaceClaimReconciler) createDefaultNetPol(namespaceClaim *claim.Nam
 			},
 		}
 		if err := r.Create(context.TODO(), netPolConfig); err != nil {
-			reqLogger.Error(err, "Failed to create ConfigMap  [ "+util.DEFAULT_NETWORK_POLICY_CONFIG_MAP+" ]")
+			reqLogger.V(1).Error(err, "Failed to create ConfigMap  [ "+util.DEFAULT_NETWORK_POLICY_CONFIG_MAP+" ]")
 			panic("Failed to create ConfigMap  [ " + util.DEFAULT_NETWORK_POLICY_CONFIG_MAP + " ]")
 		} else {
-			reqLogger.Info("Create ConfigMap  [ " + util.DEFAULT_NETWORK_POLICY_CONFIG_MAP + " ] Success")
+			reqLogger.V(3).Info("Create ConfigMap  [ " + util.DEFAULT_NETWORK_POLICY_CONFIG_MAP + " ] Success")
 		}
 
 	} else {
 		// Read ConfigMap & Create Network Policy If Data Exists
 		if netPolConfigFound != nil && netPolConfigFound.Data != nil && netPolConfigFound.Data[util.NETWORK_POLICY_YAML] != "" {
 			netPolYamlString := netPolConfigFound.Data[util.NETWORK_POLICY_YAML]
-			reqLogger.Info(" netPolYamlString : " + netPolYamlString)
-			reqLogger.Info(" ------------------------------------------------------ ")
+			reqLogger.V(3).Info(" netPolYamlString : " + netPolYamlString)
+			reqLogger.V(3).Info(" ------------------------------------------------------ ")
 			netPol := &networkv1.NetworkPolicy{}
 			if err := yaml.Unmarshal([]byte(netPolYamlString), &netPol); err != nil {
 				panic("Failed to Convert yaml to json  [ " + util.NETWORK_POLICY_YAML + " ]")
@@ -439,10 +439,10 @@ func (r *NamespaceClaimReconciler) createDefaultNetPol(namespaceClaim *claim.Nam
 			netPol.SetName(namespaceClaim.ResourceName)
 			netPol.SetNamespace(namespaceClaim.ResourceName)
 			if err := r.Create(context.TODO(), netPol); err != nil {
-				reqLogger.Error(err, "Failed to create NetworkPolicy  [ "+namespaceClaim.ResourceName+" ]")
+				reqLogger.V(1).Error(err, "Failed to create NetworkPolicy  [ "+namespaceClaim.ResourceName+" ]")
 				panic("Failed to create NetworkPolicy  [ " + namespaceClaim.ResourceName + " ]")
 			} else {
-				reqLogger.Info("Create NetworkPolicy  [ " + namespaceClaim.ResourceName + " ] Success")
+				reqLogger.V(3).Info("Create NetworkPolicy  [ " + namespaceClaim.ResourceName + " ] Success")
 			}
 		}
 	}
@@ -451,7 +451,7 @@ func (r *NamespaceClaimReconciler) createDefaultNetPol(namespaceClaim *claim.Nam
 
 func (r *NamespaceClaimReconciler) createCRBForNSCUser(namespaceClaim *claim.NamespaceClaim) {
 	reqLogger := r.Log
-	reqLogger.Info("Create ClusterRoleBinding For NamespaceClaim user Start")
+	reqLogger.V(3).Info("Create ClusterRoleBinding For NamespaceClaim user Start")
 	crbForNscUserFound := &rbacApi.ClusterRoleBinding{}
 	crbForNscUser := &rbacApi.ClusterRoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
@@ -474,20 +474,20 @@ func (r *NamespaceClaimReconciler) createCRBForNSCUser(namespaceClaim *claim.Nam
 	}
 	if err := r.Get(context.TODO(), types.NamespacedName{Name: "CRB-" + namespaceClaim.ResourceName}, crbForNscUserFound); err != nil && errors.IsNotFound(err) {
 		if err := r.Create(context.TODO(), crbForNscUser); err != nil {
-			reqLogger.Error(err, "Failed to create ClusterRoleBinding [ CRB-"+namespaceClaim.ResourceName+" ]")
+			reqLogger.V(1).Error(err, "Failed to create ClusterRoleBinding [ CRB-"+namespaceClaim.ResourceName+" ]")
 			panic("Failed to create ClusterRoleBinding [ CRB-" + namespaceClaim.ResourceName + " ]")
 		} else {
-			reqLogger.Info("Create ClusterRoleBinding [ CRB-" + namespaceClaim.ResourceName + " ] Success")
+			reqLogger.V(3).Info("Create ClusterRoleBinding [ CRB-" + namespaceClaim.ResourceName + " ] Success")
 		}
 	} else {
 		if err := r.Delete(context.TODO(), crbForNscUserFound); err != nil {
-			reqLogger.Error(err, "Failed to Delete ClusterRoleBinding [ CRB-"+namespaceClaim.ResourceName+" ]")
+			reqLogger.V(1).Error(err, "Failed to Delete ClusterRoleBinding [ CRB-"+namespaceClaim.ResourceName+" ]")
 			panic("Failed to update ClusterRoleBinding [ CRB-" + namespaceClaim.ResourceName + " ]")
 		} else if err := r.Create(context.TODO(), crbForNscUser); err != nil {
-			reqLogger.Error(err, "Failed to Re-Create ClusterRoleBinding [ CRB-"+namespaceClaim.ResourceName+" ]")
+			reqLogger.V(1).Error(err, "Failed to Re-Create ClusterRoleBinding [ CRB-"+namespaceClaim.ResourceName+" ]")
 			panic("Failed to update ClusterRoleBinding [ CRB-" + namespaceClaim.ResourceName + " ]")
 		} else {
-			reqLogger.Info("Update ClusterRoleBinding [ CRB-" + namespaceClaim.ResourceName + " ] Success")
+			reqLogger.V(3).Info("Update ClusterRoleBinding [ CRB-" + namespaceClaim.ResourceName + " ] Success")
 		}
 	}
 }

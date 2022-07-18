@@ -96,6 +96,31 @@ func main() {
 	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
+
+	logLevel, isLogLevelSet := os.LookupEnv("LOG_LEVEL")
+	if isLogLevelSet {
+		setupLog.Info("LOG_LEVEL = " + logLevel)
+	} else {
+		setupLog.Info("LOG_LEVEL = INFO")
+	}
+
+	if logLevel == "TRACE" || logLevel == "trace" {
+		logLevel = "5"
+	} else if logLevel == "DEBUG" || logLevel == "debug" {
+		logLevel = "4"
+	} else if logLevel == "INFO" || logLevel == "info" {
+		logLevel = "3"
+	} else if logLevel == "WARN" || logLevel == "warn" {
+		logLevel = "2"
+	} else if logLevel == "ERROR" || logLevel == "error" {
+		logLevel = "1"
+	} else if logLevel == "FATAL" || logLevel == "fatal" {
+		logLevel = "0"
+	} else {
+		logLevel = "3"
+	}
+	flag.Set("v", logLevel)
+
 	flag.Parse()
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{

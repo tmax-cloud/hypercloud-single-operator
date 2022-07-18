@@ -48,14 +48,14 @@ var _ webhook.Validator = &NamespaceClaim{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
 func (r *NamespaceClaim) ValidateCreate() error {
-	namespaceclaimlog.Info("validate create", "name", r.Name)
-	namespaceclaimlog.Info("validating Webhook for NamespaceClaim CRD Start!!")
+	namespaceclaimlog.V(3).Info("validate create", "name", r.Name)
+	namespaceclaimlog.V(3).Info("validating Webhook for NamespaceClaim CRD Start!!")
 	return r.validateNscRq()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
 func (r *NamespaceClaim) ValidateUpdate(old runtime.Object) error {
-	namespaceclaimlog.Info("validate update", "name", r.Name)
+	namespaceclaimlog.V(3).Info("validate update", "name", r.Name)
 	// TODO(user): fill in your validation logic upon object update.
 	old_status := old.(*NamespaceClaim).DeepCopy().Status.Status
 	now_status := r.Status.Status
@@ -74,7 +74,7 @@ func (r *NamespaceClaim) ValidateUpdate(old runtime.Object) error {
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
 func (r *NamespaceClaim) ValidateDelete() error {
-	namespaceclaimlog.Info("validate delete", "name", r.Name)
+	namespaceclaimlog.V(3).Info("validate delete", "name", r.Name)
 	// TODO(user): fill in your validation logic upon object deletion.
 	return nil
 }

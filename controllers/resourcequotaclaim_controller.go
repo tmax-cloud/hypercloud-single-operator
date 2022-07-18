@@ -53,15 +53,15 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(_ context.Context, req ctrl.Req
 	_ = context.Background()
 	reqLogger := r.Log
 	// your logic here
-	reqLogger.Info("Reconciling ResourceQuotaClaim")
+	reqLogger.V(3).Info("Reconciling ResourceQuotaClaim")
 	resourceQuotaClaim := &claim.ResourceQuotaClaim{}
 
 	if err := r.Get(context.TODO(), req.NamespacedName, resourceQuotaClaim); err != nil {
 		if errors.IsNotFound(err) {
-			reqLogger.Info("ResourceQuotaClaim resource not found. Ignoring since object must be deleted.")
+			reqLogger.V(3).Info("ResourceQuotaClaim resource not found. Ignoring since object must be deleted.")
 			return ctrl.Result{}, nil
 		}
-		reqLogger.Error(err, "Failed to get ResourceQuotaClaim ["+req.Name+"]")
+		reqLogger.V(1).Error(err, "Failed to get ResourceQuotaClaim ["+req.Name+"]")
 		return ctrl.Result{}, err
 	}
 
@@ -97,9 +97,9 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(_ context.Context, req ctrl.Req
 	found := &v1.ResourceQuota{}
 	err := r.Get(context.TODO(), types.NamespacedName{Name: resourceQuotaClaim.Namespace, Namespace: resourceQuotaClaim.Namespace}, found)
 
-	reqLogger.Info("ResourceQuotaClaim status:" + resourceQuotaClaim.Status.Status)
+	reqLogger.V(3).Info("ResourceQuotaClaim status:" + resourceQuotaClaim.Status.Status)
 	if err != nil && !errors.IsNotFound(err) {
-		reqLogger.Error(err, "failed to get ResourceQuota info")
+		reqLogger.V(1).Error(err, "failed to get ResourceQuota info")
 		return ctrl.Result{}, err
 	}
 
@@ -108,7 +108,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(_ context.Context, req ctrl.Req
 	case "":
 		// Set Owner Annotation from Annotation 'Creator'
 		if resourceQuotaClaim.Annotations != nil && resourceQuotaClaim.Annotations["creator"] != "" && resourceQuotaClaim.Annotations["owner"] == "" {
-			reqLogger.Info("Set Owner Annotation from Annotation 'Creator'")
+			reqLogger.V(3).Info("Set Owner Annotation from Annotation 'Creator'")
 			resourceQuotaClaim.Annotations["owner"] = resourceQuotaClaim.Annotations["creator"]
 		}
 
@@ -117,10 +117,10 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(_ context.Context, req ctrl.Req
 		}
 		resourceQuotaClaim.Labels["make"] = "yet"
 		if err := r.Update(context.TODO(), resourceQuotaClaim); err != nil {
-			reqLogger.Error(err, "Failed to update labels[\"make\"]")
+			reqLogger.V(1).Error(err, "Failed to update labels[\"make\"]")
 		}
 
-		reqLogger.Info("New ResourceQuotaClaim Added")
+		reqLogger.V(3).Info("New ResourceQuotaClaim Added")
 		resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeAwaiting
 		resourceQuotaClaim.Status.Reason = "Please Wait for administrator approval"
 
@@ -133,7 +133,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(_ context.Context, req ctrl.Req
 		if resourceQuotaClaim.Labels["make"] == "yet" { // run only when entering for the first time
 			delete(resourceQuotaClaim.Labels, "make") // remove ["make"] label
 			if err := r.Update(context.TODO(), resourceQuotaClaim); err != nil {
-				reqLogger.Error(err, "Failed to update labels[\"make\"]")
+				reqLogger.V(1).Error(err, "Failed to update labels[\"make\"]")
 			}
 			rqcLabels := make(map[string]string)
 			if resourceQuotaClaim.Labels != nil {
@@ -177,25 +177,25 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(_ context.Context, req ctrl.Req
 			resourceQuota.Spec.Hard = hardList
 
 			if err != nil && errors.IsNotFound(err) {
-				reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.Namespace + " ] not Exists, Create ResourceQuota.")
+				reqLogger.V(3).Info("ResourceQuota [ " + resourceQuotaClaim.Namespace + " ] not Exists, Create ResourceQuota.")
 				if err := r.Create(context.TODO(), resourceQuota); err != nil {
-					reqLogger.Error(err, "Failed to create ResourceQuota.")
+					reqLogger.V(1).Error(err, "Failed to create ResourceQuota.")
 					resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeError
 					resourceQuotaClaim.Status.Reason = "Failed to create ResourceQuota"
 					resourceQuotaClaim.Status.Message = err.Error()
 				} else {
-					reqLogger.Info("Create ResourceQuota Success.")
+					reqLogger.V(3).Info("Create ResourceQuota Success.")
 					resourceQuotaClaim.Status.Reason = "Create ResourceQuota Success"
 				}
 			} else {
-				reqLogger.Info("ResourceQuota [ " + resourceQuotaClaim.Namespace + " ] Exists, Update ResourceQuota.")
+				reqLogger.V(3).Info("ResourceQuota [ " + resourceQuotaClaim.Namespace + " ] Exists, Update ResourceQuota.")
 				if err := r.Update(context.TODO(), resourceQuota); err != nil {
-					reqLogger.Error(err, "Failed to update ResourceQuota.")
+					reqLogger.V(1).Error(err, "Failed to update ResourceQuota.")
 					resourceQuotaClaim.Status.Status = claim.ResourceQuotaClaimStatusTypeError
 					resourceQuotaClaim.Status.Reason = "Failed to update ResourceQuota"
 					resourceQuotaClaim.Status.Message = err.Error()
 				} else {
-					reqLogger.Info("Update ResourceQuota Success.")
+					reqLogger.V(3).Info("Update ResourceQuota Success.")
 					resourceQuotaClaim.Status.Reason = "Update ResourceQuota Success"
 				}
 			}
@@ -204,7 +204,7 @@ func (r *ResourceQuotaClaimReconciler) Reconcile(_ context.Context, req ctrl.Req
 
 	resourceQuotaClaim.Status.LastTransitionTime = metav1.Now()
 	if err := r.Status().Update(context.TODO(), resourceQuotaClaim); err != nil {
-		reqLogger.Error(err, "Failed to update ["+resourceQuotaClaim.Name+"] status.")
+		reqLogger.V(1).Error(err, "Failed to update ["+resourceQuotaClaim.Name+"] status.")
 		return ctrl.Result{}, err
 	}
 

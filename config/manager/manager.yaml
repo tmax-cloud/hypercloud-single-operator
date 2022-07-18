@@ -25,6 +25,9 @@ spec:
         - /manager
         args:
         - --enable-leader-election
+        env:
+        - name: LOG_LEVEL
+        value: "INFO"
         image: controller:latest
         name: manager
         resources:

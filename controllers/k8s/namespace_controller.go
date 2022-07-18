@@ -68,12 +68,12 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 	_ = context.Background()
 	reqLogger := r.Log
 	// your logic here
-	reqLogger.Info("Reconciling Namespace")
+	reqLogger.V(3).Info("Reconciling Namespace")
 	namespace := &v1.Namespace{}
 
 	if err := r.Get(context.TODO(), req.NamespacedName, namespace); err != nil {
 		if errors.IsNotFound(err) {
-			reqLogger.Info("Namespace resource not found. Ignoring since object must be deleted.")
+			reqLogger.V(3).Info("Namespace resource not found. Ignoring since object must be deleted.")
 
 			// if namespace is deleted
 			// request broadcast to hypercloud-api-server
@@ -88,13 +88,13 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 			}
 			response, err := r.postRequestToHypercloudApiServer(namespace, "DELETED")
 			if err != nil {
-				reqLogger.Error(err, " Failed to broadcast namespace delete event")
+				reqLogger.V(1).Error(err, " Failed to broadcast namespace delete event")
 			}
-			reqLogger.Info(response)
+			reqLogger.V(3).Info(response)
 
 			return ctrl.Result{}, nil
 		}
-		reqLogger.Error(err, "Failed to get Namespace")
+		reqLogger.V(1).Error(err, "Failed to get Namespace")
 		return ctrl.Result{}, err
 	}
 
@@ -125,34 +125,34 @@ func (r *NamespaceReconciler) Reconcile(_ context.Context, req ctrl.Request) (ct
 	}()
 
 	if namespace.Status.Phase == "Terminating" {
-		reqLogger.Info(namespace.Name + " is in Terminating Status")
+		reqLogger.V(3).Info(namespace.Name + " is in Terminating Status")
 		if namespace.Labels != nil && namespace.Labels["fromClaim"] != "" {
 			if namespace.Finalizers != nil {
 				namespace.Finalizers = util.RemoveValue(namespace.Finalizers, "namespace/finalizers")
 			}
-			reqLogger.Info("Delete Finalizer [ namespace/finalizers ] Success")
+			reqLogger.V(3).Info("Delete Finalizer [ namespace/finalizers ] Success")
 
 			// Delete ClusterRoleBinding for nsc user
 			r.deleteCRBForNSCUser(namespace)
 
-			reqLogger.Info("Update NamespaceClaim [ " + namespace.Labels["fromClaim"] + " ] Status to Namespace Deleted")
+			reqLogger.V(3).Info("Update NamespaceClaim [ " + namespace.Labels["fromClaim"] + " ] Status to Namespace Deleted")
 			r.replaceNSCStatus(namespace.Labels["fromClaim"], namespace.Name, claim.NamespaceClaimStatusTypeDeleted)
 		}
 		// if namespace is terminating
 		// request broadcast to hypercloud-api-server
 		response, err := r.postRequestToHypercloudApiServer(namespace, "MODIFIED")
 		if err != nil {
-			reqLogger.Error(err, " Failed to broadcast namespace terminating event")
+			reqLogger.V(1).Error(err, " Failed to broadcast namespace terminating event")
 		}
-		reqLogger.Info(response)
+		reqLogger.V(3).Info(response)
 	} else {
 		// if namespace is modified
 		// request broadcast to hypercloud-api-server
 		response, err := r.postRequestToHypercloudApiServer(namespace, "MODIFIED")
 		if err != nil {
-			reqLogger.Error(err, "Failed to broadcast namespace modify event")
+			reqLogger.V(1).Error(err, "Failed to broadcast namespace modify event")
 		}
-		reqLogger.Info(response)
+		reqLogger.V(3).Info(response)
 	}
 
 	if namespace.Labels != nil && namespace.Labels["trial"] != "" && namespace.Labels["period"] != "" && namespace.Annotations["owner"] != "" {
@@ -228,10 +228,10 @@ func (r *NamespaceReconciler) reconcileNamespaceForCreateEvent(o client.Object) 
 
 	if err := r.Get(context.TODO(), types.NamespacedName{Name: ns_name, Namespace: ns_namespace}, namespace); err != nil {
 		if errors.IsNotFound(err) {
-			reqLogger.Info("Namespace resource not found. Ignoring since object must be deleted.")
+			reqLogger.V(3).Info("Namespace resource not found. Ignoring since object must be deleted.")
 			return nil
 		}
-		reqLogger.Error(err, "Failed to get Namespace")
+		reqLogger.V(1).Error(err, "Failed to get Namespace")
 		return nil
 	}
 
@@ -239,10 +239,10 @@ func (r *NamespaceReconciler) reconcileNamespaceForCreateEvent(o client.Object) 
 	// request broadcast to hypercloud-api-server
 	response, err := r.postRequestToHypercloudApiServer(namespace, "ADDED")
 	if err != nil {
-		reqLogger.Error(err, "Failed to broadcast namespace create event")
+		reqLogger.V(1).Error(err, "Failed to broadcast namespace create event")
 		return nil
 	}
-	reqLogger.Info(response)
+	reqLogger.V(3).Info(response)
 	return nil
 }
 
@@ -250,31 +250,31 @@ func (r *NamespaceReconciler) replaceNSCStatus(nscName string, nsName string, st
 	reqLogger := r.Log
 	nscFound := &claim.NamespaceClaim{}
 	if err := r.Get(context.TODO(), types.NamespacedName{Name: nscName}, nscFound); err != nil && errors.IsNotFound(err) {
-		reqLogger.Info("NamespaceClaim [ " + nscName + " ] Not Exists, Do Nothing")
+		reqLogger.V(3).Info("NamespaceClaim [ " + nscName + " ] Not Exists, Do Nothing")
 	} else {
 		nscFound.Status.Status = status
 		nscFound.Status.Reason = "Namespace [ " + nsName + " ] Deleted"
 		if err := r.Status().Update(context.TODO(), nscFound); err != nil {
-			reqLogger.Error(err, "Failed to Update NamespaceClaim [ "+nscName+" ]")
+			reqLogger.V(1).Error(err, "Failed to Update NamespaceClaim [ "+nscName+" ]")
 			panic("Failed to Update NamespaceClaim [ " + nscName + " ]")
 		} else {
-			reqLogger.Info("Update NamespaceClaim [ " + nscName + " ] Success")
+			reqLogger.V(3).Info("Update NamespaceClaim [ " + nscName + " ] Success")
 		}
 	}
 }
 
 func (r *NamespaceReconciler) deleteCRBForNSCUser(namespace *v1.Namespace) {
 	reqLogger := r.Log
-	reqLogger.Info("Delete ClusterRoleBinding For NamespaceClaim user Start")
+	reqLogger.V(3).Info("Delete ClusterRoleBinding For NamespaceClaim user Start")
 	crbForNscUserFound := &rbacApi.ClusterRoleBinding{}
 	if err := r.Get(context.TODO(), types.NamespacedName{Name: "CRB-" + namespace.Name}, crbForNscUserFound); err != nil && errors.IsNotFound(err) {
-		reqLogger.Info("ClusterRoleBinding [ CRB-" + namespace.Name + " ] Not Exists, Do Nothing")
+		reqLogger.V(3).Info("ClusterRoleBinding [ CRB-" + namespace.Name + " ] Not Exists, Do Nothing")
 	} else {
 		if err := r.Delete(context.TODO(), crbForNscUserFound); err != nil {
-			reqLogger.Error(err, "Failed to Delete ClusterRoleBinding [ CRB-"+namespace.Name+" ]")
+			reqLogger.V(1).Error(err, "Failed to Delete ClusterRoleBinding [ CRB-"+namespace.Name+" ]")
 			panic("Failed to Delete ClusterRoleBinding [ CRB-" + namespace.Name + " ]")
 		} else {
-			reqLogger.Info("Delete ClusterRoleBinding [ CRB-" + namespace.Name + " ] Success")
+			reqLogger.V(3).Info("Delete ClusterRoleBinding [ CRB-" + namespace.Name + " ] Success")
 		}
 	}
 }
@@ -287,7 +287,7 @@ func (r *NamespaceReconciler) postRequestToHypercloudApiServer(ns *v1.Namespace,
 
 	byte, err := json.Marshal(ns)
 	if err != nil {
-		reqLogger.Error(err, " Failed to marshal")
+		reqLogger.V(1).Error(err, " Failed to marshal")
 		return "", err
 	}
 
@@ -301,7 +301,7 @@ func (r *NamespaceReconciler) postRequestToHypercloudApiServer(ns *v1.Namespace,
 		ns_body = `{ "type": "MODIFIED", "object": `
 	default:
 		err := goError.New("Invalid event type")
-		reqLogger.Error(err, "")
+		reqLogger.V(1).Error(err, "")
 		return "", err
 	}
 
@@ -309,19 +309,19 @@ func (r *NamespaceReconciler) postRequestToHypercloudApiServer(ns *v1.Namespace,
 
 	ns_body_bytes, err := json.Marshal(ns_body)
 	if err != nil {
-		reqLogger.Error(err, "Failed to marshal")
+		reqLogger.V(1).Error(err, "Failed to marshal")
 		return "", err
 	}
 	ns_body_io_reader := bytes.NewBuffer(ns_body_bytes)
 
 	resp, err := http.Post(url, "application/json", ns_body_io_reader)
 	if err != nil {
-		reqLogger.Error(err, " Failed to broadcast namespace create event")
+		reqLogger.V(1).Error(err, " Failed to broadcast namespace create event")
 		return "", err
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		reqLogger.Error(err, " Failed to read response body")
+		reqLogger.V(1).Error(err, " Failed to read response body")
 		return "", err
 	}
 	return string(body), nil

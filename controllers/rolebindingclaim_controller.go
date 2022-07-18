@@ -52,15 +52,15 @@ func (r *RoleBindingClaimReconciler) Reconcile(_ context.Context, req ctrl.Reque
 	reqLogger := r.Log
 
 	// your logic here
-	reqLogger.Info("Reconciling RoleBindingClaim")
+	reqLogger.V(3).Info("Reconciling RoleBindingClaim")
 	roleBindingClaim := &claim.RoleBindingClaim{}
 
 	if err := r.Get(context.TODO(), req.NamespacedName, roleBindingClaim); err != nil {
 		if errors.IsNotFound(err) {
-			reqLogger.Info("RoleBindingClaim resource not found. Ignoring since object must be deleted.")
+			reqLogger.V(3).Info("RoleBindingClaim resource not found. Ignoring since object must be deleted.")
 			return ctrl.Result{}, nil
 		}
-		reqLogger.Error(err, "Failed to get RoleBindingClaim ["+req.Name+"]")
+		reqLogger.V(1).Error(err, "Failed to get RoleBindingClaim ["+req.Name+"]")
 		return ctrl.Result{}, err
 	}
 
@@ -104,9 +104,9 @@ func (r *RoleBindingClaimReconciler) Reconcile(_ context.Context, req ctrl.Reque
 	labels := map[string]string{"fromClaim": roleBindingClaim.Name}
 	err := r.List(context.TODO(), found, client.InNamespace(roleBindingClaim.Namespace), client.MatchingLabels(labels))
 
-	reqLogger.Info("RoleBindingClaim status:" + roleBindingClaim.Status.Status)
+	reqLogger.V(3).Info("RoleBindingClaim status:" + roleBindingClaim.Status.Status)
 	if err != nil {
-		reqLogger.Error(err, "Failed to get RoleBinding info")
+		reqLogger.V(1).Error(err, "Failed to get RoleBinding info")
 		return ctrl.Result{}, err
 	}
 
@@ -115,7 +115,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(_ context.Context, req ctrl.Reque
 	case "":
 		// Set Owner Annotation from Annotation 'Creator'
 		if roleBindingClaim.Annotations != nil && roleBindingClaim.Annotations["creator"] != "" && roleBindingClaim.Annotations["owner"] == "" {
-			reqLogger.Info("Set Owner Annotation from Annotation 'Creator'")
+			reqLogger.V(3).Info("Set Owner Annotation from Annotation 'Creator'")
 			roleBindingClaim.Annotations["owner"] = roleBindingClaim.Annotations["creator"]
 		}
 
@@ -123,7 +123,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(_ context.Context, req ctrl.Reque
 		if err := r.List(context.TODO(), rbcList, &client.ListOptions{
 			Namespace: roleBindingClaim.Namespace,
 		}); err != nil {
-			reqLogger.Error(err, "Failed to get RoleBindingClaim List")
+			reqLogger.V(1).Error(err, "Failed to get RoleBindingClaim List")
 			panic(err)
 		}
 
@@ -141,7 +141,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(_ context.Context, req ctrl.Reque
 		// if !isExistSameName {
 		// 	rbList := &v1.RoleBindingList{}
 		// 	if err := r.List(context.TODO(), rbList); err != nil {
-		// 		reqLogger.Error(err, "Failed to get RoleBinding List")
+		// 		reqLogger.V(1).Error(err, "Failed to get RoleBinding List")
 		// 		panic(err)
 		// 	}
 
@@ -154,11 +154,11 @@ func (r *RoleBindingClaimReconciler) Reconcile(_ context.Context, req ctrl.Reque
 		// }
 
 		if len(found.Items) < 1 && !isExistSameName {
-			reqLogger.Info("New RoleBindingClaim Added")
+			reqLogger.V(3).Info("New RoleBindingClaim Added")
 			roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeAwaiting
 			roleBindingClaim.Status.Reason = "Please Wait for administrator approval"
 		} else {
-			reqLogger.Info("RoleBinding [ " + roleBindingClaim.Name + " ] Already Exists.")
+			reqLogger.V(3).Info("RoleBinding [ " + roleBindingClaim.Name + " ] Already Exists.")
 			roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeReject
 			roleBindingClaim.Status.Reason = "Duplicated RolebindingClaim Name"
 		}
@@ -184,31 +184,31 @@ func (r *RoleBindingClaimReconciler) Reconcile(_ context.Context, req ctrl.Reque
 		}
 
 		if len(found.Items) < 1 {
-			reqLogger.Info("RoleBinding [ " + roleBindingClaim.Name + " ] not Exists, Create RoleBinding.")
+			reqLogger.V(3).Info("RoleBinding [ " + roleBindingClaim.Name + " ] not Exists, Create RoleBinding.")
 			if err := r.Create(context.TODO(), roleBinding); err != nil {
-				reqLogger.Error(err, "Failed to create RoleBinding.")
+				reqLogger.V(1).Error(err, "Failed to create RoleBinding.")
 				roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
 				roleBindingClaim.Status.Reason = "Failed to create RoleBinding"
 				roleBindingClaim.Status.Message = err.Error()
 			} else {
-				reqLogger.Info("Create RoleBinding Success.")
+				reqLogger.V(3).Info("Create RoleBinding Success.")
 				roleBindingClaim.Status.Reason = "Create RoleBinding Success"
 			}
 		} else {
-			reqLogger.Info("RoleBinding [ " + roleBindingClaim.Name + " ] Exists.")
+			reqLogger.V(3).Info("RoleBinding [ " + roleBindingClaim.Name + " ] Exists.")
 
 			// if !cmp.Equal(roleBindingClaim.Subjects, found.Items[0].Subjects) || !cmp.Equal(roleBindingClaim.RoleRef, found.Items[0].RoleRef) {
-			// 	reqLogger.Info("Same resourceName already exists, modify resourceName and retry.")
+			// 	reqLogger.V(3).Info("Same resourceName already exists, modify resourceName and retry.")
 			// 	roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
 			// 	roleBindingClaim.Status.Reason = "Same resourceName already exists, modify resourceName and retry"
 			// 	roleBindingClaim.Status.Message = fmt.Errorf("Same resourceName already exists").Error()
 			// } else if err := r.Update(context.TODO(), &found.Items[0]); err != nil {
-			// 	reqLogger.Error(err, "Failed to update RoleBinding.")
+			// 	reqLogger.V(1).Error(err, "Failed to update RoleBinding.")
 			// 	roleBindingClaim.Status.Status = claim.RoleBindingClaimStatusTypeError
 			// 	roleBindingClaim.Status.Reason = "Failed to update RoleBinding"
 			// 	roleBindingClaim.Status.Message = err.Error()
 			// } else {
-			// 	reqLogger.Info("Update RoleBinding Success.")
+			// 	reqLogger.V(3).Info("Update RoleBinding Success.")
 			// 	roleBindingClaim.Status.Reason = "Update RoleBinding Success"
 			// }
 		}
@@ -216,7 +216,7 @@ func (r *RoleBindingClaimReconciler) Reconcile(_ context.Context, req ctrl.Reque
 
 	roleBindingClaim.Status.LastTransitionTime = metav1.Now()
 	if err := r.Status().Update(context.TODO(), roleBindingClaim); err != nil {
-		reqLogger.Error(err, "Failed to update ["+roleBindingClaim.Name+"] status.")
+		reqLogger.V(1).Error(err, "Failed to update ["+roleBindingClaim.Name+"] status.")
 		return ctrl.Result{}, err
 	}
 
