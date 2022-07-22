@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.26.4 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.26.4 (2022. 07. 22. (금) 18:47:30 KST)
+
+### Added
+  - [feat] 로그 레벨 기능 추가(zap) by Seungwon Lee
+
+### Changed
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.26.4 end --------------------->
+
 <!-------------------- v5.0.26.3 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.26.3 (2022. 07. 05. (화) 12:32:37 KST)
