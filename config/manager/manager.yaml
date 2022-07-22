@@ -27,6 +27,7 @@ spec:
         - /manager
         args:
         - --enable-leader-election
+        - --zap-log-level=info
         image: controller:latest
         name: manager
         resources:
