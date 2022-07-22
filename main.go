@@ -67,7 +67,7 @@ func main() {
 	defer file.Close()
 	w := io.MultiWriter(file, os.Stdout)
 
-	ctrl.SetLogger(zap.New(zap.UseDevMode(true), zap.WriteTo(w)))
+	//ctrl.SetLogger(zap.New(zap.UseDevMode(true), zap.WriteTo(w)))
 	util.UpdateResourceList(setupLog)
 
 	// Logging Cron Job
@@ -96,7 +96,12 @@ func main() {
 	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
+	opts := zap.Options{
+		Development: false,
+	}
+	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
+	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts), zap.WriteTo(w)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:             scheme,
