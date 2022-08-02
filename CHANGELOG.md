@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.30.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.30.0 (2022. 08. 02. (화) 17:03:25 KST)
+
+### Added
+
+### Changed
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+  - [etc] k8s 1.19, 1.22 동시 호환 배포를 위한 Makefile 수정 by GitHub
+
+<!--------------------- v5.0.30.0 end --------------------->
+
 <!-------------------- v5.0.29.1 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.29.1 (2022. 07. 22. (금) 18:42:42 KST)
