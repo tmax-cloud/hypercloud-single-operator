@@ -24,6 +24,7 @@ webhooks:
     operations:
     - CREATE
     - UPDATE
+    - DELETE
     resources:
     - namespaceclaims
     - namespaceclaims/status
@@ -46,31 +47,10 @@ webhooks:
     operations:
     - CREATE
     - UPDATE
+    - DELETE
     resources:
     - resourcequotaclaims
     - resourcequotaclaims/status
-  sideEffects: NoneOnDryRun
-- admissionReviewVersions:
-  - v1beta1
-  - v1
-  clientConfig:
-    service:
-      name: webhook-service
-      namespace: system
-      path: /validate-claim-tmax-io-v1alpha1-namespaceclaim
-  failurePolicy: Fail
-  name: vnamespaceclaim.kb.io
-  rules:
-  - apiGroups:
-    - claim.tmax.io
-    apiVersions:
-    - v1alpha1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - namespaceclaims
-    - namespaceclaims/status
   sideEffects: NoneOnDryRun
 - admissionReviewVersions:
   - v1beta1
@@ -90,28 +70,8 @@ webhooks:
     operations:
     - CREATE
     - UPDATE
+    - DELETE
     resources:
+    - rolebindingclaims
     - rolebindingclaims/status
-  sideEffects: NoneOnDryRun
-- admissionReviewVersions:
-  - v1beta1
-  - v1
-  clientConfig:
-    service:
-      name: webhook-service
-      namespace: system
-      path: /validate-claim-tmax-io-v1alpha1-namespaceclaim
-  failurePolicy: Fail
-  name: vnamespaceclaim.kb.io
-  rules:
-  - apiGroups:
-    - claim.tmax.io
-    apiVersions:
-    - v1alpha1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - namespaceclaims
-    - namespaceclaims/status
   sideEffects: NoneOnDryRun
