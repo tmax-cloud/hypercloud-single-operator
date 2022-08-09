@@ -48,14 +48,12 @@ var _ webhook.Validator = &RoleBindingClaim{}
 func (r *RoleBindingClaim) ValidateCreate() error {
 	rolebindingclaimlog.Info("validate create", "name", r.Name)
 
-	// TODO(user): fill in your validation logic upon object creation.
 	return nil
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
 func (r *RoleBindingClaim) ValidateUpdate(old runtime.Object) error {
 	rolebindingclaimlog.Info("validate update", "name", r.Name)
-	// TODO(user): fill in your validation logic upon object update.
 
 	old_status := old.(*RoleBindingClaim).DeepCopy().Status.Status
 	now_status := r.Status.Status
@@ -65,7 +63,7 @@ func (r *RoleBindingClaim) ValidateUpdate(old runtime.Object) error {
 		return errors.NewForbidden(
 			schema.GroupResource{Group: "claim.tmax.io", Resource: r.Name},
 			"",
-			err.New("cannot update RoleBindingClaim in Approved or Deleted status"),
+			err.New("Cannot update RoleBindingClaim in Approved or Deleted status"),
 		)
 	}
 
@@ -75,7 +73,8 @@ func (r *RoleBindingClaim) ValidateUpdate(old runtime.Object) error {
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
 func (r *RoleBindingClaim) ValidateDelete() error {
 	rolebindingclaimlog.Info("validate delete", "name", r.Name)
-
-	// TODO(user): fill in your validation logic upon object deletion.
+	if r.Status.Status == RoleBindingClaimStatusTypeSuccess {
+		return err.New("Cannot delete RoleBindingClaim before deleting Rolebinding")
+	}
 	return nil
 }

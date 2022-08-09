@@ -56,7 +56,6 @@ func (r *NamespaceClaim) ValidateCreate() error {
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
 func (r *NamespaceClaim) ValidateUpdate(old runtime.Object) error {
 	namespaceclaimlog.Info("validate update", "name", r.Name)
-	// TODO(user): fill in your validation logic upon object update.
 	old_status := old.(*NamespaceClaim).DeepCopy().Status.Status
 	now_status := r.Status.Status
 
@@ -65,7 +64,7 @@ func (r *NamespaceClaim) ValidateUpdate(old runtime.Object) error {
 		return errors.NewForbidden(
 			schema.GroupResource{Group: "claim.tmax.io", Resource: r.Name},
 			"",
-			err.New("cannot update NamespaceClaim in Approved or Deleted status"),
+			err.New("Cannot update NamespaceClaim in Approved or Deleted status"),
 		)
 	}
 
@@ -75,7 +74,9 @@ func (r *NamespaceClaim) ValidateUpdate(old runtime.Object) error {
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
 func (r *NamespaceClaim) ValidateDelete() error {
 	namespaceclaimlog.Info("validate delete", "name", r.Name)
-	// TODO(user): fill in your validation logic upon object deletion.
+	if r.Status.Status == NamespaceClaimStatusTypeSuccess {
+		return err.New("Cannot delete NamespaceClaim before deleting Namespace")
+	}
 	return nil
 }
 

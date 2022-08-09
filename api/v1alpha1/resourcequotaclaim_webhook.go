@@ -95,7 +95,6 @@ func (r *ResourceQuotaClaim) ValidateCreate() error {
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
 func (r *ResourceQuotaClaim) ValidateUpdate(old runtime.Object) error {
 	resourcequotaclaimlog.Info("validate update", "name", r.Name)
-	// TODO(user): fill in your validation logic upon object update.
 	old_status := old.(*ResourceQuotaClaim).DeepCopy().Status.Status
 	now_status := r.Status.Status
 
@@ -104,7 +103,7 @@ func (r *ResourceQuotaClaim) ValidateUpdate(old runtime.Object) error {
 		return errors.NewForbidden(
 			schema.GroupResource{Group: "claim.tmax.io", Resource: r.Name},
 			"",
-			err.New("cannot update ResourceQuotaClaim in Approved or Deleted status"),
+			err.New("Cannot update ResourceQuotaClaim in Approved or Deleted status"),
 		)
 	}
 
@@ -114,7 +113,9 @@ func (r *ResourceQuotaClaim) ValidateUpdate(old runtime.Object) error {
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
 func (r *ResourceQuotaClaim) ValidateDelete() error {
 	resourcequotaclaimlog.Info("validate delete", "name", r.Name)
-	// TODO(user): fill in your validation logic upon object deletion.
+	if r.Status.Status == ResourceQuotaClaimStatusTypeSuccess {
+		return err.New("Cannot delete ResourceQuotaClaim before deleting ResourceQuota")
+	}
 	return nil
 }
 
