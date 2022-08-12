@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.31.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.31.0 (2022. 08. 12. (금) 10:37:43 KST)
+
+### Added
+  - [feat] claim이 승인 상태일 경우, 해당 리소스가 삭제되기 전까지 claim이 삭제되는 것을 웹훅에서 막는 기능 추가 by Seungwon Lee
+
+### Changed
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.31.0 end --------------------->
+
 <!-------------------- v5.0.30.0 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.30.0 (2022. 08. 02. (화) 17:03:25 KST)
