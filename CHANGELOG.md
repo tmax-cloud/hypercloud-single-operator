@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.32.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.32.0 (2022. 08. 24. (수) 12:48:51 KST)
+
+### Added
+
+### Changed
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+  - [etc] default zap log level INFO로 설정하는 args 추가 by GitHub
+
+<!--------------------- v5.0.32.0 end --------------------->
+
 <!-------------------- v5.0.31.0 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.31.0 (2022. 08. 12. (금) 10:37:43 KST)
