@@ -1,6 +1,23 @@
 # HyperCloud-Single-Operator changelog!!
 All notable changes to this project will be documented in this file.
 
+<!-------------------- v5.0.33.0 start -------------------->
+
+## HyperCloud-Single-Operator_5.0.33.0 (2022. 09. 02. (금) 14:20:30 KST)
+
+### Added
+
+### Changed
+  - [mod] make 명령어 시, 웹훅 설정 추가되도록 kubebuilder 주석 수정 by Seungwon Lee
+
+### Fixed
+
+### CRD yaml
+
+### Etc
+
+<!--------------------- v5.0.33.0 end --------------------->
+
 <!-------------------- v5.0.32.0 start -------------------->
 
 ## HyperCloud-Single-Operator_5.0.32.0 (2022. 08. 24. (수) 12:48:51 KST)
