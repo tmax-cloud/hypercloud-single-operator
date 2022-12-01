@@ -57,8 +57,9 @@ spec:
                   pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                   x-kubernetes-int-or-string: true
                 description: 'hard is the set of desired hard limits for each named
-                  resource. "limits.cpu" and "limits.memory" must be required. More
-                  info: https://kubernetes.io/docs/concepts/policy/resource-quotas/'
+                  resource. "limits.cpu" and "limits.memory" must be required.
+                  Value can be "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "K", "M", "G", "T", "P" and "E".
+                  More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/'
                 type: object
               scopeSelector:
                 description: scopeSelector is also a collection of filters like scopes
@@ -202,8 +203,9 @@ spec:
                   pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                   x-kubernetes-int-or-string: true
                 description: 'hard is the set of desired hard limits for each named
-                  resource. "limits.cpu" and "limits.memory" must be required. More
-                  info: https://kubernetes.io/docs/concepts/policy/resource-quotas/'
+                  resource. "limits.cpu" and "limits.memory" must be required.
+                  Value can be "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "K", "M", "G", "T", "P" and "E".
+                  More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/'
                 type: object
               scopeSelector:
                 description: scopeSelector is also a collection of filters like scopes
